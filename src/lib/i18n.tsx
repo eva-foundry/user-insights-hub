@@ -95,14 +95,18 @@ export function I18nProvider({
         defaultLocale="en"
         messages={messagesByLocale[locale]}
         onError={(err) => {
-          // Dev-only: missing translations log a warning instead of throwing,
-          // so a single missing key doesn't blank the SSR render.
-          if (import.meta.env.DEV && err.code === "MISSING_TRANSLATION") {
-            console.warn(`[i18n] ${err.message}`);
+          // A single missing or malformed message must never blank the SSR
+          // render. We swallow MISSING_TRANSLATION silently and log
+          // FORMAT_ERROR (e.g. UNCLOSED_TAG) as a warning so it surfaces in
+          // dev tools but the id-as-fallback keeps the page alive.
+          if (err.code === "MISSING_TRANSLATION") {
+            if (import.meta.env.DEV) console.warn(`[i18n] ${err.message}`);
             return;
           }
-          if (err.code === "MISSING_TRANSLATION") return;
-
+          if (err.code === "FORMAT_ERROR") {
+            console.warn(`[i18n format] ${err.message}`);
+            return;
+          }
           console.error(err);
         }}
       >
