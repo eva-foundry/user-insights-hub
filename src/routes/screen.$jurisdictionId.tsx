@@ -83,6 +83,9 @@ export const Route = createFileRoute("/screen/$jurisdictionId")({
   pendingComponent: () => <ScreenFormSkeleton />,
   component: ScreenFormPage,
   notFoundComponent: () => <UnknownJurisdiction />,
+  errorComponent: ({ error, reset }) => (
+    <ScreenLoaderError error={error} onRetry={reset} />
+  ),
 });
 
 function ScreenFormPage() {
@@ -172,6 +175,50 @@ function UnknownJurisdiction() {
       >
         {intl.formatMessage({ id: "screen.back" })}
       </Link>
+    </ScreenShell>
+  );
+}
+
+/**
+ * Route-level error boundary for unexpected loader failures (i.e. anything
+ * the loader's own try/catch did not absorb into the preview-mode fallback).
+ * Keeps the citizen surface honest: shows what failed and a retry control,
+ * never silently renders empty fields.
+ */
+function ScreenLoaderError({ error, onRetry }: { error: unknown; onRetry: () => void }) {
+  const intl = useIntl();
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    <ScreenShell showBack>
+      <div
+        role="alert"
+        className="rounded border border-destructive/60 bg-destructive/5 p-4"
+      >
+        <h1 className="font-serif text-2xl text-destructive">
+          {intl.formatMessage({ id: "screen.loader_error.title" })}
+        </h1>
+        <p className="mt-2 text-sm text-foreground-muted">
+          {intl.formatMessage({ id: "screen.loader_error.body" })}
+        </p>
+        <pre className="mt-3 overflow-x-auto rounded bg-surface-sunken px-2 py-1 text-xs text-foreground-muted">
+          {message}
+        </pre>
+        <div className="mt-4 flex gap-3">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex h-9 items-center rounded bg-foreground px-3 text-sm font-medium text-background hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {intl.formatMessage({ id: "screen.loader_error.retry" })}
+          </button>
+          <Link
+            to="/screen"
+            className="inline-flex h-9 items-center text-sm underline underline-offset-2 text-foreground"
+          >
+            {intl.formatMessage({ id: "screen.back" })}
+          </Link>
+        </div>
+      </div>
     </ScreenShell>
   );
 }
