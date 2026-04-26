@@ -30,8 +30,6 @@ import { Route as CasesCaseIdRouteImport } from './routes/cases.$caseId'
 import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals.$id'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes/config.prompts.$key.$jurisdictionId.edit'
-import { Route as ScreenRouteImport } from './routes/screen'
-import { Route as ScreenJurisdictionIdRouteImport } from './routes/screen.$jurisdictionId'
 
 const ScreenRoute = ScreenRouteImport.update({
   id: '/screen',
@@ -41,11 +39,6 @@ const ScreenRoute = ScreenRouteImport.update({
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScreenRoute = ScreenRouteImport.update({
-  id: '/screen',
-  path: '/screen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpactRoute = ImpactRouteImport.update({
@@ -144,11 +137,6 @@ const ConfigPromptsKeyJurisdictionIdEditRoute =
     path: '/$key/$jurisdictionId/edit',
     getParentRoute: () => ConfigPromptsRoute,
   } as any)
-const ScreenJurisdictionIdRoute = ScreenJurisdictionIdRouteImport.update({
-  id: '/$jurisdictionId',
-  path: '/$jurisdictionId',
-  getParentRoute: () => ScreenRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -161,7 +149,6 @@ export interface FileRoutesByFullPath {
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
   '/screen': typeof ScreenRouteWithChildren
-  '/screen': typeof ScreenRouteWithChildren
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -173,7 +160,6 @@ export interface FileRoutesByFullPath {
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
-  '/screen/$jurisdictionId': typeof ScreenJurisdictionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -186,7 +172,6 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
   '/screen': typeof ScreenRouteWithChildren
-  '/screen': typeof ScreenRouteWithChildren
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -198,7 +183,6 @@ export interface FileRoutesByTo {
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
-  '/screen/$jurisdictionId': typeof ScreenJurisdictionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -212,7 +196,6 @@ export interface FileRoutesById {
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
   '/screen': typeof ScreenRouteWithChildren
-  '/screen': typeof ScreenRouteWithChildren
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -224,7 +207,6 @@ export interface FileRoutesById {
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
-  '/screen/$jurisdictionId': typeof ScreenJurisdictionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -239,7 +221,6 @@ export interface FileRouteTypes {
     | '/impact'
     | '/policies'
     | '/screen'
-    | '/screen'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
@@ -251,7 +232,6 @@ export interface FileRouteTypes {
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
-    | '/screen/$jurisdictionId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -264,7 +244,6 @@ export interface FileRouteTypes {
     | '/impact'
     | '/policies'
     | '/screen'
-    | '/screen'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
@@ -276,7 +255,6 @@ export interface FileRouteTypes {
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
-    | '/screen/$jurisdictionId'
   id:
     | '__root__'
     | '/'
@@ -289,7 +267,6 @@ export interface FileRouteTypes {
     | '/impact'
     | '/policies'
     | '/screen'
-    | '/screen'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
@@ -301,7 +278,6 @@ export interface FileRouteTypes {
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
-    | '/screen/$jurisdictionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -388,20 +364,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/screen': {
-      id: '/screen'
-      path: '/screen'
-      fullPath: '/screen'
-      preLoaderRoute: typeof ScreenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/screen/$jurisdictionId': {
-      id: '/screen/$jurisdictionId'
-      path: '/$jurisdictionId'
-      fullPath: '/screen/$jurisdictionId'
-      preLoaderRoute: typeof ScreenJurisdictionIdRouteImport
-      parentRoute: typeof ScreenRoute
     }
     '/screen/$jurisdictionId': {
       id: '/screen/$jurisdictionId'
@@ -549,17 +511,6 @@ const EncodeRouteChildren: EncodeRouteChildren = {
 
 const EncodeRouteWithChildren =
   EncodeRoute._addFileChildren(EncodeRouteChildren)
-
-interface ScreenRouteChildren {
-  ScreenJurisdictionIdRoute: typeof ScreenJurisdictionIdRoute
-}
-
-const ScreenRouteChildren: ScreenRouteChildren = {
-  ScreenJurisdictionIdRoute: ScreenJurisdictionIdRoute,
-}
-
-const ScreenRouteWithChildren =
-  ScreenRoute._addFileChildren(ScreenRouteChildren)
 
 interface ScreenRouteChildren {
   ScreenJurisdictionIdRoute: typeof ScreenJurisdictionIdRoute
