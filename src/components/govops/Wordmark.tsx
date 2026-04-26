@@ -1,7 +1,9 @@
-// Text-rendered wordmark: "GovOps" with the middle "O" carrying the agentic
-// accent (spec govops-002) so the system register is visible at a glance.
-// The PNG variants in /public are reserved for og:image / favicons; the live UI
-// uses text for crispness, RTL handling, and accessibility.
+// Text-rendered wordmark: "Gov0ps" — the middle character is a literal zero
+// (U+0030), with the agentic accent on it. This bakes the law-as-code idea
+// directly into the mark (spec govops-013, supersedes govops-002). The PNG
+// variants in /public are reserved for og:image / favicons; the live UI uses
+// text for crispness, RTL handling, and accessibility. Screen readers
+// announce the brand name "GovOps" via aria-label, not "Gov zero PS".
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span
@@ -11,10 +13,11 @@ export function Wordmark({ className }: { className?: string }) {
         fontWeight: 600,
         letterSpacing: "-0.01em",
         whiteSpace: "nowrap",
+        fontVariantNumeric: "lining-nums",
       }}
       aria-label="GovOps"
     >
-      Gov<span style={{ color: "var(--agentic)" }}>O</span>ps
+      Gov<span style={{ color: "var(--agentic)" }}>0</span>ps
     </span>
   );
 }
