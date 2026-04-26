@@ -10,6 +10,13 @@ import {
   runLabel,
 } from "./fixture/useFixtureHistory";
 import { FixtureResult } from "./fixture/FixtureResult";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 /**
  * Side panel that lets a maintainer execute the encoder against a saved
@@ -109,25 +116,33 @@ export function FixtureTestPanel({
         >
           {intl.formatMessage({ id: "prompt.fixture.select.label" })}
         </label>
-        <select
-          id="fixture-select"
-          value={selectedFixture}
-          onChange={(e) => setSelectedFixture(e.target.value)}
+        <Select
+          value={selectedFixture || undefined}
+          onValueChange={setSelectedFixture}
           disabled={!fixtures || fixtures.length === 0}
-          className="h-9 w-full rounded-md border border-border bg-background px-2 text-sm text-foreground"
         >
-          {fixtures === null && <option>…</option>}
-          {fixtures && fixtures.length === 0 && (
-            <option value="">
-              {intl.formatMessage({ id: "prompt.fixture.select.placeholder" })}
-            </option>
-          )}
-          {fixtures?.map((f) => (
-            <option key={f.id} value={f.id}>
-              {f.document_title} ({f.jurisdiction_id})
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id="fixture-select"
+            className="h-9 w-full bg-background text-sm text-foreground"
+          >
+            <SelectValue
+              placeholder={
+                fixtures === null
+                  ? "…"
+                  : intl.formatMessage({
+                      id: "prompt.fixture.select.placeholder",
+                    })
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {fixtures?.map((f) => (
+              <SelectItem key={f.id} value={f.id}>
+                {f.document_title} ({f.jurisdiction_id})
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <button
@@ -163,23 +178,29 @@ export function FixtureTestPanel({
           >
             {intl.formatMessage({ id: "prompt.fixture.history.label" })}
           </label>
-          <select
-            id="fixture-history-select"
-            value={viewIndex}
-            onChange={(e) => {
-              const next = Number(e.target.value);
+          <Select
+            value={String(viewIndex)}
+            onValueChange={(v) => {
+              const next = Number(v);
               setViewIndex(next);
               if (compareIndex === next) setCompareIndex(null);
             }}
-            className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
-            style={{ fontFamily: "var(--font-mono)" }}
           >
-            {history.map((r, i) => (
-              <option key={i} value={i}>
-                {runLabel(r, i)}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger
+              id="fixture-history-select"
+              className="h-9 w-full bg-background text-xs text-foreground"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {history.map((r, i) => (
+                <SelectItem key={i} value={String(i)}>
+                  {runLabel(r, i)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       )}
 
@@ -195,24 +216,30 @@ export function FixtureTestPanel({
             >
               {intl.formatMessage({ id: "prompt.fixture.compare.label" })}
             </label>
-            <select
-              id="fixture-compare-select"
-              value={compareIndex ?? ""}
-              onChange={(e) =>
-                setCompareIndex(e.target.value === "" ? null : Number(e.target.value))
+            <Select
+              value={compareIndex == null ? "__none__" : String(compareIndex)}
+              onValueChange={(v) =>
+                setCompareIndex(v === "__none__" ? null : Number(v))
               }
-              className="h-9 w-full rounded-md border border-border bg-background px-2 text-xs text-foreground"
-              style={{ fontFamily: "var(--font-mono)" }}
             >
-              <option value="">
-                {intl.formatMessage({ id: "prompt.fixture.compare.none" })}
-              </option>
-              {compareOptions.map((i) => (
-                <option key={i} value={i}>
-                  {runLabel(history[i], i)}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger
+                id="fixture-compare-select"
+                className="h-9 w-full bg-background text-xs text-foreground"
+                style={{ fontFamily: "var(--font-mono)" }}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">
+                  {intl.formatMessage({ id: "prompt.fixture.compare.none" })}
+                </SelectItem>
+                {compareOptions.map((i) => (
+                  <SelectItem key={i} value={String(i)}>
+                    {runLabel(history[i], i)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 

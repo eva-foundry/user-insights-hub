@@ -12,6 +12,7 @@ import {
 } from "@/components/govops/ConfigValueFilters";
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
 import {
   Select,
   SelectContent,
@@ -80,14 +81,7 @@ export const Route = createFileRoute("/config")({
     <RouteError error={error as Error} reset={reset} />
   ),
   pendingComponent: () => (
-    <ul role="list" className="space-y-2" aria-busy="true">
-      {[0, 1, 2].map((i) => (
-        <li
-          key={i}
-          className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
-        />
-      ))}
-    </ul>
+    <RouteLoading rows={3} rowHeight={68} />
   ),
   component: ConfigPage,
 });

@@ -8,6 +8,7 @@ import { ValueDiff } from "@/components/govops/ValueDiff";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
 import { ValueTypeBadge } from "@/components/govops/ValueTypeBadge";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
 import { getApproval, resolveCurrentConfigValue } from "@/lib/api";
 import type { ConfigValue } from "@/lib/types";
 
@@ -35,15 +36,7 @@ export const Route = createFileRoute("/config/approvals/$id")({
   errorComponent: ({ error, reset }) => (
     <RouteError error={error as Error} reset={reset} />
   ),
-  pendingComponent: () => (
-    <div className="space-y-6" aria-busy="true">
-      <div className="h-24 animate-pulse rounded-md bg-surface-sunken" />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="h-72 animate-pulse rounded-md bg-surface-sunken" />
-        <div className="h-72 animate-pulse rounded-md bg-surface-sunken" />
-      </div>
-    </div>
-  ),
+  pendingComponent: () => <RouteLoading variant="panel" />,
   component: ApprovalDetailPage,
 });
 

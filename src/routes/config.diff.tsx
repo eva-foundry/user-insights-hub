@@ -14,6 +14,7 @@ import { DiffMetadataStrip } from "@/components/govops/DiffMetadataStrip";
 import { ValueDiff } from "@/components/govops/ValueDiff";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
 
 type DiffSearch = { from?: string; to?: string };
 
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/config/diff")({
   errorComponent: ({ error, reset }) => (
     <RouteError error={error as Error} reset={reset} />
   ),
-  pendingComponent: DiffSkeleton,
+  pendingComponent: () => <RouteLoading variant="split" />,
   component: DiffPage,
 });
 
@@ -55,23 +56,6 @@ async function loadOne(id: string): Promise<LoadResult> {
     if (mock) return { kind: "ok", cv: mock };
     return { kind: "error", id, message: "404" };
   }
-}
-
-function DiffSkeleton() {
-  return (
-    <div className="grid gap-4 md:grid-cols-2" aria-busy="true">
-      {[0, 1].map((i) => (
-        <div
-          key={i}
-          className="space-y-2 rounded-md border border-border bg-surface p-4"
-        >
-          <div className="h-3 w-24 animate-pulse rounded bg-surface-sunken" />
-          <div className="h-3 w-full animate-pulse rounded bg-surface-sunken" />
-          <div className="h-3 w-3/4 animate-pulse rounded bg-surface-sunken" />
-        </div>
-      ))}
-    </div>
-  );
 }
 
 function DiffPage() {
