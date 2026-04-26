@@ -38,14 +38,16 @@ function walk(dir) {
 }
 walk(SRC);
 
-const ID_RE = /\bid:\s*["'`]([a-zA-Z0-9_.\-]+)["'`]/g;
-const FM_RE = /<FormattedMessage[^>]*\bid=["'`]([a-zA-Z0-9_.\-]+)["'`]/g;
+// Match formatMessage({ id: "x.y[.z]" }) — require a dot to avoid matching
+// data object ids like { id: "p-001" }.
+const FM_CALL_RE = /formatMessage\(\s*\{\s*id:\s*["'`]([a-zA-Z0-9_.\-]+\.[a-zA-Z0-9_.\-]+)["'`]/g;
+const FM_TAG_RE = /<FormattedMessage[^>]*\bid=["'`]([a-zA-Z0-9_.\-]+\.[a-zA-Z0-9_.\-]+)["'`]/g;
 
 const used = new Set();
 for (const file of sourceFiles) {
   const text = readFileSync(file, "utf8");
-  for (const m of text.matchAll(ID_RE)) used.add(m[1]);
-  for (const m of text.matchAll(FM_RE)) used.add(m[1]);
+  for (const m of text.matchAll(FM_CALL_RE)) used.add(m[1]);
+  for (const m of text.matchAll(FM_TAG_RE)) used.add(m[1]);
 }
 
 let failures = 0;
