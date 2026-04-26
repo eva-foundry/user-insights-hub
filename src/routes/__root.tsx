@@ -7,7 +7,7 @@ import { Masthead } from "@/components/govops/Masthead";
 import { SkipToContent } from "@/components/govops/SkipToContent";
 import { Toaster } from "@/components/ui/sonner";
 import { RouteError } from "@/components/govops/RouteError";
-import { getSsrLocale } from "@/lib/ssrLocale.server";
+import { getSsrLocale } from "@/lib/ssrLocale";
 
 function NotFoundComponent() {
   return (
