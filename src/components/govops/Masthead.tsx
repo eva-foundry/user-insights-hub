@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/config/approvals", id: "nav.approvals" },
   { to: "/config/prompts", id: "nav.prompts" },
   { to: "/about", id: "nav.about" },
+  { to: "/admin", id: "nav.admin" },
 ];
 
 export function Masthead() {

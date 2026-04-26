@@ -13,6 +13,7 @@ import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AuthorityRouteImport } from './routes/authority'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
@@ -42,6 +43,11 @@ const CasesRoute = CasesRouteImport.update({
 const AuthorityRoute = AuthorityRouteImport.update({
   id: '/authority',
   path: '/authority',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -99,6 +105,7 @@ const ConfigPromptsKeyJurisdictionIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/authority': typeof AuthorityRoute
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/authority': typeof AuthorityRoute
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/authority': typeof AuthorityRoute
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/authority'
     | '/cases'
     | '/config'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/authority'
     | '/cases'
     | '/config'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/authority'
     | '/cases'
     | '/config'
@@ -199,6 +211,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   AuthorityRoute: typeof AuthorityRoute
   CasesRoute: typeof CasesRouteWithChildren
   ConfigRoute: typeof ConfigRouteWithChildren
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/authority'
       fullPath: '/authority'
       preLoaderRoute: typeof AuthorityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -365,6 +385,7 @@ const ConfigRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   AuthorityRoute: AuthorityRoute,
   CasesRoute: CasesRouteWithChildren,
   ConfigRoute: ConfigRouteWithChildren,
@@ -373,12 +394,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
