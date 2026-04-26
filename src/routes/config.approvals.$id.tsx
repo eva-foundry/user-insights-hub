@@ -8,6 +8,7 @@ import { ValueDiff } from "@/components/govops/ValueDiff";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
 import { ValueTypeBadge } from "@/components/govops/ValueTypeBadge";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
 import { getApproval, resolveCurrentConfigValue } from "@/lib/api";
 import type { ConfigValue } from "@/lib/types";
 
