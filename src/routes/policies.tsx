@@ -7,6 +7,7 @@ import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { VerdictBadge } from "@/components/govops/VerdictBadge";
 import { useLocale } from "@/lib/i18n";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
 
 export const Route = createFileRoute("/policies")({
   head: () => ({

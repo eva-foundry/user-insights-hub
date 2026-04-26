@@ -31,16 +31,7 @@ export const Route = createFileRoute("/config/$key/$jurisdictionId")({
   errorComponent: ({ error, reset }) => (
     <RouteError error={error as Error} reset={reset} />
   ),
-  pendingComponent: () => (
-    <ul role="list" className="space-y-3" aria-busy="true">
-      {[0, 1, 2].map((i) => (
-        <li
-          key={i}
-          className="h-[140px] animate-pulse rounded-md border border-border bg-surface-sunken"
-        />
-      ))}
-    </ul>
-  ),
+  pendingComponent: () => <RouteLoading rows={3} rowHeight={140} />,
   component: ConfigDetailPage,
 });
 
