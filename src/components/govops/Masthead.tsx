@@ -12,6 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/", id: "nav.home", exact: true },
   { to: "/policies", id: "nav.policies" },
   { to: "/authority", id: "nav.authority" },
+  { to: "/impact", id: "nav.impact" },
   { to: "/cases", id: "nav.cases" },
   { to: "/encode", id: "nav.encode" },
   { to: "/config", id: "nav.config" },

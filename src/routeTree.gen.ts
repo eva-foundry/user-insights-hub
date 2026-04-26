@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PoliciesRouteImport } from './routes/policies'
+import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as EncodeRouteImport } from './routes/encode'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as CasesRouteImport } from './routes/cases'
@@ -31,6 +32,11 @@ import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EncodeRoute = EncodeRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
   '/encode': typeof EncodeRouteWithChildren
+  '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
   '/encode': typeof EncodeRouteWithChildren
+  '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
   '/encode': typeof EncodeRouteWithChildren
+  '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/config'
     | '/encode'
+    | '/impact'
     | '/policies'
     | '/cases/$caseId'
     | '/config/approvals'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/config'
     | '/encode'
+    | '/impact'
     | '/policies'
     | '/cases/$caseId'
     | '/config/approvals'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/cases'
     | '/config'
     | '/encode'
+    | '/impact'
     | '/policies'
     | '/cases/$caseId'
     | '/config/approvals'
@@ -252,6 +264,7 @@ export interface RootRouteChildren {
   CasesRoute: typeof CasesRouteWithChildren
   ConfigRoute: typeof ConfigRouteWithChildren
   EncodeRoute: typeof EncodeRouteWithChildren
+  ImpactRoute: typeof ImpactRoute
   PoliciesRoute: typeof PoliciesRoute
 }
 
@@ -262,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/policies'
       fullPath: '/policies'
       preLoaderRoute: typeof PoliciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/encode': {
@@ -461,6 +481,7 @@ const rootRouteChildren: RootRouteChildren = {
   CasesRoute: CasesRouteWithChildren,
   ConfigRoute: ConfigRouteWithChildren,
   EncodeRoute: EncodeRouteWithChildren,
+  ImpactRoute: ImpactRoute,
   PoliciesRoute: PoliciesRoute,
 }
 export const routeTree = rootRouteImport
