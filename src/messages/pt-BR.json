@@ -309,5 +309,6 @@
   "prompt.fixture.compare.removed": "{count, plural, one {# removida} other {# removidas}}",
   "prompt.fixture.compare.unchanged": "{count, plural, one {# proposta inalterada} other {# propostas inalteradas}}",
   "prompt.fixture.export": "Exportar relatório (PDF)",
-  "prompt.fixture.export.done": "Relatório baixado"
+  "prompt.fixture.export.done": "Relatório baixado",
+  "nav.menu": "Menu"
 }
