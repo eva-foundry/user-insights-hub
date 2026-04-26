@@ -251,5 +251,13 @@
   "approvals.panel.expand": "Expandir",
   "approvals.shortcuts.show": "Mostrar atalhos de teclado",
   "approvals.shortcuts.hide": "Ocultar atalhos de teclado",
-  "approvals.shortcuts.toggle_help": "Mostrar / ocultar esta ajuda"
+  "approvals.shortcuts.toggle_help": "Mostrar / ocultar esta ajuda",
+  "approvals.search.label": "Buscar nas aprovações",
+  "approvals.search.placeholder": "Buscar por chave, autor, jurisdição ou justificativa…",
+  "approvals.filter.status.label": "Status",
+  "approvals.filter.status.all": "Todos",
+  "approvals.filter.empty.title": "Nenhuma aprovação corresponde a esses filtros.",
+  "approvals.filter.empty.body": "Tente uma busca mais ampla ou limpe o filtro de status.",
+  "approvals.filter.clear": "Limpar filtros",
+  "approvals.pagination.per_page": "Por página"
 }

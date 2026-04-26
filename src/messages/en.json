@@ -251,5 +251,13 @@
   "approvals.panel.expand": "Expand",
   "approvals.shortcuts.show": "Show keyboard shortcuts",
   "approvals.shortcuts.hide": "Hide keyboard shortcuts",
-  "approvals.shortcuts.toggle_help": "Toggle this help"
+  "approvals.shortcuts.toggle_help": "Toggle this help",
+  "approvals.search.label": "Search approvals",
+  "approvals.search.placeholder": "Search by key, author, jurisdiction, or rationale…",
+  "approvals.filter.status.label": "Status",
+  "approvals.filter.status.all": "All",
+  "approvals.filter.empty.title": "No approvals match these filters.",
+  "approvals.filter.empty.body": "Try a broader search or clear the status filter.",
+  "approvals.filter.clear": "Clear filters",
+  "approvals.pagination.per_page": "Per page"
 }

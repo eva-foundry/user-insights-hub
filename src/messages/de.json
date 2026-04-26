@@ -251,5 +251,13 @@
   "approvals.panel.expand": "Ausklappen",
   "approvals.shortcuts.show": "Tastenkürzel anzeigen",
   "approvals.shortcuts.hide": "Tastenkürzel ausblenden",
-  "approvals.shortcuts.toggle_help": "Diese Hilfe ein-/ausblenden"
+  "approvals.shortcuts.toggle_help": "Diese Hilfe ein-/ausblenden",
+  "approvals.search.label": "Freigaben durchsuchen",
+  "approvals.search.placeholder": "Suche nach Schlüssel, Autor, Zuständigkeit oder Begründung…",
+  "approvals.filter.status.label": "Status",
+  "approvals.filter.status.all": "Alle",
+  "approvals.filter.empty.title": "Keine Freigaben entsprechen diesen Filtern.",
+  "approvals.filter.empty.body": "Versuchen Sie eine breitere Suche oder entfernen Sie den Statusfilter.",
+  "approvals.filter.clear": "Filter zurücksetzen",
+  "approvals.pagination.per_page": "Pro Seite"
 }

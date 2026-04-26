@@ -251,5 +251,13 @@
   "approvals.panel.expand": "Розгорнути",
   "approvals.shortcuts.show": "Показати комбінації клавіш",
   "approvals.shortcuts.hide": "Сховати комбінації клавіш",
-  "approvals.shortcuts.toggle_help": "Показати / сховати цю довідку"
+  "approvals.shortcuts.toggle_help": "Показати / сховати цю довідку",
+  "approvals.search.label": "Пошук у затвердженнях",
+  "approvals.search.placeholder": "Пошук за ключем, автором, юрисдикцією або обґрунтуванням…",
+  "approvals.filter.status.label": "Статус",
+  "approvals.filter.status.all": "Усі",
+  "approvals.filter.empty.title": "Жодне затвердження не відповідає цим фільтрам.",
+  "approvals.filter.empty.body": "Спробуйте ширший пошук або скиньте фільтр статусу.",
+  "approvals.filter.clear": "Скинути фільтри",
+  "approvals.pagination.per_page": "На сторінці"
 }
