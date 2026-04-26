@@ -519,5 +519,12 @@
   "impact.empty.body": "Перевірте ланцюг повноважень, щоб підтвердити існування посилання.",
   "impact.empty.cta": "Переглянути ланцюг повноважень",
   "impact.error.title": "Не вдалося виконати запит впливу",
-  "impact.error.retry": "Повторити"
+  "impact.error.retry": "Повторити",
+  "impact.match.aria": "збігається з пошуком: {query}",
+  "impact.results.region": "Результати впливу цитування",
+  "impact.pagination.aria": "Навігація сторінками результатів впливу",
+  "impact.pagination.limit": "На сторінці",
+  "impact.pagination.prev": "Назад",
+  "impact.pagination.next": "Далі",
+  "impact.pagination.status": "Сторінка {page} з {pageCount}"
 }

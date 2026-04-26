@@ -6,7 +6,10 @@ import type { ImpactResponse } from "@/lib/types";
 import { ImpactSection } from "@/components/govops/ImpactSection";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 
-type ImpactSearch = { citation?: string };
+type ImpactSearch = { citation?: string; limit?: number; page?: number };
+
+const ALLOWED_LIMITS = [10, 25, 50, 100] as const;
+const DEFAULT_LIMIT = 25;
 
 export const Route = createFileRoute("/impact")({
   head: () => ({
@@ -20,6 +23,18 @@ export const Route = createFileRoute("/impact")({
   }),
   validateSearch: (s: Record<string, unknown>): ImpactSearch => ({
     citation: typeof s.citation === "string" && s.citation ? s.citation : undefined,
+    limit:
+      typeof s.limit === "number" && (ALLOWED_LIMITS as readonly number[]).includes(s.limit)
+        ? s.limit
+        : typeof s.limit === "string" && (ALLOWED_LIMITS as readonly number[]).includes(Number(s.limit))
+          ? Number(s.limit)
+          : undefined,
+    page:
+      typeof s.page === "number" && Number.isInteger(s.page) && s.page > 0
+        ? s.page
+        : typeof s.page === "string" && Number.isInteger(Number(s.page)) && Number(s.page) > 0
+          ? Number(s.page)
+          : undefined,
   }),
   component: ImpactPage,
 });
@@ -27,6 +42,8 @@ export const Route = createFileRoute("/impact")({
 function ImpactPage() {
   const search = Route.useSearch();
   const citation = search.citation ?? "";
+  const limit = search.limit ?? DEFAULT_LIMIT;
+  const page = search.page ?? 1;
   const navigate = useNavigate({ from: "/impact" });
   const intl = useIntl();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +58,7 @@ function ImpactPage() {
     setInput(citation);
   }, [citation]);
 
-  // run query when ?citation= changes
+  // run query when ?citation=, ?limit=, ?page= change
   useEffect(() => {
     let cancelled = false;
     if (!citation.trim()) {
@@ -51,7 +68,7 @@ function ImpactPage() {
     }
     setLoading(true);
     setError(null);
-    impactByCitation(citation)
+    impactByCitation(citation, { limit, page })
       .then((r) => {
         if (!cancelled) setData(r);
       })
@@ -64,7 +81,7 @@ function ImpactPage() {
     return () => {
       cancelled = true;
     };
-  }, [citation]);
+  }, [citation, limit, page]);
 
   // global "/" focuses the search input (when not in another text field)
   useEffect(() => {
@@ -83,7 +100,12 @@ function ImpactPage() {
 
   function pushQuery(v: string) {
     navigate({
-      search: () => ({ citation: v.trim() ? v : undefined }),
+      // any new query resets pagination back to page 1
+      search: (prev: ImpactSearch) => ({
+        citation: v.trim() ? v : undefined,
+        limit: prev.limit,
+        page: undefined,
+      }),
       replace: true,
     });
   }
@@ -105,11 +127,25 @@ function ImpactPage() {
       // re-issue by toggling state; simplest is just to refetch directly.
       setError(null);
       setLoading(true);
-      impactByCitation(citation)
+      impactByCitation(citation, { limit, page })
         .then(setData)
         .catch((e) => setError(e instanceof Error ? e.message : String(e)))
         .finally(() => setLoading(false));
     }
+  }
+
+  function setLimit(next: number) {
+    navigate({
+      search: (prev: ImpactSearch) => ({ ...prev, limit: next, page: undefined }),
+      replace: true,
+    });
+  }
+
+  function gotoPage(next: number) {
+    navigate({
+      search: (prev: ImpactSearch) => ({ ...prev, page: next > 1 ? next : undefined }),
+      replace: false,
+    });
   }
 
   return (
@@ -144,16 +180,27 @@ function ImpactPage() {
           onChange={(e) => onChange(e.target.value)}
           placeholder={intl.formatMessage({ id: "impact.search.placeholder" })}
           aria-label={intl.formatMessage({ id: "impact.search.placeholder" })}
+          aria-controls="impact-results"
           className="w-full rounded-md border border-border bg-surface px-4 py-3 text-sm text-foreground outline-none focus-visible:shadow-[var(--ring-focus)]"
           style={{ fontFamily: "var(--font-mono)" }}
+          data-testid="impact-search"
         />
       </form>
 
-      <div aria-live="polite" aria-atomic="true" className="min-h-[2rem]">
+      <div
+        id="impact-results"
+        role="region"
+        aria-label={intl.formatMessage({ id: "impact.results.region" })}
+        aria-live="polite"
+        aria-atomic="true"
+        tabIndex={-1}
+        className="min-h-[2rem]"
+      >
         {error && (
           <div
             role="alert"
             className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface-sunken p-4"
+            data-testid="impact-error"
           >
             <div>
               <p className="text-sm font-medium text-foreground">
@@ -165,6 +212,7 @@ function ImpactPage() {
               type="button"
               onClick={retry}
               className="rounded-md border border-border bg-surface px-3 py-1.5 text-sm text-foreground hover:bg-surface-sunken focus-visible:shadow-[var(--ring-focus)]"
+              data-testid="impact-retry"
             >
               {intl.formatMessage({ id: "impact.error.retry" })}
             </button>
@@ -175,12 +223,19 @@ function ImpactPage() {
 
         {!loading && !error && data && data.total > 0 && (
           <>
-            <p className="mb-6 text-sm text-foreground-muted">
+            <p className="mb-4 text-sm text-foreground-muted">
               <FormattedMessage
                 id="impact.summary"
                 values={{ n: data.total, m: data.jurisdiction_count, query: data.query }}
               />
             </p>
+            <ImpactPaginationBar
+              limit={data.limit ?? limit}
+              page={data.page ?? page}
+              pageCount={data.page_count ?? 1}
+              onLimitChange={setLimit}
+              onPageChange={gotoPage}
+            />
             {data.results.map((r) => (
               <ImpactSection
                 key={r.jurisdiction_id ?? "global"}
@@ -188,11 +243,18 @@ function ImpactPage() {
                 query={data.query}
               />
             ))}
+            <ImpactPaginationBar
+              limit={data.limit ?? limit}
+              page={data.page ?? page}
+              pageCount={data.page_count ?? 1}
+              onLimitChange={setLimit}
+              onPageChange={gotoPage}
+            />
           </>
         )}
 
         {!loading && !error && data && data.total === 0 && (
-          <div className="rounded-md bg-agentic-soft p-6 text-center">
+          <div className="rounded-md bg-agentic-soft p-6 text-center" data-testid="impact-empty">
             <p className="text-base font-medium text-agentic-foreground">
               {intl.formatMessage({ id: "impact.empty.title" })}
             </p>
@@ -210,6 +272,73 @@ function ImpactPage() {
         )}
       </div>
     </section>
+  );
+}
+
+function ImpactPaginationBar({
+  limit,
+  page,
+  pageCount,
+  onLimitChange,
+  onPageChange,
+}: {
+  limit: number;
+  page: number;
+  pageCount: number;
+  onLimitChange: (n: number) => void;
+  onPageChange: (n: number) => void;
+}) {
+  const intl = useIntl();
+  const prevDisabled = page <= 1;
+  const nextDisabled = page >= pageCount;
+  return (
+    <nav
+      aria-label={intl.formatMessage({ id: "impact.pagination.aria" })}
+      className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface px-3 py-2 text-xs text-foreground-muted"
+    >
+      <label className="flex items-center gap-2">
+        <span>{intl.formatMessage({ id: "impact.pagination.limit" })}</span>
+        <select
+          value={limit}
+          onChange={(e) => onLimitChange(Number(e.target.value))}
+          className="rounded border border-border bg-surface px-2 py-1 text-foreground focus-visible:shadow-[var(--ring-focus)]"
+          aria-label={intl.formatMessage({ id: "impact.pagination.limit" })}
+          data-testid="impact-limit"
+        >
+          {ALLOWED_LIMITS.map((n) => (
+            <option key={n} value={n}>
+              {n}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onPageChange(page - 1)}
+          disabled={prevDisabled}
+          className="rounded border border-border bg-surface px-2 py-1 text-foreground hover:bg-surface-sunken disabled:opacity-40 focus-visible:shadow-[var(--ring-focus)]"
+          data-testid="impact-prev"
+        >
+          {intl.formatMessage({ id: "impact.pagination.prev" })}
+        </button>
+        <span aria-live="off" data-testid="impact-page-status">
+          <FormattedMessage
+            id="impact.pagination.status"
+            values={{ page, pageCount }}
+          />
+        </span>
+        <button
+          type="button"
+          onClick={() => onPageChange(page + 1)}
+          disabled={nextDisabled}
+          className="rounded border border-border bg-surface px-2 py-1 text-foreground hover:bg-surface-sunken disabled:opacity-40 focus-visible:shadow-[var(--ring-focus)]"
+          data-testid="impact-next"
+        >
+          {intl.formatMessage({ id: "impact.pagination.next" })}
+        </button>
+      </div>
+    </nav>
   );
 }
 

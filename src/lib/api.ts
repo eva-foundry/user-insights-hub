@@ -478,14 +478,26 @@ export async function commitBatch(batchId: string): Promise<{ committed_rule_ids
 
 // ---- Citation impact (govops-014) ------------------------------------------
 
-export async function impactByCitation(citation: string): Promise<ImpactResponse> {
+export interface ImpactQueryOpts {
+  limit?: number;
+  page?: number;
+}
+
+export async function impactByCitation(
+  citation: string,
+  opts: ImpactQueryOpts = {},
+): Promise<ImpactResponse> {
   const trimmed = citation.trim();
-  if (!trimmed) return { query: "", total: 0, jurisdiction_count: 0, results: [] };
-  const qs = new URLSearchParams({ citation: trimmed }).toString();
+  if (!trimmed)
+    return { query: "", total: 0, jurisdiction_count: 0, results: [], limit: opts.limit, page: opts.page, page_count: 0 };
+  const params = new URLSearchParams({ citation: trimmed });
+  if (opts.limit) params.set("limit", String(opts.limit));
+  if (opts.page) params.set("page", String(opts.page));
+  const qs = params.toString();
   try {
     return await fetcher<ImpactResponse>(`/api/impact?${qs}`);
   } catch {
     const { MOCK_IMPACT_RESPONSE } = await import("./mock-impact");
-    return MOCK_IMPACT_RESPONSE(trimmed);
+    return MOCK_IMPACT_RESPONSE(trimmed, opts);
   }
 }

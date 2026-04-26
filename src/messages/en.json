@@ -519,5 +519,12 @@
   "impact.empty.body": "Try the authority chain to confirm the citation exists.",
   "impact.empty.cta": "Browse authority chain",
   "impact.error.title": "Couldn't run the impact query",
-  "impact.error.retry": "Retry"
+  "impact.error.retry": "Retry",
+  "impact.match.aria": "matches search: {query}",
+  "impact.results.region": "Citation impact results",
+  "impact.pagination.aria": "Impact results pagination",
+  "impact.pagination.limit": "Per page",
+  "impact.pagination.prev": "Previous",
+  "impact.pagination.next": "Next",
+  "impact.pagination.status": "Page {page} of {pageCount}"
 }

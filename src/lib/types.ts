@@ -339,4 +339,8 @@ export interface ImpactResponse {
   total: number;
   jurisdiction_count: number;
   results: ImpactResult[];
+  /** Page-level metadata (govops-014 pagination). Optional for backwards compat. */
+  limit?: number;
+  page?: number;
+  page_count?: number;
 }
