@@ -40,6 +40,13 @@ export function Masthead() {
             {intl.formatMessage({ id: "nav.config" })}
           </Link>
           <Link
+            to="/config/approvals"
+            className="text-foreground-muted transition-colors hover:text-foreground"
+            activeProps={{ className: "text-foreground font-medium" }}
+          >
+            {intl.formatMessage({ id: "nav.approvals" })}
+          </Link>
+          <Link
             to="/about"
             className="text-foreground-muted transition-colors hover:text-foreground"
             activeProps={{ className: "text-foreground font-medium" }}
