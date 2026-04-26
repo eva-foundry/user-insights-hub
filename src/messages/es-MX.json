@@ -194,5 +194,9 @@
   "draft.saved": "Borrador guardado en la URL — agrégalo a marcadores para continuar",
   "draft.preview.title": "Vista previa de la línea de tiempo",
   "draft.preview.caption": "Así se verá la nueva versión cuando se envíe.",
-  "draft.preview.supersedes": "Reemplazará la versión vigente desde {date, date, medium}"
+  "draft.preview.supersedes": "Reemplazará la versión vigente desde {date, date, medium}",
+  "validators.effective_from.format": "Debe ser ISO-8601 UTC, p. ej. 2026-01-15T00:00:00Z",
+  "validators.effective_from.invalid": "La fecha no es válida.",
+  "draft.recent.title": "Borradores recientes",
+  "draft.recent.remove": "Eliminar borrador {label}"
 }

@@ -194,5 +194,9 @@
   "draft.saved": "Brouillon enregistré dans l'URL — ajoutez aux favoris pour reprendre",
   "draft.preview.title": "Aperçu en direct de la chronologie",
   "draft.preview.caption": "Voici comment la nouvelle version apparaîtra une fois soumise.",
-  "draft.preview.supersedes": "Remplacera la version en vigueur depuis le {date, date, medium}"
+  "draft.preview.supersedes": "Remplacera la version en vigueur depuis le {date, date, medium}",
+  "validators.effective_from.format": "Doit être au format ISO-8601 UTC, p. ex. 2026-01-15T00:00:00Z",
+  "validators.effective_from.invalid": "La date n'est pas valide.",
+  "draft.recent.title": "Brouillons récents",
+  "draft.recent.remove": "Supprimer le brouillon {label}"
 }

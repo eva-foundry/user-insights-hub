@@ -24,7 +24,17 @@ import {
   coerceValue,
   validateKey,
   validateRationale,
+  validateIsoUtc,
 } from "@/lib/validators";
+import { emitDraftsChanged, saveRecentDraft } from "@/lib/draftStorage";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DOMAINS,
   JURISDICTIONS,
@@ -132,8 +142,20 @@ export function DraftConfigForm({
   const [errors, setErrors] = useState<Errors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
+  const [showPreview, setShowPreview] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    const stored = window.localStorage.getItem("govops:draft-preview-open");
+    return stored === null ? true : stored === "true";
+  });
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [savedDraftOnce, setSavedDraftOnce] = useState(false);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+
+  // Persist preview-open across reloads / save-as-draft navigations.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("govops:draft-preview-open", String(showPreview));
+  }, [showPreview]);
 
   // -- locked fields when superseding --
   const lockedKey = !!initial.supersedes_id || !!prior;
@@ -177,7 +199,7 @@ export function DraftConfigForm({
         case "key":
           return validateKey(String(v("key", key))) ?? undefined;
         case "effective_from":
-          return v("effective_from", effectiveFrom) ? undefined : "validators.effective_from.required";
+          return validateIsoUtc(String(v("effective_from", effectiveFrom) ?? "")) ?? undefined;
         case "citation":
           return (v("domain", domain) === "rule" && !String(v("citation", citation)).trim())
             ? "validators.citation.required"
@@ -307,14 +329,26 @@ export function DraftConfigForm({
       }
     }
     onSaveDraft(params);
+    saveRecentDraft(params);
+    emitDraftsChanged();
+    setSavedDraftOnce(true);
     toast.success(intl.formatMessage({ id: "draft.saved" }));
   }
 
+  /** Anything that should make Cancel show a confirm modal. */
+  const cancelNeedsConfirm =
+    dirty || Object.keys(touched).length > 0 || savedDraftOnce;
+
   function handleCancel() {
-    if (dirty) {
-      const ok = window.confirm(intl.formatMessage({ id: "draft.unsaved.body" }));
-      if (!ok) return;
+    if (cancelNeedsConfirm) {
+      setConfirmCancelOpen(true);
+      return;
     }
+    performCancel();
+  }
+
+  function performCancel() {
+    setConfirmCancelOpen(false);
     if (window.history.length > 1) window.history.back();
     else nav({ to: "/config" });
   }
@@ -620,6 +654,29 @@ export function DraftConfigForm({
           />
         )}
       </section>
+
+      <Dialog open={confirmCancelOpen} onOpenChange={setConfirmCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{intl.formatMessage({ id: "draft.unsaved.title" })}</DialogTitle>
+            <DialogDescription>
+              {intl.formatMessage({ id: "draft.unsaved.body" })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setConfirmCancelOpen(false)}
+            >
+              {intl.formatMessage({ id: "draft.unsaved.dismiss" })}
+            </Button>
+            <Button type="button" variant="destructive" onClick={performCancel}>
+              {intl.formatMessage({ id: "draft.unsaved.confirm" })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }

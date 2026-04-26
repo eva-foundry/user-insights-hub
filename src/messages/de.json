@@ -194,5 +194,9 @@
   "draft.saved": "Entwurf in URL gespeichert — Lesezeichen zum Fortsetzen",
   "draft.preview.title": "Live-Vorschau der Zeitleiste",
   "draft.preview.caption": "So erscheint die neue Version nach dem Absenden.",
-  "draft.preview.supersedes": "Ersetzt die seit {date, date, medium} gültige Version"
+  "draft.preview.supersedes": "Ersetzt die seit {date, date, medium} gültige Version",
+  "validators.effective_from.format": "Muss ISO-8601 UTC sein, z. B. 2026-01-15T00:00:00Z",
+  "validators.effective_from.invalid": "Datum ist kein gültiges Kalenderdatum.",
+  "draft.recent.title": "Letzte Entwürfe",
+  "draft.recent.remove": "Entwurf {label} entfernen"
 }

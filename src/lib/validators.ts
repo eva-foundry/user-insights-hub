@@ -19,6 +19,19 @@ export function validateRationale(text: string): string | null {
 }
 
 /**
+ * Strict ISO-8601 UTC datetime validator. Accepts YYYY-MM-DDTHH:mm[:ss[.sss]]Z.
+ * Returns an i18n message id, or null if valid.
+ */
+const ISO_UTC_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{1,3})?)?Z$/;
+export function validateIsoUtc(value: string): string | null {
+  if (!value) return "validators.effective_from.required";
+  if (!ISO_UTC_REGEX.test(value)) return "validators.effective_from.format";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "validators.effective_from.invalid";
+  return null;
+}
+
+/**
  * Coerces a raw form string (or already-typed value) into the appropriate
  * ConfigValue runtime shape. Throws an Error whose message is an i18n key.
  */
