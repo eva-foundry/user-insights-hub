@@ -101,7 +101,7 @@ function ImpactPage() {
   function pushQuery(v: string) {
     navigate({
       // any new query resets pagination back to page 1
-      search: (prev) => ({
+      search: (prev: ImpactSearch) => ({
         citation: v.trim() ? v : undefined,
         limit: prev.limit,
         page: undefined,
@@ -136,14 +136,14 @@ function ImpactPage() {
 
   function setLimit(next: number) {
     navigate({
-      search: (prev) => ({ ...prev, limit: next, page: undefined }),
+      search: (prev: ImpactSearch) => ({ ...prev, limit: next, page: undefined }),
       replace: true,
     });
   }
 
   function gotoPage(next: number) {
     navigate({
-      search: (prev) => ({ ...prev, page: next > 1 ? next : undefined }),
+      search: (prev: ImpactSearch) => ({ ...prev, page: next > 1 ? next : undefined }),
       replace: false,
     });
   }
