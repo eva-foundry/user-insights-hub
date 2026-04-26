@@ -31,7 +31,7 @@ import { MOCK_CONFIG_VALUES } from "./mock-config-values";
  */
 const loadMocks = () => import("./api.mock");
 
-const useMock = () => import.meta.env.VITE_USE_MOCK_API === "true";
+const isMockMode = () => import.meta.env.VITE_USE_MOCK_API === "true";
 
 /**
  * fetchOrMock: try the configured backend; on failure, return the supplied
@@ -73,7 +73,7 @@ export interface FixtureRunResult {
 }
 
 export async function listFixtures(): Promise<FixtureBatchSummary[]> {
-  if (useMock()) return (await loadMocks()).mockListFixtures();
+  if (isMockMode()) return (await loadMocks()).mockListFixtures();
   try {
     return await fetcher<FixtureBatchSummary[]>("/api/encode/fixtures");
   } catch {
@@ -85,7 +85,7 @@ export async function runFixtureWithPrompt(
   fixtureId: string,
   body: { prompt_text: string; prompt_key: string },
 ): Promise<FixtureRunResult> {
-  if (useMock()) return (await loadMocks()).mockRunFixtureWithPrompt(fixtureId, body);
+  if (isMockMode()) return (await loadMocks()).mockRunFixtureWithPrompt(fixtureId, body);
   try {
     return await fetcher<FixtureRunResult>(
       `/api/encode/fixtures/${encodeURIComponent(fixtureId)}/run-with-prompt`,
@@ -124,7 +124,7 @@ export async function getConfigValue(id: string): Promise<ConfigValue> {
 }
 
 export async function createConfigValue(body: CreateConfigValueRequest): Promise<ConfigValue> {
-  if (useMock()) return (await loadMocks()).mockCreateConfigValue(body);
+  if (isMockMode()) return (await loadMocks()).mockCreateConfigValue(body);
   try {
     return await fetcher<ConfigValue>("/api/config/values", {
       method: "POST",
@@ -136,7 +136,7 @@ export async function createConfigValue(body: CreateConfigValueRequest): Promise
 }
 
 export async function listApprovals(): Promise<ListConfigValuesResponse> {
-  if (useMock()) return (await loadMocks()).mockListApprovals();
+  if (isMockMode()) return (await loadMocks()).mockListApprovals();
   try {
     const [draft, pending] = await Promise.all([
       fetcher<ListConfigValuesResponse>("/api/config/values?status=draft"),
@@ -152,7 +152,7 @@ export async function listApprovals(): Promise<ListConfigValuesResponse> {
 }
 
 export async function getApproval(id: string): Promise<ConfigValue | null> {
-  if (useMock()) return (await loadMocks()).mockGetApproval(id);
+  if (isMockMode()) return (await loadMocks()).mockGetApproval(id);
   try {
     return await getConfigValue(id);
   } catch {
@@ -164,7 +164,7 @@ export async function approveConfigValue(
   id: string,
   body: { approved_by: string; comment: string },
 ): Promise<ConfigValue> {
-  if (useMock()) return (await loadMocks()).mockApproveConfigValue(id, body);
+  if (isMockMode()) return (await loadMocks()).mockApproveConfigValue(id, body);
   try {
     return await fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}/approve`, {
       method: "POST",
@@ -179,7 +179,7 @@ export async function requestChangesConfigValue(
   id: string,
   body: { reviewer: string; comment: string },
 ): Promise<ConfigValue> {
-  if (useMock()) return (await loadMocks()).mockRequestChangesConfigValue(id, body);
+  if (isMockMode()) return (await loadMocks()).mockRequestChangesConfigValue(id, body);
   try {
     return await fetcher<ConfigValue>(
       `/api/config/values/${encodeURIComponent(id)}/request-changes`,
@@ -194,7 +194,7 @@ export async function rejectConfigValue(
   id: string,
   body: { reviewer: string; comment: string },
 ): Promise<ConfigValue> {
-  if (useMock()) return (await loadMocks()).mockRejectConfigValue(id, body);
+  if (isMockMode()) return (await loadMocks()).mockRejectConfigValue(id, body);
   try {
     return await fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}/reject`, {
       method: "POST",
