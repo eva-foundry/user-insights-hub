@@ -21,16 +21,23 @@ if (!existsSync(target)) {
 }
 
 const src = readFileSync(target, "utf8");
-const decl = /^\s*(?:export\s+)?(?:const|let|interface|function|class)\s+([A-Za-z_$][\w$]*)/gm;
-const seen = new Map(); // name -> [lineNumbers]
+// Track values and types in separate namespaces, since TS allows
+// `interface Foo {}` + `const Foo: Foo = {}` to share a name.
+const decl = /^\s*(?:export\s+)?(const|let|var|interface|type|function|class)\s+([A-Za-z_$][\w$]*)/gm;
+const VALUE_KINDS = new Set(["const", "let", "var", "function", "class"]);
+const TYPE_KINDS = new Set(["interface", "type"]);
+const seen = new Map(); // `${ns}:${name}` -> [lineNumbers]
 
 let m;
 while ((m = decl.exec(src)) !== null) {
-  const name = m[1];
+  const kind = m[1];
+  const name = m[2];
+  const ns = VALUE_KINDS.has(kind) ? "value" : TYPE_KINDS.has(kind) ? "type" : kind;
+  const key = `${ns}:${name}`;
   const line = src.slice(0, m.index).split("\n").length;
-  const list = seen.get(name) ?? [];
+  const list = seen.get(key) ?? [];
   list.push(line);
-  seen.set(name, list);
+  seen.set(key, list);
 }
 
 const dups = [...seen.entries()].filter(([, lines]) => lines.length > 1);
@@ -40,8 +47,8 @@ if (dups.length === 0) {
 }
 
 console.error("[check-route-tree-duplicates] Duplicate symbols in routeTree.gen.ts:");
-for (const [name, lines] of dups) {
-  console.error(`  - ${name}  (lines: ${lines.join(", ")})`);
+for (const [key, lines] of dups) {
+  console.error(`  - ${key}  (lines: ${lines.join(", ")})`);
 }
 console.error(
   "\nThis usually means the generated file is stale. Run `bun run dev` " +
