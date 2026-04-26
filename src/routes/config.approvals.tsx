@@ -146,8 +146,7 @@ function ApprovalsPage() {
         </div>
       </header>
 
-      {!error && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
           <div>
             <label
               htmlFor="approvals-search"
@@ -216,39 +215,8 @@ function ApprovalsPage() {
             </select>
           </div>
         </div>
-      )}
 
-      {error && (
-        <div
-          role="alert"
-          className="rounded-md border border-[color:var(--verdict-rejected)] bg-[color:var(--verdict-rejected)]/5 p-4"
-        >
-          <p className="text-sm font-medium text-[color:var(--verdict-rejected)]">
-            {intl.formatMessage({ id: "approvals.error.load" })}
-          </p>
-          <p className="mt-1 text-xs text-foreground-muted">{error}</p>
-          <button
-            type="button"
-            onClick={load}
-            className="mt-3 inline-flex h-8 items-center rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface-sunken"
-          >
-            {intl.formatMessage({ id: "config.error.retry" })}
-          </button>
-        </div>
-      )}
-
-      {loading && !error && (
-        <ul role="list" className="space-y-2" aria-busy="true">
-          {[0, 1, 2].map((i) => (
-            <li
-              key={i}
-              className="h-[88px] animate-pulse rounded-md border border-border bg-surface-sunken"
-            />
-          ))}
-        </ul>
-      )}
-
-      {!loading && !error && values && values.length === 0 && (
+      {values.length === 0 && (
         <div
           role="status"
           aria-live="polite"
@@ -282,7 +250,7 @@ function ApprovalsPage() {
         </div>
       )}
 
-      {!loading && !error && values && values.length > 0 && filtered.length === 0 && (
+      {values.length > 0 && filtered.length === 0 && (
         <div
           role="status"
           aria-live="polite"
@@ -304,7 +272,7 @@ function ApprovalsPage() {
         </div>
       )}
 
-      {!loading && !error && values && values.length > 0 && filtered.length > 0 && (
+      {values.length > 0 && filtered.length > 0 && (
         <div className="space-y-4">
           <p
             aria-live="polite"
