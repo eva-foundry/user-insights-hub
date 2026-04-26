@@ -1,10 +1,11 @@
 import type { ProvenanceVariant } from "@/components/govops/ProvenanceRibbon";
 import type { Verdict } from "@/components/govops/VerdictBadge";
+import type { Locale } from "@/lib/i18n";
 
 export type Policy = {
   id: string;
   ref: string;
-  title: { en: string; fr: string; ar: string };
+  title: Partial<Record<Locale, string>> & { en: string };
   verdict: Verdict;
   provenance: ProvenanceVariant;
   updatedAt: string; // ISO
