@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 
@@ -32,6 +32,7 @@ function mockVersions(key: string, jurisdictionId: string): ListVersionsResponse
 function ConfigDetailPage() {
   const intl = useIntl();
   const { key, jurisdictionId } = Route.useParams();
+  const navigate = useNavigate();
   const decodedKey = decodeURIComponent(key);
   const decodedJur = decodeURIComponent(jurisdictionId);
 
@@ -162,9 +163,13 @@ function ConfigDetailPage() {
             {selectedIds.length === 2 && (
               <button
                 type="button"
-                disabled
-                title="govops-005"
-                className="inline-flex h-8 items-center rounded-md px-3 text-xs font-medium text-primary-foreground transition-opacity disabled:cursor-not-allowed disabled:opacity-70"
+                onClick={() =>
+                  navigate({
+                    to: "/config/diff",
+                    search: { from: selectedIds[0], to: selectedIds[1] },
+                  })
+                }
+                className="inline-flex h-8 items-center rounded-md px-3 text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
                 style={{ backgroundColor: "var(--agentic)" }}
               >
                 {intl.formatMessage({ id: "timeline.compare.cta" })}
