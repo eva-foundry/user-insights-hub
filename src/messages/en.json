@@ -586,5 +586,11 @@
   "screen.errors.residency.start_before_dob": "Start date is before your date of birth.",
   "screen.errors.residency.end_future": "End date cannot be in the future.",
   "screen.errors.residency.end_before_start": "End date must be on or after the start date.",
-  "screen.errors.residency.overlap": "This period overlaps another residency period."
+  "screen.errors.residency.overlap": "This period overlaps another residency period.",
+  "screen.errors.summary.heading": "{count, plural, one {# field needs your attention} other {# fields need your attention}} before we can check eligibility.",
+  "screen.errors.summary.more": "and {count, plural, one {# more} other {# more}}…",
+  "screen.reset.title": "Discard your draft?",
+  "screen.reset.body": "This will clear every field on this form. Your draft is only stored in this browser tab — it isn't sent anywhere.",
+  "screen.reset.keep": "Keep my draft",
+  "screen.reset.discard": "Discard draft"
 }

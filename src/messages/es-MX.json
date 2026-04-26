@@ -586,5 +586,11 @@
   "screen.errors.residency.start_before_dob": "La fecha de inicio es anterior a tu fecha de nacimiento.",
   "screen.errors.residency.end_future": "La fecha de fin no puede ser futura.",
   "screen.errors.residency.end_before_start": "La fecha de fin debe ser igual o posterior a la fecha de inicio.",
-  "screen.errors.residency.overlap": "Este periodo se traslapa con otro periodo de residencia."
+  "screen.errors.residency.overlap": "Este periodo se traslapa con otro periodo de residencia.",
+  "screen.errors.summary.heading": "{count, plural, one {# campo requiere tu atención} other {# campos requieren tu atención}} antes de verificar la elegibilidad.",
+  "screen.errors.summary.more": "y {count, plural, one {# más} other {# más}}…",
+  "screen.reset.title": "¿Descartar tu borrador?",
+  "screen.reset.body": "Esto borrará todos los campos del formulario. Tu borrador solo se guarda en esta pestaña; no se envía a ningún lado.",
+  "screen.reset.keep": "Conservar mi borrador",
+  "screen.reset.discard": "Descartar borrador"
 }

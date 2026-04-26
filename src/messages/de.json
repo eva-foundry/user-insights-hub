@@ -586,5 +586,11 @@
   "screen.errors.residency.start_before_dob": "Startdatum liegt vor Ihrem Geburtsdatum.",
   "screen.errors.residency.end_future": "Enddatum darf nicht in der Zukunft liegen.",
   "screen.errors.residency.end_before_start": "Enddatum muss am oder nach dem Startdatum liegen.",
-  "screen.errors.residency.overlap": "Dieser Zeitraum überschneidet sich mit einem anderen Aufenthaltszeitraum."
+  "screen.errors.residency.overlap": "Dieser Zeitraum überschneidet sich mit einem anderen Aufenthaltszeitraum.",
+  "screen.errors.summary.heading": "{count, plural, one {# Feld benötigt Ihre Aufmerksamkeit} other {# Felder benötigen Ihre Aufmerksamkeit}}, bevor wir die Berechtigung prüfen können.",
+  "screen.errors.summary.more": "und {count, plural, one {# weiteres} other {# weitere}}…",
+  "screen.reset.title": "Entwurf verwerfen?",
+  "screen.reset.body": "Dadurch werden alle Felder gelöscht. Ihr Entwurf wird nur in diesem Tab gespeichert — nichts wird gesendet.",
+  "screen.reset.keep": "Entwurf behalten",
+  "screen.reset.discard": "Entwurf verwerfen"
 }
