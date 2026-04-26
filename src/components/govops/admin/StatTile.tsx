@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { ProvenanceRibbon, type ProvenanceVariant } from "../ProvenanceRibbon";
 
@@ -25,8 +24,8 @@ export function StatTile({
     id: recentActivity ? "admin.trend.recent" : "admin.trend.quiet",
   });
   return (
-    <Link
-      to={to}
+    <a
+      href={to}
       aria-label={`${value} ${label}`}
       className="group flex items-stretch rounded-lg border border-border bg-surface-raised outline-none transition-colors hover:bg-surface focus-visible:ring-2 focus-visible:ring-ring"
     >
@@ -59,6 +58,6 @@ export function StatTile({
         )}
         <span className="text-sm text-foreground-muted">{label}</span>
       </div>
-    </Link>
+    </a>
   );
 }
