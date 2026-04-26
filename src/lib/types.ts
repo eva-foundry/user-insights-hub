@@ -325,3 +325,18 @@ export interface EncodingBatchSummary {
   counts: Record<ProposalStatus, number>;
   created_at: string;
 }
+
+// ── Citation impact (govops-014) ────────────────────────────────────────────
+
+export interface ImpactResult {
+  jurisdiction_id: string | null;
+  jurisdiction_label: string;
+  values: ConfigValue[];
+}
+
+export interface ImpactResponse {
+  query: string;
+  total: number;
+  jurisdiction_count: number;
+  results: ImpactResult[];
+}
