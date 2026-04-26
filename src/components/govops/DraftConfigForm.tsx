@@ -73,6 +73,26 @@ function todayMidnightUtc(): string {
   ).padStart(2, "0")}T00:00:00.000Z`;
 }
 
+/** Hydrate a URL-serialized value back into its in-form runtime shape. */
+function hydrateValue(raw: string, type: ValueType): unknown {
+  if (raw === "") return type === "list" || type === "enum" ? [] : type === "bool" ? false : "";
+  if (type === "number") {
+    const n = Number(raw);
+    return Number.isNaN(n) ? raw : n;
+  }
+  if (type === "bool") return raw === "true";
+  if (type === "list" || type === "enum") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {
+      /* fallthrough to comma-split */
+    }
+    return raw.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  return raw;
+}
+
 export function DraftConfigForm({
   initial,
   prior,
@@ -360,6 +380,7 @@ export function DraftConfigForm({
             type="text"
             value={key}
             onChange={(e) => setKey(e.target.value)}
+            onBlur={() => markTouched("key")}
             disabled={lockedKey}
             required
             aria-required="true"
@@ -419,7 +440,10 @@ export function DraftConfigForm({
           <DateTimeInput
             id={ids.effectiveFrom}
             value={effectiveFrom}
-            onChange={setEffectiveFrom}
+            onChange={(v) => {
+              setEffectiveFrom(v);
+              markTouched("effective_from");
+            }}
             ariaDescribedBy={`${ids.effectiveFrom}-help ${errors.effective_from ? `${ids.effectiveFrom}-error` : ""}`.trim()}
             ariaInvalid={!!errors.effective_from}
             required
@@ -427,6 +451,11 @@ export function DraftConfigForm({
           <p id={`${ids.effectiveFrom}-help`} className="text-xs text-foreground-muted">
             {intl.formatMessage({ id: "draft.field.effective_from.help" })}
           </p>
+          {errors.effective_from && (
+            <p id={`${ids.effectiveFrom}-error`} role="alert" className="text-xs" style={{ color: "var(--verdict-rejected)" }}>
+              {intl.formatMessage({ id: errors.effective_from })}
+            </p>
+          )}
         </div>
 
         {/* Value (full width) */}
@@ -438,7 +467,10 @@ export function DraftConfigForm({
             id={ids.value}
             type={valueType}
             value={value}
-            onChange={setValue}
+            onChange={(v) => {
+              setValue(v);
+              markTouched("value");
+            }}
             ariaDescribedBy={errors.value ? `${ids.value}-error` : undefined}
             ariaInvalid={!!errors.value}
           />
@@ -460,6 +492,7 @@ export function DraftConfigForm({
             type="text"
             value={citation}
             onChange={(e) => setCitation(e.target.value)}
+            onBlur={() => markTouched("citation")}
             aria-required={domain === "rule" || undefined}
             aria-invalid={!!errors.citation}
             aria-describedby={`${ids.citation}-help ${errors.citation ? `${ids.citation}-error` : ""}`.trim()}
@@ -497,6 +530,7 @@ export function DraftConfigForm({
             id={ids.rationale}
             value={rationale}
             onChange={(e) => setRationale(e.target.value)}
+            onBlur={() => markTouched("rationale")}
             required
             aria-required="true"
             aria-invalid={!!errors.rationale}
@@ -534,6 +568,11 @@ export function DraftConfigForm({
         <Button type="button" variant="outline" onClick={handleCancel} disabled={submitting}>
           {intl.formatMessage({ id: "draft.cancel" })}
         </Button>
+        {onSaveDraft && (
+          <Button type="button" variant="ghost" onClick={handleSaveDraft} disabled={submitting}>
+            {intl.formatMessage({ id: "draft.save_as_draft" })}
+          </Button>
+        )}
         <Button
           type="submit"
           variant={isAgent ? "agent" : "authority"}
@@ -544,6 +583,43 @@ export function DraftConfigForm({
             : intl.formatMessage({ id: "draft.submit" })}
         </Button>
       </div>
+
+      {/* Live timeline preview */}
+      <section className="space-y-2 border-t border-border pt-6">
+        <div className="flex items-center justify-between">
+          <h2
+            className="text-xs uppercase tracking-[0.18em] text-foreground-subtle"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {intl.formatMessage({ id: "draft.preview.title" })}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setShowPreview((s) => !s)}
+            aria-expanded={showPreview}
+            className="text-xs text-foreground-muted underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {intl.formatMessage({ id: showPreview ? "value.collapse" : "value.expand" })}
+          </button>
+        </div>
+        {showPreview && (
+          <DraftPreview
+            draft={{
+              key,
+              jurisdiction,
+              domain,
+              valueType,
+              value,
+              effectiveFrom,
+              citation,
+              rationale,
+              language,
+              author: currentAuthor,
+            }}
+            prior={prior}
+          />
+        )}
+      </section>
     </form>
   );
 }
