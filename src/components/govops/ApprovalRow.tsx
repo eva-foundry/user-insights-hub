@@ -62,7 +62,7 @@ export function ApprovalRow({ cv }: { cv: ConfigValue }) {
               <ValueRenderer value={cv.value} type={cv.value_type} />
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <JurisdictionChip jurisdiction={cv.jurisdiction_id} />
+              <JurisdictionChip id={cv.jurisdiction_id} />
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{
