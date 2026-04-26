@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { ScreenShell } from "@/components/govops/ScreenShell";
 import { ScreenForm } from "@/components/govops/ScreenForm";
 import { ScreenResult } from "@/components/govops/ScreenResult";
-import { submitScreen } from "@/lib/api";
+import { fetchJurisdiction, submitScreen } from "@/lib/api";
 import {
   SCREEN_JURISDICTIONS,
   type ScreenJurisdictionId,
+  type JurisdictionResponse,
   type ScreenRequest,
   type ScreenResponse,
 } from "@/lib/types";
@@ -16,54 +17,84 @@ function isValidJurisdiction(id: string): id is ScreenJurisdictionId {
   return (SCREEN_JURISDICTIONS as readonly string[]).includes(id);
 }
 
+/**
+ * Network-failure fallback. Used only when the loader cannot reach
+ * `/api/jurisdiction/{code}` (offline, 5xx). Kept in sync with the
+ * authoritative server response shape so the citizen-facing surface
+ * never renders empty strings or a broken header.
+ */
+const PROGRAM_LABELS: Record<ScreenJurisdictionId, JurisdictionResponse> = {
+  ca: {
+    id: "ca",
+    jurisdiction_label: "Government of Canada",
+    program_name: "Old Age Security (OAS)",
+    default_language: "en",
+  },
+  br: {
+    id: "br",
+    jurisdiction_label: "República Federativa do Brasil",
+    program_name: "Benefício de Prestação Continuada (BPC)",
+    default_language: "pt-BR",
+  },
+  es: {
+    id: "es",
+    jurisdiction_label: "Reino de España",
+    program_name: "Pensión No Contributiva",
+    default_language: "es-MX",
+  },
+  fr: {
+    id: "fr",
+    jurisdiction_label: "République française",
+    program_name: "Allocation de Solidarité aux Personnes Âgées (ASPA)",
+    default_language: "fr",
+  },
+  de: {
+    id: "de",
+    jurisdiction_label: "Bundesrepublik Deutschland",
+    program_name: "Grundsicherung im Alter",
+    default_language: "de",
+  },
+  ua: {
+    id: "ua",
+    jurisdiction_label: "Україна",
+    program_name: "Державна соціальна допомога",
+    default_language: "uk",
+  },
+};
+
+type LoaderData = { live: boolean; data: JurisdictionResponse };
+
 export const Route = createFileRoute("/screen/$jurisdictionId")({
   head: ({ params }) => ({
     meta: [{ title: `Self-screen — ${params.jurisdictionId.toUpperCase()} — GovOps` }],
   }),
+  loader: async ({ params }): Promise<LoaderData> => {
+    const code = params.jurisdictionId;
+    if (!isValidJurisdiction(code)) throw notFound();
+    try {
+      const data = await fetchJurisdiction(code);
+      return { live: true, data };
+    } catch {
+      // Preview-mode parity: never crash the page when the backend is
+      // unreachable. The component renders a small "preview mode" badge.
+      return { live: false, data: PROGRAM_LABELS[code] };
+    }
+  },
+  pendingComponent: ScreenFormSkeleton,
   component: ScreenFormPage,
   notFoundComponent: () => <UnknownJurisdiction />,
 });
 
-const PROGRAM_LABELS: Record<ScreenJurisdictionId, { name: string; lede: string }> = {
-  ca: {
-    name: "Old Age Security — Canada",
-    lede: "Federal monthly benefit for seniors aged 65 or over.",
-  },
-  br: {
-    name: "Benefício de Prestação Continuada — Brasil",
-    lede: "Assistência mensal para idosos com 65 anos ou mais.",
-  },
-  es: {
-    name: "Pensión No Contributiva — España",
-    lede: "Prestación económica para personas mayores sin recursos suficientes.",
-  },
-  fr: {
-    name: "Allocation de Solidarité aux Personnes Âgées — France",
-    lede: "Allocation mensuelle pour les personnes âgées à faibles ressources.",
-  },
-  de: {
-    name: "Grundsicherung im Alter — Deutschland",
-    lede: "Mindestsicherung für ältere Menschen mit geringem Einkommen.",
-  },
-  ua: {
-    name: "State social assistance — Ukraine",
-    lede: "Державна соціальна допомога для осіб похилого віку.",
-  },
-};
-
 function ScreenFormPage() {
   const { jurisdictionId } = Route.useParams() as { jurisdictionId: ScreenJurisdictionId };
+  const { live, data } = Route.useLoaderData() as LoaderData;
   const intl = useIntl();
-  const valid = isValidJurisdiction(jurisdictionId);
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScreenResponse | null>(null);
   const [stale, setStale] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastReq, setLastReq] = useState<ScreenRequest | null>(null);
-
-  if (!valid) return <UnknownJurisdiction />;
-  const program = PROGRAM_LABELS[jurisdictionId];
 
   const run = async (req: ScreenRequest) => {
     setLoading(true);
@@ -82,9 +113,14 @@ function ScreenFormPage() {
 
   return (
     <ScreenShell showBack>
+      {!live && (
+        <div className="mb-4 inline-flex items-center rounded border border-agentic/30 bg-agentic/10 px-2 py-1 text-xs uppercase tracking-wide text-agentic">
+          {intl.formatMessage({ id: "screen.preview_mode" })}
+        </div>
+      )}
       <header className="mb-6">
-        <h1 className="font-serif text-3xl text-foreground">{program.name}</h1>
-        <p className="mt-2 text-foreground-muted">{program.lede}</p>
+        <h1 className="font-serif text-3xl text-foreground">{data.program_name}</h1>
+        <p className="mt-2 text-foreground-muted">{data.jurisdiction_label}</p>
       </header>
 
       <section
@@ -136,6 +172,34 @@ function UnknownJurisdiction() {
       >
         {intl.formatMessage({ id: "screen.back" })}
       </Link>
+    </ScreenShell>
+  );
+}
+
+/**
+ * Pending skeleton while the loader resolves the jurisdiction metadata.
+ * Matches the live header's vertical rhythm so the form doesn't jump
+ * when real content lands. Respects `prefers-reduced-motion` (no shimmer).
+ */
+function ScreenFormSkeleton() {
+  return (
+    <ScreenShell showBack>
+      <header className="mb-6" aria-hidden>
+        <div className="h-9 w-2/3 rounded bg-surface-sunken motion-safe:animate-pulse" />
+        <div className="mt-3 h-4 w-1/2 rounded bg-surface-sunken motion-safe:animate-pulse" />
+      </header>
+      <div
+        className="rounded border border-border bg-surface-sunken p-3 mb-6 h-12 motion-safe:animate-pulse"
+        aria-hidden
+      />
+      <div className="space-y-4" aria-hidden>
+        <div className="h-10 rounded bg-surface-sunken motion-safe:animate-pulse" />
+        <div className="h-10 rounded bg-surface-sunken motion-safe:animate-pulse" />
+        <div className="h-24 rounded bg-surface-sunken motion-safe:animate-pulse" />
+      </div>
+      <p className="sr-only" role="status" aria-live="polite">
+        Loading…
+      </p>
     </ScreenShell>
   );
 }
