@@ -83,6 +83,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@formatjs/icu-messageformat-parser": "^3.5.5",
     "@lovable.dev/vite-tanstack-config": "^1.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
