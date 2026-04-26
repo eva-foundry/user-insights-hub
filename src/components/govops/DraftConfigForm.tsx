@@ -310,6 +310,16 @@ export function DraftConfigForm({
    */
   function handleSaveDraft() {
     if (!onSaveDraft) return;
+    // Block invalid effective_from from being baked into a URL snapshot.
+    const efErr = computeFieldError("effective_from");
+    if (efErr) {
+      markTouched("effective_from");
+      setErrors((prev) => ({ ...prev, effective_from: efErr }));
+      const el = document.getElementById(ids.effectiveFrom);
+      el?.focus();
+      toast.error(intl.formatMessage({ id: "draft.saved.blocked" }));
+      return;
+    }
     const params: Record<string, string> = {};
     if (key) params.key = key;
     if (jurisdiction) params.jurisdiction_id = jurisdiction;
@@ -486,9 +496,20 @@ export function DraftConfigForm({
             {intl.formatMessage({ id: "draft.field.effective_from.help" })}
           </p>
           {errors.effective_from && (
-            <p id={`${ids.effectiveFrom}-error`} role="alert" className="text-xs" style={{ color: "var(--verdict-rejected)" }}>
-              {intl.formatMessage({ id: errors.effective_from })}
-            </p>
+            <>
+              <p id={`${ids.effectiveFrom}-error`} role="alert" className="text-xs" style={{ color: "var(--verdict-rejected)" }}>
+                {intl.formatMessage({ id: errors.effective_from })}
+              </p>
+              {(errors.effective_from === "validators.effective_from.format" ||
+                errors.effective_from === "validators.effective_from.invalid") && (
+                <p
+                  className="text-[11px] text-foreground-muted"
+                  style={{ fontFamily: "var(--font-mono)" }}
+                >
+                  {intl.formatMessage({ id: "draft.field.effective_from.format_help" })}
+                </p>
+              )}
+            </>
           )}
         </div>
 
