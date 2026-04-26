@@ -175,3 +175,31 @@ function UnknownJurisdiction() {
     </ScreenShell>
   );
 }
+
+/**
+ * Pending skeleton while the loader resolves the jurisdiction metadata.
+ * Matches the live header's vertical rhythm so the form doesn't jump
+ * when real content lands. Respects `prefers-reduced-motion` (no shimmer).
+ */
+function ScreenFormSkeleton() {
+  return (
+    <ScreenShell showBack>
+      <header className="mb-6" aria-hidden>
+        <div className="h-9 w-2/3 rounded bg-surface-sunken motion-safe:animate-pulse" />
+        <div className="mt-3 h-4 w-1/2 rounded bg-surface-sunken motion-safe:animate-pulse" />
+      </header>
+      <div
+        className="rounded border border-border bg-surface-sunken p-3 mb-6 h-12 motion-safe:animate-pulse"
+        aria-hidden
+      />
+      <div className="space-y-4" aria-hidden>
+        <div className="h-10 rounded bg-surface-sunken motion-safe:animate-pulse" />
+        <div className="h-10 rounded bg-surface-sunken motion-safe:animate-pulse" />
+        <div className="h-24 rounded bg-surface-sunken motion-safe:animate-pulse" />
+      </div>
+      <p className="sr-only" role="status" aria-live="polite">
+        Loading…
+      </p>
+    </ScreenShell>
+  );
+}
