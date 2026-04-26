@@ -29,3 +29,18 @@ export async function fetchOrMock<T>(path: string, mock: T, init?: RequestInit):
     return mock;
   }
 }
+
+import type {
+  ListConfigValuesParams,
+  ListConfigValuesResponse,
+} from "./types";
+
+export async function listConfigValues(
+  params: ListConfigValuesParams,
+): Promise<ListConfigValuesResponse> {
+  const entries = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== "" && v !== "all",
+  ) as [string, string][];
+  const qs = new URLSearchParams(entries).toString();
+  return fetcher<ListConfigValuesResponse>(`/api/config/values${qs ? `?${qs}` : ""}`);
+}
