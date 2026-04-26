@@ -9,7 +9,20 @@ import { LegalDocumentList } from "@/components/govops/authority/LegalDocumentLi
 import { LegalRuleList } from "@/components/govops/authority/LegalRuleList";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
-import type { DocumentType, RuleType } from "@/lib/types";
+import type {
+  AuthorityReference,
+  DocumentType,
+  Jurisdiction,
+  LegalDocument,
+  LegalRule,
+  RuleType,
+} from "@/lib/types";
+
+interface LoaderData {
+  chain: { jurisdiction: Jurisdiction; chain: AuthorityReference[] };
+  documents: LegalDocument[];
+  rules: LegalRule[];
+}
 
 export const Route = createFileRoute("/authority")({
   head: () => ({
@@ -22,7 +35,7 @@ export const Route = createFileRoute("/authority")({
       },
     ],
   }),
-  loader: async () => {
+  loader: async (): Promise<LoaderData> => {
     const [chain, documents, rules] = await Promise.all([
       getAuthorityChain(),
       listLegalDocuments(),
