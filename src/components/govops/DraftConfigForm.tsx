@@ -44,16 +44,7 @@ import {
   type CreateConfigValueRequest,
   type ValueType,
 } from "@/lib/types";
-
-const VALUE_TYPES: ValueType[] = [
-  "number",
-  "string",
-  "bool",
-  "list",
-  "enum",
-  "prompt",
-  "formula",
-];
+import { hydrateValue, todayMidnightUtc, VALUE_TYPES } from "./draft/draftHelpers";
 
 type Initial = {
   key?: string;
@@ -75,34 +66,6 @@ type Errors = Partial<Record<
 >>;
 
 type FieldName = keyof Errors;
-
-/** Today midnight UTC, ISO-8601 with Z. */
-function todayMidnightUtc(): string {
-  const d = new Date();
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(
-    d.getUTCDate(),
-  ).padStart(2, "0")}T00:00:00.000Z`;
-}
-
-/** Hydrate a URL-serialized value back into its in-form runtime shape. */
-function hydrateValue(raw: string, type: ValueType): unknown {
-  if (raw === "") return type === "list" || type === "enum" ? [] : type === "bool" ? false : "";
-  if (type === "number") {
-    const n = Number(raw);
-    return Number.isNaN(n) ? raw : n;
-  }
-  if (type === "bool") return raw === "true";
-  if (type === "list" || type === "enum") {
-    try {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed.map(String);
-    } catch {
-      /* fallthrough to comma-split */
-    }
-    return raw.split(",").map((s) => s.trim()).filter(Boolean);
-  }
-  return raw;
-}
 
 export function DraftConfigForm({
   initial,
