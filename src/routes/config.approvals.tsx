@@ -5,6 +5,14 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { ApprovalRow } from "@/components/govops/ApprovalRow";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { listApprovals } from "@/lib/api";
 import type { ConfigValue } from "@/lib/types";
 
@@ -54,16 +62,7 @@ export const Route = createFileRoute("/config/approvals")({
   errorComponent: ({ error, reset }) => (
     <RouteError error={error as Error} reset={reset} />
   ),
-  pendingComponent: () => (
-    <ul role="list" className="space-y-2" aria-busy="true">
-      {[0, 1, 2].map((i) => (
-        <li
-          key={i}
-          className="h-[88px] animate-pulse rounded-md border border-border bg-surface-sunken"
-        />
-      ))}
-    </ul>
-  ),
+  pendingComponent: () => <RouteLoading rows={3} rowHeight={88} />,
   component: ApprovalsPage,
 });
 
@@ -172,24 +171,28 @@ function ApprovalsPage() {
             >
               {intl.formatMessage({ id: "approvals.filter.status.label" })}
             </label>
-            <select
-              id="approvals-status"
+            <Select
               value={statusFilter}
-              onChange={(e) =>
-                setSearch({ status: e.target.value as StatusFilter })
-              }
-              className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground hover:bg-surface-sunken"
+              onValueChange={(v) => setSearch({ status: v as StatusFilter })}
             >
-              <option value="all">
-                {intl.formatMessage({ id: "approvals.filter.status.all" })}
-              </option>
-              <option value="pending">
-                {intl.formatMessage({ id: "status.pending" })}
-              </option>
-              <option value="draft">
-                {intl.formatMessage({ id: "status.draft" })}
-              </option>
-            </select>
+              <SelectTrigger
+                id="approvals-status"
+                className="h-9 w-[140px] bg-surface text-sm text-foreground"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  {intl.formatMessage({ id: "approvals.filter.status.all" })}
+                </SelectItem>
+                <SelectItem value="pending">
+                  {intl.formatMessage({ id: "status.pending" })}
+                </SelectItem>
+                <SelectItem value="draft">
+                  {intl.formatMessage({ id: "status.draft" })}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex items-center gap-2">
             <label
@@ -199,20 +202,26 @@ function ApprovalsPage() {
             >
               {intl.formatMessage({ id: "approvals.pagination.per_page" })}
             </label>
-            <select
-              id="approvals-pagesize"
-              value={pageSize}
-              onChange={(e) =>
-                setSearch({ page_size: Number(e.target.value) as PageSize })
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) =>
+                setSearch({ page_size: Number(v) as PageSize })
               }
-              className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground hover:bg-surface-sunken"
             >
-              {PAGE_SIZES.map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger
+                id="approvals-pagesize"
+                className="h-9 w-[80px] bg-surface text-sm text-foreground"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZES.map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
