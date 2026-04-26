@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { listCases } from "@/lib/api";
 import type { CaseListItem, CaseStatus } from "@/lib/types";
@@ -38,6 +38,8 @@ export const Route = createFileRoute("/cases")({
 
 function CasesListPage() {
   const intl = useIntl();
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
   const { cases } = Route.useLoaderData() as { cases: CaseListItem[] };
   const [activeStatuses, setActiveStatuses] = useState<Set<CaseStatus>>(new Set());
   const [jurisdiction, setJurisdiction] = useState<string>("all");
