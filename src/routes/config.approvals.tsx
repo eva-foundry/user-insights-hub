@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -56,8 +56,14 @@ export const Route = createFileRoute("/config/approvals")({
   },
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={88} />,
-  component: ApprovalsPage,
+  component: ApprovalsRouteComponent,
 });
+
+function ApprovalsRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <ApprovalsPage />;
+}
 
 function ApprovalsPage() {
   const intl = useIntl();
