@@ -1,23 +1,25 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { IntlProvider } from "react-intl";
 
-import en from "@/messages/en.json";
-import fr from "@/messages/fr.json";
-import esMX from "@/messages/es-MX.json";
-import ptBR from "@/messages/pt-BR.json";
-import de from "@/messages/de.json";
-import uk from "@/messages/uk.json";
-
 export type Locale = "en" | "fr" | "es-MX" | "pt-BR" | "de" | "uk";
 
-const messagesByLocale: Record<Locale, Record<string, string>> = {
-  en,
-  fr,
-  "es-MX": esMX,
-  "pt-BR": ptBR,
-  de,
-  uk,
-};
+// SSR-safe loader: import.meta.glob with eager+import:default ensures Vite re-evaluates
+// the JSON modules on HMR, so edits to locale files are picked up without a server
+// restart and without stale module-cache entries during SSR.
+const localeModules = import.meta.glob<Record<string, string>>("../messages/*.json", {
+  eager: true,
+  import: "default",
+});
+
+const messagesByLocale: Record<Locale, Record<string, string>> = (() => {
+  const out = {} as Record<Locale, Record<string, string>>;
+  for (const [path, mod] of Object.entries(localeModules)) {
+    const match = path.match(/\/([^/]+)\.json$/);
+    if (!match) continue;
+    out[match[1] as Locale] = mod;
+  }
+  return out;
+})();
 const RTL_LOCALES: Locale[] = []; // none of the supported locales are RTL
 const STORAGE_KEY = "govops-locale";
 
@@ -74,7 +76,23 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   return (
     <LocaleCtx.Provider value={value}>
-      <IntlProvider locale={locale} defaultLocale="en" messages={messagesByLocale[locale]}>
+      <IntlProvider
+        locale={locale}
+        defaultLocale="en"
+        messages={messagesByLocale[locale]}
+        onError={(err) => {
+          // Dev-only: missing translations log a warning instead of throwing,
+          // so a single missing key doesn't blank the SSR render.
+          if (import.meta.env.DEV && err.code === "MISSING_TRANSLATION") {
+            // eslint-disable-next-line no-console
+            console.warn(`[i18n] ${err.message}`);
+            return;
+          }
+          if (err.code === "MISSING_TRANSLATION") return;
+          // eslint-disable-next-line no-console
+          console.error(err);
+        }}
+      >
         {children}
       </IntlProvider>
     </LocaleCtx.Provider>
