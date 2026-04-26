@@ -63,3 +63,35 @@ export function coerceValue(raw: unknown, type: ValueType): unknown {
       return String(raw ?? "");
   }
 }
+
+// ---- Prompt-specific validation (govops-008) -------------------------------
+
+export const PROMPT_TEXT_MIN = 10;
+export const PROMPT_TEXT_MAX = 8000;
+
+/**
+ * Validate a prompt key. Reuses the shared key regex but ALSO requires the
+ * domain segment (the second-to-last `.`-separated part) to literally be
+ * `prompt` — every prompt is registered as `<scope>.prompt.<name>`.
+ *
+ * Returns an i18n message id, or null if valid.
+ */
+export function validatePromptKey(key: string): string | null {
+  const base = validateKey(key);
+  if (base) return base;
+  const parts = key.split(".");
+  if (!parts.includes("prompt")) return "validators.prompt_key.must_contain_prompt";
+  return null;
+}
+
+/**
+ * Length check for the prompt body. Returns an i18n message id, or null if
+ * valid. The bounds are advisory — the FastAPI backend will revalidate.
+ */
+export function validatePromptText(text: string): string | null {
+  const trimmed = text.trim();
+  if (trimmed.length === 0) return "validators.prompt_text.required";
+  if (trimmed.length < PROMPT_TEXT_MIN) return "validators.prompt_text.too_short";
+  if (trimmed.length > PROMPT_TEXT_MAX) return "validators.prompt_text.too_long";
+  return null;
+}
