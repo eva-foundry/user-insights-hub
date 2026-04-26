@@ -32,6 +32,12 @@ export interface ListConfigValuesParams {
   language?: string;
 }
 
+export interface ListVersionsResponse {
+  key: string;
+  versions: ConfigValue[]; // backend returns oldest-first; UI flips to newest-first
+  count: number;
+}
+
 export const DOMAINS = ["rule", "enum", "ui", "prompt", "engine"] as const;
 export const JURISDICTIONS = [
   "ca-oas",
