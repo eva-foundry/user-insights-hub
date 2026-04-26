@@ -57,7 +57,7 @@ function ApprovalsPage() {
   const [values, setValues] = useState<ConfigValue[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [visible, setVisible] = useState(pageSize);
+  const [visible, setVisible] = useState<number>(pageSize);
 
   function setSearch(next: Partial<ApprovalsSearch>) {
     nav({
