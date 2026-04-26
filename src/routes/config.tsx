@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { listConfigValues } from "@/lib/api";
@@ -11,6 +11,7 @@ import {
   type FiltersState,
 } from "@/components/govops/ConfigValueFilters";
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
+import { RouteError } from "@/components/govops/RouteError";
 
 type SortKey = "key_asc" | "key_desc" | "effective_desc" | "effective_asc";
 const SORT_KEYS: SortKey[] = ["key_asc", "key_desc", "effective_desc", "effective_asc"];
