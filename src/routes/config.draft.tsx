@@ -11,18 +11,33 @@ type DraftSearch = {
   jurisdiction_id?: string;
   value_type?: string;
   supersedes_id?: string;
+  domain?: string;
+  value?: string;
+  effective_from?: string;
+  citation?: string;
+  rationale?: string;
+  language?: string;
 };
 
 export const Route = createFileRoute("/config/draft")({
   head: () => ({
     meta: [{ title: "Draft new ConfigValue — GovOps" }],
   }),
-  validateSearch: (s: Record<string, unknown>): DraftSearch => ({
-    key: typeof s.key === "string" ? s.key : undefined,
-    jurisdiction_id: typeof s.jurisdiction_id === "string" ? s.jurisdiction_id : undefined,
-    value_type: typeof s.value_type === "string" ? s.value_type : undefined,
-    supersedes_id: typeof s.supersedes_id === "string" ? s.supersedes_id : undefined,
-  }),
+  validateSearch: (s: Record<string, unknown>): DraftSearch => {
+    const pick = (k: string) => (typeof s[k] === "string" ? (s[k] as string) : undefined);
+    return {
+      key: pick("key"),
+      jurisdiction_id: pick("jurisdiction_id"),
+      value_type: pick("value_type"),
+      supersedes_id: pick("supersedes_id"),
+      domain: pick("domain"),
+      value: pick("value"),
+      effective_from: pick("effective_from"),
+      citation: pick("citation"),
+      rationale: pick("rationale"),
+      language: pick("language"),
+    };
+  },
   component: DraftPage,
 });
 
@@ -65,11 +80,20 @@ function DraftPage() {
     }
   }
 
+  function onSaveDraft(params: Record<string, string>) {
+    nav({
+      to: "/config/draft",
+      search: params as DraftSearch,
+      replace: true,
+    });
+  }
+
   return (
     <DraftConfigForm
       initial={search}
       prior={prior}
       onSubmit={onSubmit}
+      onSaveDraft={onSaveDraft}
       submitting={submitting}
     />
   );
