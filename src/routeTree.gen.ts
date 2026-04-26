@@ -30,6 +30,8 @@ import { Route as CasesCaseIdRouteImport } from './routes/cases.$caseId'
 import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals.$id'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes/config.prompts.$key.$jurisdictionId.edit'
+import { Route as ScreenRouteImport } from './routes/screen'
+import { Route as ScreenJurisdictionIdRouteImport } from './routes/screen.$jurisdictionId'
 
 const ScreenRoute = ScreenRouteImport.update({
   id: '/screen',
@@ -39,6 +41,11 @@ const ScreenRoute = ScreenRouteImport.update({
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScreenRoute = ScreenRouteImport.update({
+  id: '/screen',
+  path: '/screen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpactRoute = ImpactRouteImport.update({
@@ -137,6 +144,11 @@ const ConfigPromptsKeyJurisdictionIdEditRoute =
     path: '/$key/$jurisdictionId/edit',
     getParentRoute: () => ConfigPromptsRoute,
   } as any)
+const ScreenJurisdictionIdRoute = ScreenJurisdictionIdRouteImport.update({
+  id: '/$jurisdictionId',
+  path: '/$jurisdictionId',
+  getParentRoute: () => ScreenRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
