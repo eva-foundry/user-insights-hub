@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
+import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AuthorityRouteImport } from './routes/authority'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,7 @@ import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
 import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
 import { Route as ConfigApprovalsRouteImport } from './routes/config.approvals'
+import { Route as CasesCaseIdRouteImport } from './routes/cases.$caseId'
 import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals.$id'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes/config.prompts.$key.$jurisdictionId.edit'
@@ -30,6 +32,11 @@ const PoliciesRoute = PoliciesRouteImport.update({
 const ConfigRoute = ConfigRouteImport.update({
   id: '/config',
   path: '/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesRoute = CasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthorityRoute = AuthorityRouteImport.update({
@@ -67,6 +74,11 @@ const ConfigApprovalsRoute = ConfigApprovalsRouteImport.update({
   path: '/approvals',
   getParentRoute: () => ConfigRoute,
 } as any)
+const CasesCaseIdRoute = CasesCaseIdRouteImport.update({
+  id: '/$caseId',
+  path: '/$caseId',
+  getParentRoute: () => CasesRoute,
+} as any)
 const ConfigApprovalsIdRoute = ConfigApprovalsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -88,8 +100,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/authority': typeof AuthorityRoute
+  '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
@@ -102,8 +116,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/authority': typeof AuthorityRoute
+  '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
@@ -117,8 +133,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/authority': typeof AuthorityRoute
+  '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
@@ -133,8 +151,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/authority'
+    | '/cases'
     | '/config'
     | '/policies'
+    | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
@@ -147,8 +167,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/authority'
+    | '/cases'
     | '/config'
     | '/policies'
+    | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
@@ -161,8 +183,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/authority'
+    | '/cases'
     | '/config'
     | '/policies'
+    | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
@@ -176,6 +200,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AuthorityRoute: typeof AuthorityRoute
+  CasesRoute: typeof CasesRouteWithChildren
   ConfigRoute: typeof ConfigRouteWithChildren
   PoliciesRoute: typeof PoliciesRoute
 }
@@ -194,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/config'
       fullPath: '/config'
       preLoaderRoute: typeof ConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases': {
+      id: '/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof CasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/authority': {
@@ -245,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfigApprovalsRouteImport
       parentRoute: typeof ConfigRoute
     }
+    '/cases/$caseId': {
+      id: '/cases/$caseId'
+      path: '/$caseId'
+      fullPath: '/cases/$caseId'
+      preLoaderRoute: typeof CasesCaseIdRouteImport
+      parentRoute: typeof CasesRoute
+    }
     '/config/approvals/$id': {
       id: '/config/approvals/$id'
       path: '/$id'
@@ -268,6 +307,16 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface CasesRouteChildren {
+  CasesCaseIdRoute: typeof CasesCaseIdRoute
+}
+
+const CasesRouteChildren: CasesRouteChildren = {
+  CasesCaseIdRoute: CasesCaseIdRoute,
+}
+
+const CasesRouteWithChildren = CasesRoute._addFileChildren(CasesRouteChildren)
 
 interface ConfigApprovalsRouteChildren {
   ConfigApprovalsIdRoute: typeof ConfigApprovalsIdRoute
@@ -317,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AuthorityRoute: AuthorityRoute,
+  CasesRoute: CasesRouteWithChildren,
   ConfigRoute: ConfigRouteWithChildren,
   PoliciesRoute: PoliciesRoute,
 }
