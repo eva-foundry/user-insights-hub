@@ -48,7 +48,7 @@ function PoliciesSkeleton() {
 function PoliciesPage() {
   const intl = useIntl();
   const { locale } = useLocale();
-  const policies = Route.useLoaderData();
+  const policies: Policy[] = Route.useLoaderData();
 
   const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
 
