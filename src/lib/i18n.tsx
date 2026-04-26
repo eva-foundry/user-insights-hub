@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { IntlProvider } from "react-intl";
+import { StorageKeys } from "./storageKeys";
 
 export type Locale = "en" | "fr" | "es-MX" | "pt-BR" | "de" | "uk";
 
@@ -21,7 +22,7 @@ const messagesByLocale: Record<Locale, Record<string, string>> = (() => {
   return out;
 })();
 const RTL_LOCALES: Locale[] = []; // none of the supported locales are RTL
-const STORAGE_KEY = "govops-locale";
+const STORAGE_KEY = StorageKeys.locale;
 
 type LocaleContext = {
   locale: Locale;
