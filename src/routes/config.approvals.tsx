@@ -26,7 +26,7 @@ type ApprovalsSearch = {
   page_size?: PageSize;
 };
 
-export const Route = createFileRoute("/config/approvals/")({
+export const Route = createFileRoute("/config/approvals")({
   head: () => ({
     meta: [
       { title: "Pending approvals — GovOps" },

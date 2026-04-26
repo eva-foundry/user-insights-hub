@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
 
-export const Route = createFileRoute("/encode/")({
+export const Route = createFileRoute("/encode")({
   head: () => ({
     meta: [
       { title: "Encode — GovOps" },
