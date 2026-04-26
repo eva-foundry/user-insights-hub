@@ -48,12 +48,21 @@ function detectInitialLocale(): Locale {
   return "en";
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+export function I18nProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale ?? "en");
 
-  // Initialize on client (avoid SSR hydration mismatch by reading after mount)
+  // On the client, prefer the persisted locale (cookie/localStorage) over the
+  // SSR-resolved value when they disagree (e.g. user changed it in another tab).
   useEffect(() => {
-    setLocaleState(detectInitialLocale());
+    const detected = detectInitialLocale();
+    if (detected !== locale) setLocaleState(detected);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -69,7 +78,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       dir: RTL_LOCALES.includes(locale) ? "rtl" : "ltr",
       setLocale: (l) => {
         setLocaleState(l);
-        if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, l);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(STORAGE_KEY, l);
+          // Mirror to a cookie so the SSR loader can read it on next request.
+          document.cookie = `${STORAGE_KEY}=${encodeURIComponent(l)};path=/;max-age=31536000;samesite=lax`;
+        }
       },
     }),
     [locale],
