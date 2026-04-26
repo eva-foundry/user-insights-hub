@@ -63,6 +63,8 @@ function PromptsPage() {
   const intl = useIntl();
   const [data, setData] = useState<ListConfigValuesResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [visible, setVisible] = useState<number>(10);
 
   useEffect(() => {
     setLoading(true);
@@ -73,6 +75,16 @@ function PromptsPage() {
   }, []);
 
   const rows = useMemo(() => (data ? groupByKeyJurisdiction(data.values) : []), [data]);
+
+  // Reset the visible window when the page-size selector changes or the
+  // dataset changes (e.g. after a refetch). Avoids leaving a stale window
+  // larger than the current row count.
+  useEffect(() => {
+    setVisible(pageSize);
+  }, [pageSize, rows.length]);
+
+  const visibleRows = rows.slice(0, visible);
+  const hasMore = visible < rows.length;
 
   return (
     <section aria-labelledby="prompts-heading" className="space-y-8">
@@ -121,8 +133,42 @@ function PromptsPage() {
       )}
 
       {!loading && rows.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p
+            aria-live="polite"
+            className="text-xs text-foreground-muted"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            <FormattedMessage
+              id="prompts.pagination.showing"
+              values={{ shown: visibleRows.length, total: rows.length }}
+            />
+          </p>
+          <label
+            htmlFor="prompts-per-page"
+            className="flex items-center gap-2 text-xs text-foreground-muted"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {intl.formatMessage({ id: "prompts.pagination.per_page" })}
+            <select
+              id="prompts-per-page"
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="h-8 rounded-md border border-border bg-surface px-2 text-xs text-foreground"
+            >
+              {[10, 20, 50].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
+
+      {!loading && rows.length > 0 && (
         <ol role="list" className="space-y-3">
-          {rows.map(({ current, versionCount }) => {
+          {visibleRows.map(({ current, versionCount }) => {
             const jurisdictionParam = current.jurisdiction_id ?? "global";
             const previewText = String(current.value ?? "").slice(0, 200);
             return (
@@ -183,6 +229,21 @@ function PromptsPage() {
             );
           })}
         </ol>
+      )}
+
+      {!loading && hasMore && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => setVisible((v) => Math.min(v + pageSize, rows.length))}
+            className="inline-flex h-9 items-center rounded-md border border-border bg-surface px-4 text-sm font-medium text-foreground hover:bg-surface-sunken"
+          >
+            <FormattedMessage
+              id="prompts.pagination.load_more"
+              values={{ count: Math.min(pageSize, rows.length - visible) }}
+            />
+          </button>
+        </div>
       )}
     </section>
   );
