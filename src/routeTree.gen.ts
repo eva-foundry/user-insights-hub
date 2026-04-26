@@ -19,6 +19,7 @@ import { Route as AuthorityRouteImport } from './routes/authority'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ScreenJurisdictionIdRouteImport } from './routes/screen.$jurisdictionId'
 import { Route as EncodeNewRouteImport } from './routes/encode.new'
 import { Route as EncodeBatchIdRouteImport } from './routes/encode.$batchId'
 import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
@@ -79,6 +80,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ScreenJurisdictionIdRoute = ScreenJurisdictionIdRouteImport.update({
+  id: '/$jurisdictionId',
+  path: '/$jurisdictionId',
+  getParentRoute: () => ScreenRoute,
 } as any)
 const EncodeNewRoute = EncodeNewRouteImport.update({
   id: '/new',
@@ -142,7 +148,7 @@ export interface FileRoutesByFullPath {
   '/encode': typeof EncodeRouteWithChildren
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
-  '/screen': typeof ScreenRoute
+  '/screen': typeof ScreenRouteWithChildren
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -150,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/encode/$batchId': typeof EncodeBatchIdRoute
   '/encode/new': typeof EncodeNewRoute
+  '/screen/$jurisdictionId': typeof ScreenJurisdictionIdRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
@@ -164,7 +171,7 @@ export interface FileRoutesByTo {
   '/encode': typeof EncodeRouteWithChildren
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
-  '/screen': typeof ScreenRoute
+  '/screen': typeof ScreenRouteWithChildren
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -172,6 +179,7 @@ export interface FileRoutesByTo {
   '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/encode/$batchId': typeof EncodeBatchIdRoute
   '/encode/new': typeof EncodeNewRoute
+  '/screen/$jurisdictionId': typeof ScreenJurisdictionIdRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
@@ -187,7 +195,7 @@ export interface FileRoutesById {
   '/encode': typeof EncodeRouteWithChildren
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
-  '/screen': typeof ScreenRoute
+  '/screen': typeof ScreenRouteWithChildren
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/encode/$batchId': typeof EncodeBatchIdRoute
   '/encode/new': typeof EncodeNewRoute
+  '/screen/$jurisdictionId': typeof ScreenJurisdictionIdRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
@@ -219,6 +228,7 @@ export interface FileRouteTypes {
     | '/config/prompts'
     | '/encode/$batchId'
     | '/encode/new'
+    | '/screen/$jurisdictionId'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
@@ -241,6 +251,7 @@ export interface FileRouteTypes {
     | '/config/prompts'
     | '/encode/$batchId'
     | '/encode/new'
+    | '/screen/$jurisdictionId'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
@@ -263,6 +274,7 @@ export interface FileRouteTypes {
     | '/config/prompts'
     | '/encode/$batchId'
     | '/encode/new'
+    | '/screen/$jurisdictionId'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
@@ -278,7 +290,7 @@ export interface RootRouteChildren {
   EncodeRoute: typeof EncodeRouteWithChildren
   ImpactRoute: typeof ImpactRoute
   PoliciesRoute: typeof PoliciesRoute
-  ScreenRoute: typeof ScreenRoute
+  ScreenRoute: typeof ScreenRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -352,6 +364,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/screen/$jurisdictionId': {
+      id: '/screen/$jurisdictionId'
+      path: '/$jurisdictionId'
+      fullPath: '/screen/$jurisdictionId'
+      preLoaderRoute: typeof ScreenJurisdictionIdRouteImport
+      parentRoute: typeof ScreenRoute
     }
     '/encode/new': {
       id: '/encode/new'
@@ -493,6 +512,17 @@ const EncodeRouteChildren: EncodeRouteChildren = {
 const EncodeRouteWithChildren =
   EncodeRoute._addFileChildren(EncodeRouteChildren)
 
+interface ScreenRouteChildren {
+  ScreenJurisdictionIdRoute: typeof ScreenJurisdictionIdRoute
+}
+
+const ScreenRouteChildren: ScreenRouteChildren = {
+  ScreenJurisdictionIdRoute: ScreenJurisdictionIdRoute,
+}
+
+const ScreenRouteWithChildren =
+  ScreenRoute._addFileChildren(ScreenRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -503,7 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   EncodeRoute: EncodeRouteWithChildren,
   ImpactRoute: ImpactRoute,
   PoliciesRoute: PoliciesRoute,
-  ScreenRoute: ScreenRoute,
+  ScreenRoute: ScreenRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
