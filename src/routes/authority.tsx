@@ -60,7 +60,7 @@ const RULE_TYPES: RuleType[] = [
 
 function AuthorityPage() {
   const intl = useIntl();
-  const data = Route.useLoaderData();
+  const data = Route.useLoaderData() as LoaderData;
   const { chain, documents, rules } = data;
 
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
