@@ -82,10 +82,10 @@ export function FixtureTestPanel({
     }
   };
 
-  const onExport = () => {
+  const onExport = async () => {
     const runs = compare ? [result!, compare] : result ? [result] : history;
     if (runs.length === 0) return;
-    exportFixtureReport({ promptKey, runs });
+    await exportFixtureReport({ promptKey, runs });
     toast.success(intl.formatMessage({ id: "prompt.fixture.export.done" }));
   };
 
