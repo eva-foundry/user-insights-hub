@@ -95,7 +95,7 @@ function RootComponent() {
           role="contentinfo"
           className="mx-auto max-w-5xl px-6 py-8 text-xs text-foreground-subtle"
         >
-          <span style={{ fontFamily: "var(--font-mono)" }}>govops · spec govops-002</span>
+          <span style={{ fontFamily: "var(--font-mono)" }}>govops · spec govops-008</span>
         </footer>
         <Toaster />
       </I18nProvider>
