@@ -32,6 +32,7 @@ import type {
   HumanReviewAction,
   ImpactResponse,
   Jurisdiction,
+  JurisdictionResponse,
   LegalDocument,
   LegalRule,
   Recommendation,
@@ -377,6 +378,25 @@ export async function switchJurisdiction(
   } catch {
     return { jurisdiction: code, name: code, program: "Old Age Security" };
   }
+}
+
+/**
+ * Fetch the public jurisdiction metadata (program name + label) used by
+ * the citizen-facing /screen route. In `VITE_USE_MOCK_API=true` mode the
+ * deterministic fixture is returned without touching the network. On any
+ * network/HTTP failure the caller decides what to do (the /screen loader
+ * falls back to a hardcoded label table for preview parity).
+ */
+export async function fetchJurisdiction(code: string): Promise<JurisdictionResponse> {
+  if (isMockMode()) {
+    const { MOCK_JURISDICTIONS } = await import("./mock-jurisdiction");
+    const hit = MOCK_JURISDICTIONS[code];
+    if (!hit) throw new Error(`Unknown jurisdiction: ${code}`);
+    return hit;
+  }
+  return fetcher<JurisdictionResponse>(
+    `/api/jurisdiction/${encodeURIComponent(code)}`,
+  );
 }
 
 // ---- Encoding pipeline (govops-011) ---------------------------------------
