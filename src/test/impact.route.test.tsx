@@ -114,6 +114,7 @@ describe("/impact route integration", () => {
   });
 
   it("paginates results when limit is set in the URL", async () => {
+    vi.useRealTimers();
     impactSpy.mockResolvedValue(MOCK_IMPACT_RESPONSE("a", { limit: 10, page: 1 }));
     renderImpactAt("/impact?citation=a&limit=10");
     await waitFor(() => {
