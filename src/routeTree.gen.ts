@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ScreenRouteImport } from './routes/screen'
 import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as EncodeRouteImport } from './routes/encode'
@@ -29,6 +30,11 @@ import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes/config.prompts.$key.$jurisdictionId.edit'
 
+const ScreenRoute = ScreenRouteImport.update({
+  id: '/screen',
+  path: '/screen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/encode': typeof EncodeRouteWithChildren
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
+  '/screen': typeof ScreenRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/encode': typeof EncodeRouteWithChildren
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
+  '/screen': typeof ScreenRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/encode': typeof EncodeRouteWithChildren
   '/impact': typeof ImpactRoute
   '/policies': typeof PoliciesRoute
+  '/screen': typeof ScreenRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/encode'
     | '/impact'
     | '/policies'
+    | '/screen'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/encode'
     | '/impact'
     | '/policies'
+    | '/screen'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/encode'
     | '/impact'
     | '/policies'
+    | '/screen'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
@@ -266,10 +278,18 @@ export interface RootRouteChildren {
   EncodeRoute: typeof EncodeRouteWithChildren
   ImpactRoute: typeof ImpactRoute
   PoliciesRoute: typeof PoliciesRoute
+  ScreenRoute: typeof ScreenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/screen': {
+      id: '/screen'
+      path: '/screen'
+      fullPath: '/screen'
+      preLoaderRoute: typeof ScreenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/policies': {
       id: '/policies'
       path: '/policies'
@@ -483,7 +503,17 @@ const rootRouteChildren: RootRouteChildren = {
   EncodeRoute: EncodeRouteWithChildren,
   ImpactRoute: ImpactRoute,
   PoliciesRoute: PoliciesRoute,
+  ScreenRoute: ScreenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
