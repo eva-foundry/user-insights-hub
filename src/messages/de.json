@@ -106,5 +106,13 @@
   "home.preview.title": "Live ConfigValue registry",
   "home.preview.caption": "A snapshot of the statute keys currently in force. Open the registry to filter by jurisdiction, domain, and language.",
   "home.preview.cta": "Open the registry →",
-  "home.footnote": "Drafted by agents · ratified by humans · auditable by citizens"
+  "home.footnote": "Drafted by agents · ratified by humans · auditable by citizens",
+  "branding.check.title": "Branding check",
+  "branding.check.caption": "Confirms the active title and wordmark text resolve to “GovOps” for every supported locale.",
+  "branding.check.col.locale": "Locale",
+  "branding.check.col.title": "app.name",
+  "branding.check.col.wordmark": "Wordmark",
+  "branding.check.col.status": "Status",
+  "branding.check.status.pass": "Pass",
+  "branding.check.status.fail": "Fail"
 }
