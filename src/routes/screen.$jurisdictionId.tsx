@@ -80,7 +80,7 @@ export const Route = createFileRoute("/screen/$jurisdictionId")({
       return { live: false, data: PROGRAM_LABELS[code] };
     }
   },
-  pendingComponent: ScreenFormSkeleton,
+  pendingComponent: () => <ScreenFormSkeleton />,
   component: ScreenFormPage,
   notFoundComponent: () => <UnknownJurisdiction />,
 });
