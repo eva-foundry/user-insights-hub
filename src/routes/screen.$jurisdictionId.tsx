@@ -20,7 +20,7 @@ export const Route = createFileRoute("/screen/$jurisdictionId")({
   head: ({ params }) => ({
     meta: [{ title: `Self-screen — ${params.jurisdictionId.toUpperCase()} — GovOps` }],
   }),
-  beforeLoad: ({ params }) => {
+  beforeLoad: ({ params }): void => {
     if (!isValidJurisdiction(params.jurisdictionId)) throw notFound();
   },
   component: ScreenFormPage,
