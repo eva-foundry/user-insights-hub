@@ -243,5 +243,13 @@
   "approvals.row.author": "por {author}",
   "approvals.drafted_by": "Redigido por {author} em {date}",
   "approvals.back_to_queue": "Voltar às aprovações",
-  "approvals.notfound.title": "Este rascunho não está mais pendente de revisão."
+  "approvals.notfound.title": "Este rascunho não está mais pendente de revisão.",
+  "approvals.empty.tag": "Caixa vazia · autoridade humana",
+  "approvals.pagination.showing": "Mostrando {shown} de {total}",
+  "approvals.pagination.load_more": "Carregar mais {count}",
+  "approvals.panel.collapse": "Recolher",
+  "approvals.panel.expand": "Expandir",
+  "approvals.shortcuts.show": "Mostrar atalhos de teclado",
+  "approvals.shortcuts.hide": "Ocultar atalhos de teclado",
+  "approvals.shortcuts.toggle_help": "Mostrar / ocultar esta ajuda"
 }

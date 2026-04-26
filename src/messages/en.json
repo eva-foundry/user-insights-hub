@@ -243,5 +243,13 @@
   "approvals.row.author": "by {author}",
   "approvals.drafted_by": "Drafted by {author} on {date}",
   "approvals.back_to_queue": "Back to approvals",
-  "approvals.notfound.title": "This draft is no longer pending review."
+  "approvals.notfound.title": "This draft is no longer pending review.",
+  "approvals.empty.tag": "Inbox zero · human authority",
+  "approvals.pagination.showing": "Showing {shown} of {total}",
+  "approvals.pagination.load_more": "Load {count} more",
+  "approvals.panel.collapse": "Collapse",
+  "approvals.panel.expand": "Expand",
+  "approvals.shortcuts.show": "Show keyboard shortcuts",
+  "approvals.shortcuts.hide": "Hide keyboard shortcuts",
+  "approvals.shortcuts.toggle_help": "Toggle this help"
 }

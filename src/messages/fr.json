@@ -243,5 +243,13 @@
   "approvals.row.author": "par {author}",
   "approvals.drafted_by": "Rédigé par {author} le {date}",
   "approvals.back_to_queue": "Retour aux approbations",
-  "approvals.notfound.title": "Ce brouillon n'est plus en attente d'examen."
+  "approvals.notfound.title": "Ce brouillon n'est plus en attente d'examen.",
+  "approvals.empty.tag": "Boîte vide · autorité humaine",
+  "approvals.pagination.showing": "{shown} sur {total} affichés",
+  "approvals.pagination.load_more": "Charger {count} de plus",
+  "approvals.panel.collapse": "Réduire",
+  "approvals.panel.expand": "Développer",
+  "approvals.shortcuts.show": "Afficher les raccourcis clavier",
+  "approvals.shortcuts.hide": "Masquer les raccourcis clavier",
+  "approvals.shortcuts.toggle_help": "Afficher / masquer cette aide"
 }
