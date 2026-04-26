@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { ScreenShell } from "@/components/govops/ScreenShell";
 import { ScreenForm } from "@/components/govops/ScreenForm";
@@ -20,9 +20,6 @@ export const Route = createFileRoute("/screen/$jurisdictionId")({
   head: ({ params }) => ({
     meta: [{ title: `Self-screen — ${params.jurisdictionId.toUpperCase()} — GovOps` }],
   }),
-  beforeLoad: ({ params }): void => {
-    if (!isValidJurisdiction(params.jurisdictionId)) throw notFound();
-  },
   component: ScreenFormPage,
   notFoundComponent: () => <UnknownJurisdiction />,
 });
@@ -57,6 +54,7 @@ const PROGRAM_LABELS: Record<ScreenJurisdictionId, { name: string; lede: string 
 function ScreenFormPage() {
   const intl = useIntl();
   const { jurisdictionId } = Route.useParams() as { jurisdictionId: ScreenJurisdictionId };
+  if (!isValidJurisdiction(jurisdictionId)) return <UnknownJurisdiction />;
   const program = PROGRAM_LABELS[jurisdictionId];
 
   const [loading, setLoading] = useState(false);
