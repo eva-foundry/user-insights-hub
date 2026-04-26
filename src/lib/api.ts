@@ -44,13 +44,6 @@ import {
   MOCK_LEGAL_DOCUMENTS,
   MOCK_LEGAL_RULES,
 } from "./mock-authority";
-import {
-  MOCK_CASE_LIST,
-  mockEvaluateCase,
-  mockGetAudit,
-  mockGetCase,
-  mockReviewCase,
-} from "./mock-cases";
 
 /**
  * Lazy mock loader — dynamic import so production bundles tree-shake the
