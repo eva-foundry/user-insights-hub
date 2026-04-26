@@ -52,16 +52,18 @@ const PROGRAM_LABELS: Record<ScreenJurisdictionId, { name: string; lede: string 
 };
 
 function ScreenFormPage() {
-  const intl = useIntl();
   const { jurisdictionId } = Route.useParams() as { jurisdictionId: ScreenJurisdictionId };
-  if (!isValidJurisdiction(jurisdictionId)) return <UnknownJurisdiction />;
-  const program = PROGRAM_LABELS[jurisdictionId];
+  const intl = useIntl();
+  const valid = isValidJurisdiction(jurisdictionId);
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScreenResponse | null>(null);
   const [stale, setStale] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastReq, setLastReq] = useState<ScreenRequest | null>(null);
+
+  if (!valid) return <UnknownJurisdiction />;
+  const program = PROGRAM_LABELS[jurisdictionId];
 
   const run = async (req: ScreenRequest) => {
     setLoading(true);
