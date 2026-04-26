@@ -50,10 +50,7 @@ export function DraftPreview({
   };
 
   return (
-    <section
-      aria-label={intl.formatMessage({ id: "draft.preview.title" })}
-      className="space-y-3"
-    >
+    <section aria-label={intl.formatMessage({ id: "draft.preview.title" })} className="space-y-3">
       <header className="space-y-1">
         <p
           className="text-xs uppercase tracking-[0.18em] text-foreground-subtle"
@@ -85,16 +82,12 @@ export function DraftPreview({
             aria-hidden
             className="absolute -start-[18px] top-5 size-2.5 rounded-full"
             style={{
-              backgroundColor:
-                synthetic.author.startsWith("agent:") ? "var(--agentic)" : "var(--authority)",
+              backgroundColor: synthetic.author.startsWith("agent:")
+                ? "var(--agentic)"
+                : "var(--authority)",
             }}
           />
-          <TimelineCard
-            cv={synthetic}
-            isCurrent
-            selected={false}
-            onSelectToggle={() => {}}
-          />
+          <TimelineCard cv={synthetic} isCurrent selected={false} onSelectToggle={() => {}} />
         </li>
 
         {prior && (
@@ -103,16 +96,12 @@ export function DraftPreview({
               aria-hidden
               className="absolute -start-[18px] top-5 size-2.5 rounded-full"
               style={{
-                backgroundColor:
-                  prior.author.startsWith("agent:") ? "var(--agentic)" : "var(--authority)",
+                backgroundColor: prior.author.startsWith("agent:")
+                  ? "var(--agentic)"
+                  : "var(--authority)",
               }}
             />
-            <TimelineCard
-              cv={prior}
-              isCurrent={false}
-              selected={false}
-              onSelectToggle={() => {}}
-            />
+            <TimelineCard cv={prior} isCurrent={false} selected={false} onSelectToggle={() => {}} />
           </li>
         )}
       </ol>

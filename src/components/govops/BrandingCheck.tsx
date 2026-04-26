@@ -92,9 +92,7 @@ export function BrandingCheck() {
                         backgroundColor: ok
                           ? "color-mix(in oklch, var(--verdict-enacted) 14%, transparent)"
                           : "color-mix(in oklch, var(--verdict-rejected) 14%, transparent)",
-                        color: ok
-                          ? "var(--verdict-enacted)"
-                          : "var(--verdict-rejected)",
+                        color: ok ? "var(--verdict-enacted)" : "var(--verdict-rejected)",
                       }}
                       aria-label={
                         ok

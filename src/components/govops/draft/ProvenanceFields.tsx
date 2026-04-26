@@ -11,12 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LANGUAGES } from "@/lib/types";
-import {
-  ERROR_BORDER_STYLE,
-  ErrorMessage,
-  HelpText,
-  RequiredMark,
-} from "./fieldPrimitives";
+import { ERROR_BORDER_STYLE, ErrorMessage, HelpText, RequiredMark } from "./fieldPrimitives";
 import type { DraftFormState } from "./useDraftFormState";
 
 /**
@@ -66,10 +61,7 @@ export function ProvenanceFields({ state }: { state: DraftFormState }) {
           {intl.formatMessage({ id: "draft.field.citation.help" })}
         </HelpText>
         {errors.citation && (
-          <ErrorMessage
-            id={`${ids.citation}-error`}
-            messageId={errors.citation}
-          />
+          <ErrorMessage id={`${ids.citation}-error`} messageId={errors.citation} />
         )}
       </div>
 

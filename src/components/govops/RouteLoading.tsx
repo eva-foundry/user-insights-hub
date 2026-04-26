@@ -28,10 +28,7 @@ export function RouteLoading({
         aria-label="Loading"
       >
         {[0, 1].map((i) => (
-          <div
-            key={i}
-            className="space-y-2 rounded-md border border-border bg-surface p-4"
-          >
+          <div key={i} className="space-y-2 rounded-md border border-border bg-surface p-4">
             <div className="h-3 w-24 animate-pulse rounded bg-surface-sunken" />
             <div className="h-3 w-full animate-pulse rounded bg-surface-sunken" />
             <div className="h-3 w-3/4 animate-pulse rounded bg-surface-sunken" />
@@ -59,12 +56,7 @@ export function RouteLoading({
   }
 
   return (
-    <ul
-      role="status"
-      aria-busy="true"
-      aria-label="Loading"
-      className={cn("space-y-2", className)}
-    >
+    <ul role="status" aria-busy="true" aria-label="Loading" className={cn("space-y-2", className)}>
       {Array.from({ length: rows }).map((_, i) => (
         <li
           key={i}

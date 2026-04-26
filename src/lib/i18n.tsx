@@ -98,12 +98,11 @@ export function I18nProvider({
           // Dev-only: missing translations log a warning instead of throwing,
           // so a single missing key doesn't blank the SSR render.
           if (import.meta.env.DEV && err.code === "MISSING_TRANSLATION") {
-            // eslint-disable-next-line no-console
             console.warn(`[i18n] ${err.message}`);
             return;
           }
           if (err.code === "MISSING_TRANSLATION") return;
-          // eslint-disable-next-line no-console
+
           console.error(err);
         }}
       >

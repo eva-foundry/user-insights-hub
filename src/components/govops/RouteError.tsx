@@ -5,16 +5,8 @@ import { Link } from "@tanstack/react-router";
  * Keeps the user inside the app shell (Masthead + footer still render) and
  * gives them a "Try again" affordance powered by the router's `reset` callback.
  */
-export function RouteError({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset?: () => void;
-}) {
-  const message =
-    error?.message ||
-    "Something unexpected happened while rendering this page.";
+export function RouteError({ error, reset }: { error: Error; reset?: () => void }) {
+  const message = error?.message || "Something unexpected happened while rendering this page.";
 
   return (
     <div
@@ -22,8 +14,7 @@ export function RouteError({
       className="space-y-4 rounded-md border p-6"
       style={{
         borderColor: "var(--verdict-rejected)",
-        backgroundColor:
-          "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
+        backgroundColor: "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
       }}
     >
       <p

@@ -26,9 +26,7 @@ export const Route = createFileRoute("/policies")({
     ],
   }),
   loader: () => fetchOrMock<Policy[]>("/v1/policies", MOCK_POLICIES),
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={68} />,
   component: PoliciesPage,
 });

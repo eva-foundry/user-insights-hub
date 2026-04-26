@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 
@@ -32,9 +28,7 @@ export const Route = createFileRoute("/config/diff")({
     const [from, to] = await Promise.all([loadOne(deps.from), loadOne(deps.to)]);
     return { from, to };
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading variant="split" />,
   component: DiffPage,
 });
@@ -43,9 +37,7 @@ function findMock(id: string): ConfigValue | undefined {
   return MOCK_CONFIG_VALUES.find((v) => v.id === id);
 }
 
-type LoadResult =
-  | { kind: "ok"; cv: ConfigValue }
-  | { kind: "error"; id: string; message: string };
+type LoadResult = { kind: "ok"; cv: ConfigValue } | { kind: "error"; id: string; message: string };
 
 async function loadOne(id: string): Promise<LoadResult> {
   try {
@@ -91,7 +83,9 @@ function DiffPage() {
           {intl.formatMessage({ id: "diff.heading.cross_record" })}
         </h1>
         <p className="text-sm text-foreground-muted">
-          Provide <code style={{ fontFamily: "var(--font-mono)" }}>?from=&lt;id&gt;&amp;to=&lt;id&gt;</code>.
+          Provide{" "}
+          <code style={{ fontFamily: "var(--font-mono)" }}>?from=&lt;id&gt;&amp;to=&lt;id&gt;</code>
+          .
         </p>
         <Link
           to="/config"
@@ -104,10 +98,7 @@ function DiffPage() {
   }
 
   return (
-    <section
-      aria-labelledby="diff-heading"
-      className="space-y-6 print:space-y-3"
-    >
+    <section aria-labelledby="diff-heading" className="space-y-6 print:space-y-3">
       {/* Back link — hidden in print */}
       <nav aria-label="Breadcrumb" className="text-sm print:hidden">
         {sameRecord ? (
@@ -115,19 +106,14 @@ function DiffPage() {
             to="/config/$key/$jurisdictionId"
             params={{
               key: encodeURIComponent(sameRecord.key),
-              jurisdictionId: encodeURIComponent(
-                sameRecord.jurisdiction_id ?? "global",
-              ),
+              jurisdictionId: encodeURIComponent(sameRecord.jurisdiction_id ?? "global"),
             }}
             className="text-foreground-muted underline-offset-4 hover:underline"
           >
             ← {intl.formatMessage({ id: "diff.back_to_timeline" })}
           </Link>
         ) : (
-          <Link
-            to="/config"
-            className="text-foreground-muted underline-offset-4 hover:underline"
-          >
+          <Link to="/config" className="text-foreground-muted underline-offset-4 hover:underline">
             ← {intl.formatMessage({ id: "diff.back_to_search" })}
           </Link>
         )}
@@ -168,17 +154,15 @@ function DiffPage() {
               </code>
             </div>
           )}
-          {!sameRecord &&
-            pair?.from.kind === "ok" &&
-            pair?.to.kind === "ok" && (
-              <ul
-                className="space-y-1 text-xs text-foreground-muted print:hidden"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
-                <li>from: {pair.from.cv.key}</li>
-                <li>to: {pair.to.cv.key}</li>
-              </ul>
-            )}
+          {!sameRecord && pair?.from.kind === "ok" && pair?.to.kind === "ok" && (
+            <ul
+              className="space-y-1 text-xs text-foreground-muted print:hidden"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              <li>from: {pair.from.cv.key}</li>
+              <li>to: {pair.to.cv.key}</li>
+            </ul>
+          )}
         </div>
 
         <button
@@ -191,73 +175,66 @@ function DiffPage() {
       </header>
 
       {/* Error state — at least one id failed */}
-      {pair &&
-        (pair.from.kind === "error" || pair.to.kind === "error") && (
-          <div
-            role="alert"
-            className="space-y-3 rounded-md border p-4"
-            style={{
-              borderColor: "var(--verdict-rejected)",
-              backgroundColor:
-                "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
-            }}
+      {pair && (pair.from.kind === "error" || pair.to.kind === "error") && (
+        <div
+          role="alert"
+          className="space-y-3 rounded-md border p-4"
+          style={{
+            borderColor: "var(--verdict-rejected)",
+            backgroundColor: "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
+          }}
+        >
+          {(["from", "to"] as const).map((side) => {
+            const r = pair[side];
+            if (r.kind !== "error") return null;
+            return (
+              <p
+                key={side}
+                className="text-sm font-medium"
+                style={{ color: "var(--verdict-rejected)" }}
+              >
+                {intl.formatMessage({ id: "diff.error.not_found" }, { id: r.id })}
+              </p>
+            );
+          })}
+          <Link
+            to="/config"
+            className="inline-flex h-9 items-center rounded-md border border-border bg-surface px-4 text-sm font-medium text-foreground hover:bg-surface-sunken"
           >
-            {(["from", "to"] as const).map((side) => {
-              const r = pair[side];
-              if (r.kind !== "error") return null;
-              return (
-                <p
-                  key={side}
-                  className="text-sm font-medium"
-                  style={{ color: "var(--verdict-rejected)" }}
-                >
-                  {intl.formatMessage(
-                    { id: "diff.error.not_found" },
-                    { id: r.id },
-                  )}
-                </p>
-              );
-            })}
-            <Link
-              to="/config"
-              className="inline-flex h-9 items-center rounded-md border border-border bg-surface px-4 text-sm font-medium text-foreground hover:bg-surface-sunken"
-            >
-              ← {intl.formatMessage({ id: "diff.error.go_back" })}
-            </Link>
-          </div>
-        )}
+            ← {intl.formatMessage({ id: "diff.error.go_back" })}
+          </Link>
+        </div>
+      )}
 
       {/* Success */}
-      {pair &&
-        pair.from.kind === "ok" &&
-        pair.to.kind === "ok" && (
-          <>
-            <DiffMetadataStrip from={pair.from.cv} to={pair.to.cv} />
+      {pair && pair.from.kind === "ok" && pair.to.kind === "ok" && (
+        <>
+          <DiffMetadataStrip from={pair.from.cv} to={pair.to.cv} />
 
-            <div className="grid gap-4 md:grid-cols-2 print:grid-cols-2">
-              <DiffPane cv={pair.from.cv} side="from" labelId="diff-from-label" />
-              <DiffPane cv={pair.to.cv} side="to" labelId="diff-to-label" />
-            </div>
+          <div className="grid gap-4 md:grid-cols-2 print:grid-cols-2">
+            <DiffPane cv={pair.from.cv} side="from" labelId="diff-from-label" />
+            <DiffPane cv={pair.to.cv} side="to" labelId="diff-to-label" />
+          </div>
 
-            <section
-              aria-labelledby="value-diff-heading"
-              className="space-y-3 rounded-md border border-border bg-surface p-4"
+          <section
+            aria-labelledby="value-diff-heading"
+            className="space-y-3 rounded-md border border-border bg-surface p-4"
+          >
+            <h2
+              id="value-diff-heading"
+              className="text-xs uppercase tracking-[0.18em] text-foreground-subtle"
+              style={{ fontFamily: "var(--font-mono)" }}
             >
-              <h2
-                id="value-diff-heading"
-                className="text-xs uppercase tracking-[0.18em] text-foreground-subtle"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
-                value
-              </h2>
-              <ValueDiff from={pair.from.cv} to={pair.to.cv} />
-            </section>
+              value
+            </h2>
+            <ValueDiff from={pair.from.cv} to={pair.to.cv} />
+          </section>
 
-            <p aria-live="polite" className="sr-only">
-              Diff loaded.
-            </p>
-          </>
-        )}
+          <p aria-live="polite" className="sr-only">
+            Diff loaded.
+          </p>
+        </>
+      )}
     </section>
   );
 }

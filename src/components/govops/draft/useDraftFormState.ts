@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useState,
-  type FormEvent,
-} from "react";
+import { useCallback, useEffect, useId, useMemo, useState, type FormEvent } from "react";
 import { useIntl } from "react-intl";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -13,17 +6,8 @@ import { toast } from "sonner";
 import { useUnsavedChangesPrompt } from "@/lib/dirtyState";
 import { emitDraftsChanged, saveRecentDraft } from "@/lib/draftStorage";
 import { StorageKeys } from "@/lib/storageKeys";
-import {
-  coerceValue,
-  validateIsoUtc,
-  validateKey,
-  validateRationale,
-} from "@/lib/validators";
-import type {
-  ConfigValue,
-  CreateConfigValueRequest,
-  ValueType,
-} from "@/lib/types";
+import { coerceValue, validateIsoUtc, validateKey, validateRationale } from "@/lib/validators";
+import type { ConfigValue, CreateConfigValueRequest, ValueType } from "@/lib/types";
 import { hydrateValue, todayMidnightUtc } from "./draftHelpers";
 
 export type DraftInitial = {
@@ -95,9 +79,7 @@ export function useDraftFormState({
   const [jurisdiction, setJurisdiction] = useState<string>(
     initial.jurisdiction_id ?? prior?.jurisdiction_id ?? "global",
   );
-  const [domain, setDomain] = useState<string>(
-    initial.domain ?? prior?.domain ?? "rule",
-  );
+  const [domain, setDomain] = useState<string>(initial.domain ?? prior?.domain ?? "rule");
   const [valueType, setValueType] = useState<ValueType>(
     (initial.value_type as ValueType) ?? prior?.value_type ?? "number",
   );
@@ -107,21 +89,17 @@ export function useDraftFormState({
           initial.value,
           (initial.value_type as ValueType) ?? prior?.value_type ?? "number",
         )
-      : prior?.value ?? "",
+      : (prior?.value ?? ""),
   );
   const [effectiveFrom, setEffectiveFrom] = useState<string>(
     initial.effective_from ?? todayMidnightUtc(),
   );
   const [citation, setCitation] = useState<string>(initial.citation ?? "");
   const [rationale, setRationale] = useState<string>(initial.rationale ?? "");
-  const [language, setLanguage] = useState<string>(
-    initial.language ?? prior?.language ?? "en",
-  );
+  const [language, setLanguage] = useState<string>(initial.language ?? prior?.language ?? "en");
 
   const [errors, setErrors] = useState<DraftErrors>({});
-  const [touched, setTouched] = useState<
-    Partial<Record<DraftFieldName, boolean>>
-  >({});
+  const [touched, setTouched] = useState<Partial<Record<DraftFieldName, boolean>>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [showPreview, setShowPreview] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
@@ -134,10 +112,7 @@ export function useDraftFormState({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem(
-      StorageKeys.draftPreviewOpen,
-      String(showPreview),
-    );
+    window.localStorage.setItem(StorageKeys.draftPreviewOpen, String(showPreview));
   }, [showPreview]);
 
   // -- locked fields when superseding --
@@ -160,10 +135,7 @@ export function useDraftFormState({
     );
   }, [value, citation, rationale, key, initial.key, prior]);
 
-  useUnsavedChangesPrompt(
-    dirty,
-    intl.formatMessage({ id: "draft.unsaved.body" }),
-  );
+  useUnsavedChangesPrompt(dirty, intl.formatMessage({ id: "draft.unsaved.body" }));
 
   // Reset value when value_type changes (avoid type-mismatched residue), but
   // skip the very first render so URL-hydrated values survive.
@@ -192,13 +164,9 @@ export function useDraftFormState({
         case "key":
           return validateKey(String(v("key", key))) ?? undefined;
         case "effective_from":
-          return (
-            validateIsoUtc(String(v("effective_from", effectiveFrom) ?? "")) ??
-            undefined
-          );
+          return validateIsoUtc(String(v("effective_from", effectiveFrom) ?? "")) ?? undefined;
         case "citation":
-          return v("domain", domain) === "rule" &&
-            !String(v("citation", citation)).trim()
+          return v("domain", domain) === "rule" && !String(v("citation", citation)).trim()
             ? "validators.citation.required"
             : undefined;
         case "rationale":
@@ -212,20 +180,11 @@ export function useDraftFormState({
           const raw = v("value", value);
           try {
             const coerced = coerceValue(raw, t);
-            if (
-              t === "number" &&
-              (raw === "" || raw === undefined || raw === null)
-            )
+            if (t === "number" && (raw === "" || raw === undefined || raw === null))
               return "validators.value.required";
-            if (
-              (t === "string" || t === "prompt") &&
-              !String(raw ?? "").trim()
-            )
+            if ((t === "string" || t === "prompt") && !String(raw ?? "").trim())
               return "validators.value.required";
-            if (
-              (t === "list" || t === "enum") &&
-              (!Array.isArray(coerced) || coerced.length === 0)
-            )
+            if ((t === "list" || t === "enum") && (!Array.isArray(coerced) || coerced.length === 0))
               return "validators.value.required";
             return undefined;
           } catch (e) {
@@ -312,9 +271,7 @@ export function useDraftFormState({
     setSubmitError(null);
     const { ok, coercedValue } = validateAll();
     if (!ok) {
-      const firstError = document.querySelector<HTMLElement>(
-        "[aria-invalid='true']",
-      );
+      const firstError = document.querySelector<HTMLElement>("[aria-invalid='true']");
       firstError?.focus();
       return;
     }
@@ -363,8 +320,7 @@ export function useDraftFormState({
     if (initial.supersedes_id) params.supersedes_id = initial.supersedes_id;
     if (value !== "" && value !== undefined && value !== null) {
       try {
-        params.value =
-          typeof value === "string" ? value : JSON.stringify(value);
+        params.value = typeof value === "string" ? value : JSON.stringify(value);
       } catch {
         /* skip un-serializable values */
       }
@@ -376,8 +332,7 @@ export function useDraftFormState({
     toast.success(intl.formatMessage({ id: "draft.saved" }));
   }
 
-  const cancelNeedsConfirm =
-    dirty || Object.keys(touched).length > 0 || savedDraftOnce;
+  const cancelNeedsConfirm = dirty || Object.keys(touched).length > 0 || savedDraftOnce;
 
   function performCancel() {
     setConfirmCancelOpen(false);

@@ -26,15 +26,7 @@ export function RunCompareDiff({
   const added = right.proposals.filter((p) => !leftKeys.has(proposalKey(p)));
   const unchanged = left.proposals.filter((p) => rightKeys.has(proposalKey(p)));
 
-  const Metric = ({
-    label,
-    a,
-    b,
-  }: {
-    label: string;
-    a: number | string;
-    b: number | string;
-  }) => (
+  const Metric = ({ label, a, b }: { label: string; a: number | string; b: number | string }) => (
     <div className="grid grid-cols-3 gap-2 text-xs" style={{ fontFamily: "var(--font-mono)" }}>
       <span className="text-foreground-subtle">{label}</span>
       <span className="text-foreground">{a}</span>
@@ -67,11 +59,7 @@ export function RunCompareDiff({
       <div className="space-y-1 rounded border border-border p-2">
         <Metric label="proposals" a={left.proposals_count} b={right.proposals_count} />
         <Metric label="latency ms" a={left.latency_ms} b={right.latency_ms} />
-        <Metric
-          label="tokens"
-          a={left.token_count ?? "—"}
-          b={right.token_count ?? "—"}
-        />
+        <Metric label="tokens" a={left.token_count ?? "—"} b={right.token_count ?? "—"} />
         <Metric label="fixture" a={left.fixture_id} b={right.fixture_id} />
       </div>
 
@@ -80,8 +68,7 @@ export function RunCompareDiff({
           className="rounded border p-2"
           style={{
             borderColor: "var(--diff-removed-bg)",
-            backgroundColor:
-              "color-mix(in oklch, var(--diff-removed-bg) 30%, transparent)",
+            backgroundColor: "color-mix(in oklch, var(--diff-removed-bg) 30%, transparent)",
           }}
         >
           <p
@@ -94,13 +81,10 @@ export function RunCompareDiff({
             />
           </p>
           <ul role="list" className="space-y-1 text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-            {removed.length === 0 && (
-              <li className="italic text-foreground-subtle">—</li>
-            )}
+            {removed.length === 0 && <li className="italic text-foreground-subtle">—</li>}
             {removed.map((p, i) => (
               <li key={i} className="text-foreground">
-                − {p.rule_type}{" "}
-                <span className="text-foreground-subtle">({p.citation})</span>
+                − {p.rule_type} <span className="text-foreground-subtle">({p.citation})</span>
               </li>
             ))}
           </ul>
@@ -110,27 +94,20 @@ export function RunCompareDiff({
           className="rounded border p-2"
           style={{
             borderColor: "var(--diff-added-bg)",
-            backgroundColor:
-              "color-mix(in oklch, var(--diff-added-bg) 30%, transparent)",
+            backgroundColor: "color-mix(in oklch, var(--diff-added-bg) 30%, transparent)",
           }}
         >
           <p
             className="mb-1 text-[10px] uppercase tracking-[0.14em]"
             style={{ fontFamily: "var(--font-mono)", color: "var(--diff-added-fg)" }}
           >
-            <FormattedMessage
-              id="prompt.fixture.compare.added"
-              values={{ count: added.length }}
-            />
+            <FormattedMessage id="prompt.fixture.compare.added" values={{ count: added.length }} />
           </p>
           <ul role="list" className="space-y-1 text-xs" style={{ fontFamily: "var(--font-mono)" }}>
-            {added.length === 0 && (
-              <li className="italic text-foreground-subtle">—</li>
-            )}
+            {added.length === 0 && <li className="italic text-foreground-subtle">—</li>}
             {added.map((p, i) => (
               <li key={i} className="text-foreground">
-                + {p.rule_type}{" "}
-                <span className="text-foreground-subtle">({p.citation})</span>
+                + {p.rule_type} <span className="text-foreground-subtle">({p.citation})</span>
               </li>
             ))}
           </ul>

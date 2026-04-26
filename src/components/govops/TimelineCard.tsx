@@ -39,9 +39,7 @@ export function TimelineCard({
   const to = cv.effective_to ? new Date(cv.effective_to) : null;
   const isFuture = from.getTime() > now.getTime();
   const inEffect =
-    cv.status === "approved" &&
-    !isFuture &&
-    (to === null || to.getTime() > now.getTime());
+    cv.status === "approved" && !isFuture && (to === null || to.getTime() > now.getTime());
   const isApproved = cv.status === "approved";
   const tone = statusTone(cv.status);
 
@@ -68,20 +66,10 @@ export function TimelineCard({
                 : intl.formatMessage({ id: "config.detail.superseded" })}
             </div>
             <div className="text-sm text-foreground-muted">
-              <FormattedDate
-                value={cv.effective_from}
-                year="numeric"
-                month="short"
-                day="numeric"
-              />
+              <FormattedDate value={cv.effective_from} year="numeric" month="short" day="numeric" />
               <span className="mx-1.5">→</span>
               {to ? (
-                <FormattedDate
-                  value={to}
-                  year="numeric"
-                  month="short"
-                  day="numeric"
-                />
+                <FormattedDate value={to} year="numeric" month="short" day="numeric" />
               ) : (
                 <span
                   className="font-medium"
@@ -97,8 +85,7 @@ export function TimelineCard({
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{
-                  backgroundColor:
-                    "color-mix(in oklch, var(--verdict-pending) 14%, transparent)",
+                  backgroundColor: "color-mix(in oklch, var(--verdict-pending) 14%, transparent)",
                   color: "var(--verdict-pending)",
                   fontFamily: "var(--font-mono)",
                 }}
@@ -134,16 +121,15 @@ export function TimelineCard({
 
         {cv.citation && <CitationLink citation={cv.citation} />}
 
-        {cv.rationale && (
-          <p className="line-clamp-4 text-sm text-foreground">{cv.rationale}</p>
-        )}
+        {cv.rationale && <p className="line-clamp-4 text-sm text-foreground">{cv.rationale}</p>}
 
         <footer
           className="border-t border-border pt-2 text-[11px] text-foreground-subtle"
           style={{ fontFamily: "var(--font-mono)" }}
         >
           {cv.author}
-          {cv.approved_by && ` · ${intl.formatMessage({ id: "config.detail.approved_by" })}: ${cv.approved_by}`}
+          {cv.approved_by &&
+            ` · ${intl.formatMessage({ id: "config.detail.approved_by" })}: ${cv.approved_by}`}
         </footer>
       </div>
     </article>

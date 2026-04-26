@@ -48,12 +48,7 @@ export function RecentDrafts({ activeSearch }: { activeSearch?: string }) {
           <button
             type="button"
             onClick={() => {
-              if (
-                !window.confirm(
-                  intl.formatMessage({ id: "draft.recent.clear_confirm" }),
-                )
-              )
-                return;
+              if (!window.confirm(intl.formatMessage({ id: "draft.recent.clear_confirm" }))) return;
               clearAllRecentDrafts();
               emitDraftsChanged();
             }}
@@ -103,10 +98,7 @@ export function RecentDrafts({ activeSearch }: { activeSearch?: string }) {
                   removeRecentDraft(d.id);
                   emitDraftsChanged();
                 }}
-                aria-label={intl.formatMessage(
-                  { id: "draft.recent.remove" },
-                  { label: d.label },
-                )}
+                aria-label={intl.formatMessage({ id: "draft.recent.remove" }, { label: d.label })}
                 className="rounded-sm p-1 text-foreground-subtle hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <X className="size-3.5" />

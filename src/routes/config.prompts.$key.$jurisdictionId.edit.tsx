@@ -19,24 +19,15 @@ import {
 } from "@/lib/validators";
 import type { ConfigValue } from "@/lib/types";
 
-export const Route = createFileRoute(
-  "/config/prompts/$key/$jurisdictionId/edit",
-)({
+export const Route = createFileRoute("/config/prompts/$key/$jurisdictionId/edit")({
   head: ({ params }) => ({
     meta: [{ title: `Edit prompt — ${params.key} — GovOps` }],
   }),
   loader: async ({ params }): Promise<ConfigValue | null> => {
-    const jurisdictionForApi =
-      params.jurisdictionId === "global" ? null : params.jurisdictionId;
-    return resolveCurrentConfigValue(
-      params.key,
-      jurisdictionForApi,
-      new Date().toISOString(),
-    );
+    const jurisdictionForApi = params.jurisdictionId === "global" ? null : params.jurisdictionId;
+    return resolveCurrentConfigValue(params.key, jurisdictionForApi, new Date().toISOString());
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   component: PromptEditPage,
 });
 
@@ -131,10 +122,7 @@ function PromptEditPage() {
   const blockedReason = keyError
     ? intl.formatMessage({ id: keyError })
     : textError
-      ? intl.formatMessage(
-          { id: textError },
-          { min: PROMPT_TEXT_MIN, max: PROMPT_TEXT_MAX },
-        )
+      ? intl.formatMessage({ id: textError }, { min: PROMPT_TEXT_MIN, max: PROMPT_TEXT_MAX })
       : undefined;
 
   // ── Submit (save as draft).
@@ -157,8 +145,7 @@ function PromptEditPage() {
         effective_to: null,
         citation: current.citation,
         author: getCurrentUser(),
-        rationale:
-          "Prompt revision drafted via /config/prompts editor (govops-008).",
+        rationale: "Prompt revision drafted via /config/prompts editor (govops-008).",
         supersedes: current.id,
         language: current.language,
       });
@@ -253,10 +240,7 @@ function PromptEditPage() {
           style={{ fontFamily: "var(--font-mono)" }}
           aria-live="polite"
         >
-          <FormattedMessage
-            id="prompt.editor.character_count"
-            values={{ count: value.length }}
-          />
+          <FormattedMessage id="prompt.editor.character_count" values={{ count: value.length }} />
           {autosavedAt && (
             <>
               {" · "}
@@ -279,16 +263,14 @@ function PromptEditPage() {
           className="space-y-1 rounded-md border p-3 text-xs"
           style={{
             borderColor: "var(--verdict-rejected)",
-            backgroundColor:
-              "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
+            backgroundColor: "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
             color: "var(--verdict-rejected)",
             fontFamily: "var(--font-mono)",
           }}
         >
           {keyError && (
             <p>
-              <span className="font-semibold">key:</span>{" "}
-              {intl.formatMessage({ id: keyError })}
+              <span className="font-semibold">key:</span> {intl.formatMessage({ id: keyError })}
             </p>
           )}
           {textError && (
@@ -336,7 +318,11 @@ function PromptEditPage() {
         </div>
       ) : (
         <div>
-          <div role="tablist" aria-label="Editor panes" className="flex gap-1 border-b border-border">
+          <div
+            role="tablist"
+            aria-label="Editor panes"
+            className="flex gap-1 border-b border-border"
+          >
             {(["edit", "preview", "test"] as const).map((t) => (
               <button
                 key={t}

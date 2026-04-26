@@ -14,9 +14,7 @@ import { DualApprovalBadge } from "./DualApprovalBadge";
 export function ApprovalRow({ cv }: { cv: ConfigValue }) {
   const intl = useIntl();
   const provenance = cv.author.startsWith("agent:") ? "agent" : "human";
-  const ageSeconds = Math.floor(
-    (new Date(cv.created_at).getTime() - Date.now()) / 1000,
-  );
+  const ageSeconds = Math.floor((new Date(cv.created_at).getTime() - Date.now()) / 1000);
 
   return (
     <li className="list-none">
@@ -39,11 +37,7 @@ export function ApprovalRow({ cv }: { cv: ConfigValue }) {
                 {cv.key}
               </p>
               <p className="text-xs text-foreground-muted">
-                {intl.formatMessage(
-                  { id: "approvals.row.author" },
-                  { author: cv.author },
-                )}{" "}
-                ·{" "}
+                {intl.formatMessage({ id: "approvals.row.author" }, { author: cv.author })} ·{" "}
                 <FormattedRelativeTime
                   value={ageSeconds}
                   numeric="auto"
@@ -52,9 +46,7 @@ export function ApprovalRow({ cv }: { cv: ConfigValue }) {
                 {cv.supersedes && (
                   <>
                     {" · "}
-                    <span style={{ fontFamily: "var(--font-mono)" }}>
-                      ↻ supersedes
-                    </span>
+                    <span style={{ fontFamily: "var(--font-mono)" }}>↻ supersedes</span>
                   </>
                 )}
               </p>
@@ -68,8 +60,7 @@ export function ApprovalRow({ cv }: { cv: ConfigValue }) {
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{
-                  backgroundColor:
-                    "color-mix(in oklch, var(--verdict-pending) 14%, transparent)",
+                  backgroundColor: "color-mix(in oklch, var(--verdict-pending) 14%, transparent)",
                   color: "var(--verdict-pending)",
                   fontFamily: "var(--font-mono)",
                 }}

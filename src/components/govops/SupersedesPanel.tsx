@@ -22,10 +22,7 @@ export function SupersedesPanel({ prior }: { prior: ConfigValue }) {
       >
         {intl.formatMessage({ id: "draft.field.supersedes.title" })}
       </p>
-      <p
-        className="mt-2 text-sm text-foreground"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
+      <p className="mt-2 text-sm text-foreground" style={{ fontFamily: "var(--font-mono)" }}>
         {prior.key}
       </p>
       <p className="mt-1 text-xs text-foreground-muted">

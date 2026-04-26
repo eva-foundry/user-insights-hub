@@ -59,11 +59,7 @@ export function ConfirmActionDialog({
         : "approvals.confirm.cta.request";
 
   const ctaVariant: "authority" | "destructive" | "secondary" =
-    action === "approve"
-      ? "authority"
-      : action === "reject"
-        ? "destructive"
-        : "secondary";
+    action === "approve" ? "authority" : action === "reject" ? "destructive" : "secondary";
 
   return (
     <Dialog

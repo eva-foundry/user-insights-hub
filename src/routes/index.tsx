@@ -139,17 +139,13 @@ function Index() {
           <ul role="list" className="space-y-2">
             {preview.map((cv) => {
               const valuePreview =
-                typeof cv.value === "object"
-                  ? JSON.stringify(cv.value)
-                  : String(cv.value);
+                typeof cv.value === "object" ? JSON.stringify(cv.value) : String(cv.value);
               return (
                 <li
                   key={cv.id}
                   className="flex items-stretch rounded-md border border-border bg-surface px-4 py-3"
                 >
-                  <ProvenanceRibbon
-                    variant={cv.author?.startsWith("agent:") ? "agent" : "human"}
-                  />
+                  <ProvenanceRibbon variant={cv.author?.startsWith("agent:") ? "agent" : "human"} />
                   <div className="flex w-full flex-wrap items-center justify-between gap-3">
                     <code
                       className="truncate text-sm text-foreground"

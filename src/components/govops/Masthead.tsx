@@ -30,10 +30,7 @@ export function Masthead() {
           <Wordmark />
         </Link>
 
-        <nav
-          aria-label="Primary"
-          className="hidden items-center gap-4 text-sm md:flex"
-        >
+        <nav aria-label="Primary" className="hidden items-center gap-4 text-sm md:flex">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
@@ -62,10 +59,7 @@ export function Masthead() {
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
               <SheetTitle>{intl.formatMessage({ id: "nav.menu" })}</SheetTitle>
-              <nav
-                aria-label="Primary mobile"
-                className="mt-6 flex flex-col gap-1 text-sm"
-              >
+              <nav aria-label="Primary mobile" className="mt-6 flex flex-col gap-1 text-sm">
                 {NAV_ITEMS.map((item) => (
                   <Link
                     key={item.to}

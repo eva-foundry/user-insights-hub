@@ -6,10 +6,7 @@ import { listConfigValues } from "@/lib/api";
 import { filterMockConfigValues } from "@/lib/mock-config-values";
 import type { ConfigValue, ListConfigValuesResponse } from "@/lib/types";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
-import {
-  ConfigValueFilters,
-  type FiltersState,
-} from "@/components/govops/ConfigValueFilters";
+import { ConfigValueFilters, type FiltersState } from "@/components/govops/ConfigValueFilters";
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
@@ -65,11 +62,8 @@ export const Route = createFileRoute("/config")({
       key_prefix: deps.key_prefix || undefined,
       domain: deps.domain && deps.domain !== "all" ? deps.domain : undefined,
       jurisdiction_id:
-        deps.jurisdiction_id && deps.jurisdiction_id !== "all"
-          ? deps.jurisdiction_id
-          : undefined,
-      language:
-        deps.language && deps.language !== "all" ? deps.language : undefined,
+        deps.jurisdiction_id && deps.jurisdiction_id !== "all" ? deps.jurisdiction_id : undefined,
+      language: deps.language && deps.language !== "all" ? deps.language : undefined,
     };
     try {
       return await listConfigValues(params);
@@ -77,12 +71,8 @@ export const Route = createFileRoute("/config")({
       return filterMockConfigValues(params);
     }
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
-  pendingComponent: () => (
-    <RouteLoading rows={3} rowHeight={68} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
+  pendingComponent: () => <RouteLoading rows={3} rowHeight={68} />,
   component: ConfigPage,
 });
 
@@ -92,12 +82,16 @@ function ConfigPage() {
   const search = useSearch({ from: "/config" });
   const data: ListConfigValuesResponse = Route.useLoaderData();
 
-  const filters: FiltersState = {
-    key_prefix: search.key_prefix ?? "",
-    domain: search.domain ?? "all",
-    jurisdiction_id: search.jurisdiction_id ?? "all",
-    language: search.language ?? "all",
-  };
+  // Memoized so useCallback deps below are stable across renders.
+  const filters: FiltersState = useMemo(
+    () => ({
+      key_prefix: search.key_prefix ?? "",
+      domain: search.domain ?? "all",
+      jurisdiction_id: search.jurisdiction_id ?? "all",
+      language: search.language ?? "all",
+    }),
+    [search.key_prefix, search.domain, search.jurisdiction_id, search.language],
+  );
   const sort: SortKey = search.sort ?? "key_asc";
 
   const updateFilters = useCallback(
@@ -107,8 +101,7 @@ function ConfigPage() {
         search: () => ({
           key_prefix: merged.key_prefix || undefined,
           domain: merged.domain !== "all" ? merged.domain : undefined,
-          jurisdiction_id:
-            merged.jurisdiction_id !== "all" ? merged.jurisdiction_id : undefined,
+          jurisdiction_id: merged.jurisdiction_id !== "all" ? merged.jurisdiction_id : undefined,
           language: merged.language !== "all" ? merged.language : undefined,
           sort: sort !== "key_asc" ? sort : undefined,
         }),
@@ -188,10 +181,7 @@ function ConfigPage() {
             {intl.formatMessage({ id: "config.sort.label" })}
           </label>
           <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
-            <SelectTrigger
-              id="config-sort"
-              className="h-9 w-[200px] bg-surface text-foreground"
-            >
+            <SelectTrigger id="config-sort" className="h-9 w-[200px] bg-surface text-foreground">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
