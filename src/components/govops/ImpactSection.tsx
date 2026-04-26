@@ -6,6 +6,7 @@ import { ProvenanceRibbon } from "./ProvenanceRibbon";
 import { ValueTypeBadge } from "./ValueTypeBadge";
 import { JurisdictionChip } from "./JurisdictionChip";
 import { CitationHighlight } from "./CitationHighlight";
+import { useIntl } from "react-intl";
 
 function previewValue(v: unknown): string {
   if (v === null || v === undefined) return "—";
@@ -15,6 +16,11 @@ function previewValue(v: unknown): string {
 
 export function ImpactSection({ result, query }: { result: ImpactResult; query: string }) {
   const id = `impact-section-${result.jurisdiction_id ?? "global"}`;
+  const intl = useIntl();
+  const matchLabel = intl.formatMessage(
+    { id: "impact.match.aria" },
+    { query },
+  );
   return (
     <section aria-labelledby={id} className="mb-8">
       <header className="mb-3 flex items-center gap-3 border-b border-border pb-2">
@@ -54,7 +60,7 @@ export function ImpactSection({ result, query }: { result: ImpactResult; query: 
                         className="mt-1 truncate text-xs text-foreground-subtle"
                         style={{ fontFamily: "var(--font-mono)" }}
                       >
-                        <CitationHighlight text={cv.citation} query={query} />
+                        <CitationHighlight text={cv.citation} query={query} matchLabel={matchLabel} />
                       </div>
                     )}
                   </div>
