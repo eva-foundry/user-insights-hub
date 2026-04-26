@@ -243,5 +243,13 @@
   "approvals.row.author": "von {author}",
   "approvals.drafted_by": "Verfasst von {author} am {date}",
   "approvals.back_to_queue": "Zurück zu den Freigaben",
-  "approvals.notfound.title": "Dieser Entwurf wartet nicht mehr auf Prüfung."
+  "approvals.notfound.title": "Dieser Entwurf wartet nicht mehr auf Prüfung.",
+  "approvals.empty.tag": "Postfach leer · menschliche Autorität",
+  "approvals.pagination.showing": "{shown} von {total} angezeigt",
+  "approvals.pagination.load_more": "{count} weitere laden",
+  "approvals.panel.collapse": "Einklappen",
+  "approvals.panel.expand": "Ausklappen",
+  "approvals.shortcuts.show": "Tastenkürzel anzeigen",
+  "approvals.shortcuts.hide": "Tastenkürzel ausblenden",
+  "approvals.shortcuts.toggle_help": "Diese Hilfe ein-/ausblenden"
 }

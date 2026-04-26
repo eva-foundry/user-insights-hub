@@ -243,5 +243,13 @@
   "approvals.row.author": "автор: {author}",
   "approvals.drafted_by": "Створено {author} {date}",
   "approvals.back_to_queue": "Назад до затверджень",
-  "approvals.notfound.title": "Ця чернетка більше не очікує перевірки."
+  "approvals.notfound.title": "Ця чернетка більше не очікує перевірки.",
+  "approvals.empty.tag": "Скринька порожня · людська влада",
+  "approvals.pagination.showing": "Показано {shown} з {total}",
+  "approvals.pagination.load_more": "Завантажити ще {count}",
+  "approvals.panel.collapse": "Згорнути",
+  "approvals.panel.expand": "Розгорнути",
+  "approvals.shortcuts.show": "Показати комбінації клавіш",
+  "approvals.shortcuts.hide": "Сховати комбінації клавіш",
+  "approvals.shortcuts.toggle_help": "Показати / сховати цю довідку"
 }

@@ -243,5 +243,13 @@
   "approvals.row.author": "por {author}",
   "approvals.drafted_by": "Redactado por {author} el {date}",
   "approvals.back_to_queue": "Volver a aprobaciones",
-  "approvals.notfound.title": "Este borrador ya no está pendiente de revisión."
+  "approvals.notfound.title": "Este borrador ya no está pendiente de revisión.",
+  "approvals.empty.tag": "Bandeja vacía · autoridad humana",
+  "approvals.pagination.showing": "Mostrando {shown} de {total}",
+  "approvals.pagination.load_more": "Cargar {count} más",
+  "approvals.panel.collapse": "Contraer",
+  "approvals.panel.expand": "Expandir",
+  "approvals.shortcuts.show": "Mostrar atajos de teclado",
+  "approvals.shortcuts.hide": "Ocultar atajos de teclado",
+  "approvals.shortcuts.toggle_help": "Mostrar / ocultar esta ayuda"
 }
