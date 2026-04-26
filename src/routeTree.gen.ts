@@ -15,6 +15,8 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
+import { Route as ConfigApprovalsRouteImport } from './routes/config.approvals'
+import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals.$id'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 
 const PoliciesRoute = PoliciesRouteImport.update({
@@ -47,6 +49,16 @@ const ConfigDiffRoute = ConfigDiffRouteImport.update({
   path: '/diff',
   getParentRoute: () => ConfigRoute,
 } as any)
+const ConfigApprovalsRoute = ConfigApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => ConfigRoute,
+} as any)
+const ConfigApprovalsIdRoute = ConfigApprovalsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ConfigApprovalsRoute,
+} as any)
 const ConfigKeyJurisdictionIdRoute = ConfigKeyJurisdictionIdRouteImport.update({
   id: '/$key/$jurisdictionId',
   path: '/$key/$jurisdictionId',
@@ -58,18 +70,22 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
+  '/config/approvals/$id': typeof ConfigApprovalsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
+  '/config/approvals/$id': typeof ConfigApprovalsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +93,11 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
+  '/config/approvals/$id': typeof ConfigApprovalsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,27 +106,33 @@ export interface FileRouteTypes {
     | '/about'
     | '/config'
     | '/policies'
+    | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
     | '/config/$key/$jurisdictionId'
+    | '/config/approvals/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/config'
     | '/policies'
+    | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
     | '/config/$key/$jurisdictionId'
+    | '/config/approvals/$id'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/config'
     | '/policies'
+    | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
     | '/config/$key/$jurisdictionId'
+    | '/config/approvals/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -162,6 +186,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfigDiffRouteImport
       parentRoute: typeof ConfigRoute
     }
+    '/config/approvals': {
+      id: '/config/approvals'
+      path: '/approvals'
+      fullPath: '/config/approvals'
+      preLoaderRoute: typeof ConfigApprovalsRouteImport
+      parentRoute: typeof ConfigRoute
+    }
+    '/config/approvals/$id': {
+      id: '/config/approvals/$id'
+      path: '/$id'
+      fullPath: '/config/approvals/$id'
+      preLoaderRoute: typeof ConfigApprovalsIdRouteImport
+      parentRoute: typeof ConfigApprovalsRoute
+    }
     '/config/$key/$jurisdictionId': {
       id: '/config/$key/$jurisdictionId'
       path: '/$key/$jurisdictionId'
@@ -172,13 +210,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ConfigApprovalsRouteChildren {
+  ConfigApprovalsIdRoute: typeof ConfigApprovalsIdRoute
+}
+
+const ConfigApprovalsRouteChildren: ConfigApprovalsRouteChildren = {
+  ConfigApprovalsIdRoute: ConfigApprovalsIdRoute,
+}
+
+const ConfigApprovalsRouteWithChildren = ConfigApprovalsRoute._addFileChildren(
+  ConfigApprovalsRouteChildren,
+)
+
 interface ConfigRouteChildren {
+  ConfigApprovalsRoute: typeof ConfigApprovalsRouteWithChildren
   ConfigDiffRoute: typeof ConfigDiffRoute
   ConfigDraftRoute: typeof ConfigDraftRoute
   ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
 }
 
 const ConfigRouteChildren: ConfigRouteChildren = {
+  ConfigApprovalsRoute: ConfigApprovalsRouteWithChildren,
   ConfigDiffRoute: ConfigDiffRoute,
   ConfigDraftRoute: ConfigDraftRoute,
   ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
