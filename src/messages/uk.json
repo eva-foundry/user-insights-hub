@@ -590,5 +590,8 @@
   "screen.reset.title": "Скасувати відповіді?",
   "screen.reset.body": "Очистити всі відповіді в цій формі й почати спочатку?",
   "screen.reset.keep": "Залишити відповіді",
-  "screen.reset.discard": "Скасувати відповіді"
+  "screen.reset.discard": "Скасувати відповіді",
+  "screen.loader_error.title": "Не вдалося завантажити цю програму",
+  "screen.loader_error.body": "Сталася помилка під час отримання деталей програми. Спробуйте ще раз або оберіть іншу юрисдикцію.",
+  "screen.loader_error.retry": "Спробувати знову"
 }

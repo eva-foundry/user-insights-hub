@@ -590,5 +590,8 @@
   "screen.reset.title": "Discard your answers?",
   "screen.reset.body": "Clear every answer on this form and start over?",
   "screen.reset.keep": "Keep my answers",
-  "screen.reset.discard": "Discard answers"
+  "screen.reset.discard": "Discard answers",
+  "screen.loader_error.title": "Couldn't load this program",
+  "screen.loader_error.body": "Something went wrong fetching the program details. You can retry, or pick a different jurisdiction.",
+  "screen.loader_error.retry": "Try again"
 }

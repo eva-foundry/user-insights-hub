@@ -590,5 +590,8 @@
   "screen.reset.title": "Effacer vos réponses ?",
   "screen.reset.body": "Effacer toutes vos réponses et recommencer ?",
   "screen.reset.keep": "Conserver mes réponses",
-  "screen.reset.discard": "Effacer les réponses"
+  "screen.reset.discard": "Effacer les réponses",
+  "screen.loader_error.title": "Impossible de charger ce programme",
+  "screen.loader_error.body": "Une erreur s'est produite lors du chargement des détails du programme. Vous pouvez réessayer ou choisir une autre juridiction.",
+  "screen.loader_error.retry": "Réessayer"
 }
