@@ -63,3 +63,215 @@ export interface CreateConfigValueRequest {
   supersedes: string | null;
   language: string | null;
 }
+
+// ── Authority chain (govops-010) ────────────────────────────────────────────
+
+export type DocumentType = "statute" | "regulation" | "policy_manual" | "guidance";
+
+export type RuleType =
+  | "age_threshold"
+  | "residency_minimum"
+  | "residency_partial"
+  | "legal_status"
+  | "evidence_required"
+  | "exclusion";
+
+export interface Jurisdiction {
+  id: string;
+  name: string;
+  country: string;
+  level: string;
+  parent_id: string | null;
+  legal_tradition: string;
+  language_regime: string;
+}
+
+export interface AuthorityReference {
+  id: string;
+  jurisdiction_id: string;
+  layer: string;
+  title: string;
+  citation: string;
+  effective_date: string | null;
+  url: string;
+  parent_id: string | null;
+}
+
+export interface LegalSection {
+  id: string;
+  section_ref: string;
+  heading: string;
+  text: string;
+}
+
+export interface LegalDocument {
+  id: string;
+  jurisdiction_id: string;
+  document_type: DocumentType;
+  title: string;
+  citation: string;
+  effective_date: string | null;
+  sections: LegalSection[];
+}
+
+export interface LegalRule {
+  id: string;
+  source_document_id: string;
+  source_section_ref: string;
+  rule_type: RuleType;
+  description: string;
+  formal_expression: string;
+  citation: string;
+  parameters: Record<string, unknown>;
+}
+
+// ── Cases (govops-009) ──────────────────────────────────────────────────────
+
+export type CaseStatus =
+  | "intake"
+  | "evaluating"
+  | "recommendation_ready"
+  | "under_review"
+  | "decided"
+  | "escalated";
+
+export type DecisionOutcome =
+  | "eligible"
+  | "ineligible"
+  | "insufficient_evidence"
+  | "escalate";
+
+export type ReviewActionType =
+  | "approve"
+  | "modify"
+  | "reject"
+  | "request_info"
+  | "escalate";
+
+export type RuleOutcome =
+  | "satisfied"
+  | "not_satisfied"
+  | "insufficient_evidence"
+  | "not_applicable";
+
+export interface CaseListItem {
+  id: string;
+  applicant_name: string;
+  status: CaseStatus;
+  has_recommendation: boolean;
+  jurisdiction_id?: string;
+}
+
+export interface Applicant {
+  id: string;
+  date_of_birth: string;
+  legal_name: string;
+  legal_status: string;
+  country_of_birth: string;
+}
+
+export interface ResidencyPeriod {
+  country: string;
+  start_date: string;
+  end_date: string | null;
+  verified: boolean;
+  evidence_ids: string[];
+}
+
+export interface EvidenceItem {
+  id: string;
+  evidence_type: string;
+  description: string;
+  provided: boolean;
+  verified: boolean;
+  source_reference: string;
+}
+
+export interface CaseBundle {
+  id: string;
+  created_at: string;
+  status: CaseStatus;
+  jurisdiction_id: string;
+  applicant: Applicant;
+  residency_periods: ResidencyPeriod[];
+  evidence_items: EvidenceItem[];
+}
+
+export interface RuleEvaluation {
+  rule_id: string;
+  rule_description: string;
+  citation: string;
+  outcome: RuleOutcome;
+  detail: string;
+  evidence_used: string[];
+}
+
+export interface Recommendation {
+  id: string;
+  case_id: string;
+  timestamp: string;
+  outcome: DecisionOutcome;
+  confidence: number;
+  rule_evaluations: RuleEvaluation[];
+  explanation: string;
+  pension_type: string;
+  partial_ratio: string | null;
+  missing_evidence: string[];
+  flags: string[];
+}
+
+export interface HumanReviewAction {
+  id: string;
+  case_id: string;
+  recommendation_id: string;
+  reviewer: string;
+  action: ReviewActionType;
+  rationale: string;
+  timestamp: string;
+  final_outcome: DecisionOutcome | null;
+}
+
+export interface CaseDetail {
+  case: CaseBundle;
+  recommendation: Recommendation | null;
+  reviews: HumanReviewAction[];
+}
+
+export interface AuditTrailEntry {
+  timestamp: string;
+  event_type: string;
+  actor: string;
+  detail: string;
+  data: Record<string, unknown>;
+}
+
+export interface AuditPackage {
+  case_id: string;
+  generated_at: string;
+  jurisdiction: { id: string; name: string; country: string; level: string } | null;
+  authority_chain: Array<{
+    id: string;
+    layer: string;
+    title: string;
+    citation: string;
+    effective_date: string | null;
+    url: string;
+  }>;
+  applicant_summary: Record<string, unknown>;
+  recommendation: Recommendation | null;
+  review_actions: HumanReviewAction[];
+  audit_trail: AuditTrailEntry[];
+  rules_applied: RuleEvaluation[];
+  evidence_summary: Array<Record<string, unknown>>;
+}
+
+// ── Admin / health (govops-012) ─────────────────────────────────────────────
+
+export interface HealthResponse {
+  status: string;
+  engine: string;
+  version: string;
+  jurisdiction: string;
+  program: string;
+  available_jurisdictions: string[];
+}
