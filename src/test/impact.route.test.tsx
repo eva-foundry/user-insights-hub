@@ -34,8 +34,22 @@ function renderImpactAt(initialPath: string) {
   return { router, ...render(<RouterProvider router={router} />) };
 }
 
+// Provide a stable api mock so retry / pagination behaviour is deterministic.
+vi.mock("@/lib/api", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/api")>("@/lib/api");
+  return {
+    ...actual,
+    impactByCitation: vi.fn(),
+  };
+});
+import { impactByCitation } from "@/lib/api";
+import { MOCK_IMPACT_RESPONSE } from "@/lib/mock-impact";
+
+const impactSpy = impactByCitation as unknown as ReturnType<typeof vi.fn>;
+
 describe("/impact route integration", () => {
   beforeEach(() => {
+    impactSpy.mockReset();
     vi.useFakeTimers({ shouldAdvanceTime: true });
   });
   afterEach(() => {
@@ -44,23 +58,21 @@ describe("/impact route integration", () => {
   });
 
   it("pre-fills the input from ?citation= and runs the query immediately", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline → mock fallback"));
+    impactSpy.mockResolvedValue(MOCK_IMPACT_RESPONSE("OAS"));
     renderImpactAt("/impact?citation=OAS");
     const input = await screen.findByTestId<HTMLInputElement>("impact-search");
     expect(input.value).toBe("OAS");
-    // Mock fallback returns OAS matches grouped by jurisdiction.
     await waitFor(() => {
       expect(screen.getByText(/referencing/i)).toBeInTheDocument();
     });
   });
 
   it("debounces typed input and pushes ?citation= to the URL", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
+    impactSpy.mockResolvedValue(MOCK_IMPACT_RESPONSE(""));
     const { router } = renderImpactAt("/impact");
     const input = await screen.findByTestId<HTMLInputElement>("impact-search");
 
     fireEvent.change(input, { target: { value: "OAS" } });
-    // Before debounce window elapses the URL is unchanged.
     expect(router.state.location.search).not.toMatchObject({ citation: "OAS" });
 
     await act(async () => {
@@ -72,7 +84,15 @@ describe("/impact route integration", () => {
   });
 
   it("renders the empty state when the query has no matches", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
+    impactSpy.mockResolvedValue({
+      query: "zzz",
+      total: 0,
+      jurisdiction_count: 0,
+      results: [],
+      limit: 25,
+      page: 1,
+      page_count: 0,
+    });
     renderImpactAt("/impact?citation=zzz-no-match-zzz");
     await waitFor(() => {
       expect(screen.getByTestId("impact-empty")).toBeInTheDocument();
@@ -80,19 +100,13 @@ describe("/impact route integration", () => {
   });
 
   it("shows an error banner and recovers via Retry", async () => {
-    // First call (initial load) — succeeds with empty result via JSON,
-    // but we want to exercise the error state, so mock a thrown response.
-    const fetchSpy = vi.spyOn(globalThis, "fetch");
-    // Make the *typed* path go through fetch, then throw via Response.json().
-    fetchSpy.mockResolvedValueOnce(
-      new Response("not json", { status: 200, headers: { "Content-Type": "application/json" } }),
-    );
+    impactSpy.mockRejectedValueOnce(new Error("backend exploded"));
     renderImpactAt("/impact?citation=OAS");
     const banner = await screen.findByTestId("impact-error");
     expect(banner).toBeInTheDocument();
+    expect(banner.textContent).toContain("backend exploded");
 
-    // Retry now succeeds via the mock fallback (network rejected → mock).
-    fetchSpy.mockRejectedValueOnce(new Error("offline"));
+    impactSpy.mockResolvedValueOnce(MOCK_IMPACT_RESPONSE("OAS"));
     fireEvent.click(screen.getByTestId("impact-retry"));
     await waitFor(() => {
       expect(screen.queryByTestId("impact-error")).toBeNull();
@@ -100,12 +114,14 @@ describe("/impact route integration", () => {
   });
 
   it("paginates results when limit is set in the URL", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
+    impactSpy.mockResolvedValue(MOCK_IMPACT_RESPONSE("a", { limit: 10, page: 1 }));
     renderImpactAt("/impact?citation=a&limit=10");
     await waitFor(() => {
       expect(screen.getByTestId("impact-page-status")).toBeInTheDocument();
     });
     const limitSelect = screen.getByTestId<HTMLSelectElement>("impact-limit");
     expect(limitSelect.value).toBe("10");
+    // The api was called with the URL's limit forwarded.
+    expect(impactSpy).toHaveBeenCalledWith("a", expect.objectContaining({ limit: 10 }));
   });
 });
