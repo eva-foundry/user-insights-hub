@@ -293,5 +293,21 @@
   "prompt.fixture.error.timeout": "The fixture run timed out.",
   "prompt.fixture.error.no_response": "Fixture run failed",
   "prompt.dual_approval.badge": "Requires dual approval",
-  "prompt.dual_approval.tooltip": "Phase 4 policy: prompt approvals will require two distinct human approvers. Backend enforcement is forthcoming."
+  "prompt.dual_approval.tooltip": "Phase 4 policy: prompt approvals will require two distinct human approvers. Backend enforcement is forthcoming.",
+  "prompts.pagination.showing": "Showing {shown} of {total}",
+  "prompts.pagination.per_page": "Per page",
+  "prompts.pagination.load_more": "Load {count} more",
+  "validators.prompt_key.must_contain_prompt": "Prompt key must include a `prompt` segment (e.g. `<scope>.prompt.<name>`).",
+  "validators.prompt_text.required": "Prompt text is required.",
+  "validators.prompt_text.too_short": "Prompt is too short (min {min} characters).",
+  "validators.prompt_text.too_long": "Prompt is too long (max {max} characters).",
+  "prompt.fixture.history.label": "View last run",
+  "prompt.fixture.compare.label": "Compare with",
+  "prompt.fixture.compare.none": "— no comparison —",
+  "prompt.fixture.compare.heading": "Run comparison (A vs B)",
+  "prompt.fixture.compare.added": "{count, plural, one {# added} other {# added}}",
+  "prompt.fixture.compare.removed": "{count, plural, one {# removed} other {# removed}}",
+  "prompt.fixture.compare.unchanged": "{count, plural, one {# unchanged proposal} other {# unchanged proposals}}",
+  "prompt.fixture.export": "Export test report (PDF)",
+  "prompt.fixture.export.done": "Test report downloaded"
 }

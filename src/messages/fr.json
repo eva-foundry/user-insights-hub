@@ -293,5 +293,21 @@
   "prompt.fixture.error.timeout": "L’exécution a expiré.",
   "prompt.fixture.error.no_response": "Échec de l’exécution",
   "prompt.dual_approval.badge": "Double approbation requise",
-  "prompt.dual_approval.tooltip": "Politique Phase 4 : les approbations de prompts nécessiteront deux approbateurs humains distincts."
+  "prompt.dual_approval.tooltip": "Politique Phase 4 : les approbations de prompts nécessiteront deux approbateurs humains distincts.",
+  "prompts.pagination.showing": "Affichage {shown} sur {total}",
+  "prompts.pagination.per_page": "Par page",
+  "prompts.pagination.load_more": "Charger {count} de plus",
+  "validators.prompt_key.must_contain_prompt": "La clé doit inclure un segment `prompt` (ex. `<scope>.prompt.<nom>`).",
+  "validators.prompt_text.required": "Le texte du prompt est requis.",
+  "validators.prompt_text.too_short": "Prompt trop court (min {min} caractères).",
+  "validators.prompt_text.too_long": "Prompt trop long (max {max} caractères).",
+  "prompt.fixture.history.label": "Voir la dernière exécution",
+  "prompt.fixture.compare.label": "Comparer avec",
+  "prompt.fixture.compare.none": "— aucune comparaison —",
+  "prompt.fixture.compare.heading": "Comparaison (A vs B)",
+  "prompt.fixture.compare.added": "{count, plural, one {# ajoutée} other {# ajoutées}}",
+  "prompt.fixture.compare.removed": "{count, plural, one {# supprimée} other {# supprimées}}",
+  "prompt.fixture.compare.unchanged": "{count, plural, one {# proposition inchangée} other {# propositions inchangées}}",
+  "prompt.fixture.export": "Exporter le rapport (PDF)",
+  "prompt.fixture.export.done": "Rapport téléchargé"
 }
