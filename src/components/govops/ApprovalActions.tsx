@@ -19,6 +19,7 @@ import {
 const COMMENT_MIN = 10;
 const COMMENT_KEY = (id: string) => `govops:approval-comment:${id}`;
 const EXPANDED_KEY = "govops:approval-panel-expanded";
+const HELP_KEY = "govops:approval-shortcuts-open";
 
 function isMac(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -66,7 +67,16 @@ export function ApprovalActions({
       return true;
     }
   });
-  const [showHelp, setShowHelp] = useState(false);
+  // Per-session preference: persisted in sessionStorage so the legend's
+  // visibility survives a refresh but doesn't leak across browser sessions.
+  const [showHelp, setShowHelp] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return window.sessionStorage.getItem(HELP_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [pending, setPending] = useState<ApprovalAction | null>(null);
   const [busy, setBusy] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -94,6 +104,38 @@ export function ApprovalActions({
       /* ignore */
     }
   }, [expanded]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.sessionStorage.setItem(HELP_KEY, showHelp ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, [showHelp]);
+
+  // Auto-focus the comment textarea whenever the panel is (or becomes)
+  // expanded so reviewers can start typing immediately. Skipped when the
+  // textarea would be disabled (self-approval, busy) to avoid yanking
+  // focus from elsewhere on the page.
+  useEffect(() => {
+    if (!expanded || isSelfApproval || busy) return;
+    // Defer to the next frame so the [hidden] attribute has been removed
+    // and the element is focusable.
+    const id = window.requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (!el) return;
+      el.focus({ preventScroll: true });
+      // Move caret to end if there's already a persisted draft.
+      const len = el.value.length;
+      try {
+        el.setSelectionRange(len, len);
+      } catch {
+        /* some browsers throw on certain input types */
+      }
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [expanded, isSelfApproval, busy, cv.id]);
 
   async function run() {
     if (!pending) return;
