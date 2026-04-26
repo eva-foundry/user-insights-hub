@@ -5,6 +5,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider } from "@/lib/theme";
 import { Masthead } from "@/components/govops/Masthead";
 import { SkipToContent } from "@/components/govops/SkipToContent";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -90,6 +91,7 @@ function RootComponent() {
         >
           <span style={{ fontFamily: "var(--font-mono)" }}>govops · spec govops-002</span>
         </footer>
+        <Toaster />
       </I18nProvider>
     </ThemeProvider>
   );

@@ -13,6 +13,7 @@ import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfigDraftRoute = ConfigDraftRouteImport.update({
+  id: '/draft',
+  path: '/draft',
+  getParentRoute: () => ConfigRoute,
+} as any)
 const ConfigDiffRoute = ConfigDiffRouteImport.update({
   id: '/diff',
   path: '/diff',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/config/diff': typeof ConfigDiffRoute
+  '/config/draft': typeof ConfigDraftRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/config/diff': typeof ConfigDiffRoute
+  '/config/draft': typeof ConfigDraftRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/config/diff': typeof ConfigDiffRoute
+  '/config/draft': typeof ConfigDraftRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/config'
     | '/policies'
     | '/config/diff'
+    | '/config/draft'
     | '/config/$key/$jurisdictionId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/config'
     | '/policies'
     | '/config/diff'
+    | '/config/draft'
     | '/config/$key/$jurisdictionId'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/config'
     | '/policies'
     | '/config/diff'
+    | '/config/draft'
     | '/config/$key/$jurisdictionId'
   fileRoutesById: FileRoutesById
 }
@@ -136,6 +148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/config/draft': {
+      id: '/config/draft'
+      path: '/draft'
+      fullPath: '/config/draft'
+      preLoaderRoute: typeof ConfigDraftRouteImport
+      parentRoute: typeof ConfigRoute
+    }
     '/config/diff': {
       id: '/config/diff'
       path: '/diff'
@@ -155,11 +174,13 @@ declare module '@tanstack/react-router' {
 
 interface ConfigRouteChildren {
   ConfigDiffRoute: typeof ConfigDiffRoute
+  ConfigDraftRoute: typeof ConfigDraftRoute
   ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
 }
 
 const ConfigRouteChildren: ConfigRouteChildren = {
   ConfigDiffRoute: ConfigDiffRoute,
+  ConfigDraftRoute: ConfigDraftRoute,
   ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
 }
 
