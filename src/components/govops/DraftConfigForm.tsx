@@ -27,6 +27,7 @@ import {
   validateIsoUtc,
 } from "@/lib/validators";
 import { emitDraftsChanged, saveRecentDraft } from "@/lib/draftStorage";
+import { StorageKeys } from "@/lib/storageKeys";
 import {
   Dialog,
   DialogContent,
@@ -144,7 +145,7 @@ export function DraftConfigForm({
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [showPreview, setShowPreview] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
-    const stored = window.localStorage.getItem("govops:draft-preview-open");
+    const stored = window.localStorage.getItem(StorageKeys.draftPreviewOpen);
     return stored === null ? true : stored === "true";
   });
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -154,7 +155,7 @@ export function DraftConfigForm({
   // Persist preview-open across reloads / save-as-draft navigations.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem("govops:draft-preview-open", String(showPreview));
+    window.localStorage.setItem(StorageKeys.draftPreviewOpen, String(showPreview));
   }, [showPreview]);
 
   // -- locked fields when superseding --
