@@ -344,3 +344,59 @@ export interface ImpactResponse {
   page?: number;
   page_count?: number;
 }
+
+// ── Self-screening (govops-015) ─────────────────────────────────────────────
+
+export const SCREEN_JURISDICTIONS = ["ca", "br", "es", "fr", "de", "ua"] as const;
+export type ScreenJurisdictionId = (typeof SCREEN_JURISDICTIONS)[number];
+
+export type ScreenLegalStatus = "citizen" | "permanent_resident" | "other";
+
+export type ScreenOutcome =
+  | "eligible"
+  | "ineligible"
+  | "insufficient_evidence"
+  | "escalate";
+
+export type ScreenRuleOutcome =
+  | "satisfied"
+  | "not_satisfied"
+  | "insufficient_evidence"
+  | "not_applicable";
+
+export interface ScreenResidencyPeriod {
+  country: string;
+  start_date: string;
+  end_date: string | null;
+}
+
+export interface ScreenRequest {
+  jurisdiction_id: string;
+  date_of_birth: string;
+  legal_status: ScreenLegalStatus;
+  country_of_birth?: string;
+  residency_periods: ScreenResidencyPeriod[];
+  evidence_present: { dob: boolean; residency: boolean };
+  evaluation_date?: string;
+}
+
+export interface ScreenRuleResult {
+  rule_id: string;
+  description: string;
+  citation: string;
+  outcome: ScreenRuleOutcome;
+  detail: string;
+  effective_from?: string;
+}
+
+export interface ScreenResponse {
+  outcome: ScreenOutcome;
+  pension_type: "full" | "partial" | "";
+  partial_ratio?: string;
+  rule_results: ScreenRuleResult[];
+  missing_evidence: string[];
+  jurisdiction_label: string;
+  evaluation_date: string;
+  /** Set client-side when the mock fallback ran. Never sent by the server. */
+  _preview?: boolean;
+}

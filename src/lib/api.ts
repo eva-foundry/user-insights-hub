@@ -501,3 +501,19 @@ export async function impactByCitation(
     return MOCK_IMPACT_RESPONSE(trimmed, opts);
   }
 }
+
+// ---- Self-screening (govops-015) -------------------------------------------
+
+import type { ScreenRequest, ScreenResponse } from "./types";
+
+export async function submitScreen(req: ScreenRequest): Promise<ScreenResponse> {
+  try {
+    return await fetcher<ScreenResponse>("/api/screen", {
+      method: "POST",
+      body: JSON.stringify(req),
+    });
+  } catch {
+    const { mockScreen } = await import("./mock-screen");
+    return mockScreen(req);
+  }
+}
