@@ -176,9 +176,7 @@ function ConfigPage() {
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div aria-live="polite" aria-atomic="true" className="text-sm text-foreground-muted">
-          {data && !loading && !error && (
-            <FormattedMessage id="config.results.count" values={{ count: data.count }} />
-          )}
+          <FormattedMessage id="config.results.count" values={{ count: data.count }} />
         </div>
         <div className="flex items-center gap-2">
           <label
@@ -203,37 +201,7 @@ function ConfigPage() {
         </div>
       </div>
 
-      {error && (
-        <div
-          role="alert"
-          className="rounded-md border border-[color:var(--verdict-rejected)] bg-[color:var(--verdict-rejected)]/5 p-4"
-        >
-          <p className="text-sm font-medium text-[color:var(--verdict-rejected)]">
-            {intl.formatMessage({ id: "config.error.title" })}
-          </p>
-          <p className="mt-1 text-xs text-foreground-muted">{error}</p>
-          <button
-            type="button"
-            onClick={load}
-            className="mt-3 inline-flex h-8 items-center rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface-sunken"
-          >
-            {intl.formatMessage({ id: "config.error.retry" })}
-          </button>
-        </div>
-      )}
-
-      {loading && !error && (
-        <ul role="list" className="space-y-2" aria-busy="true">
-          {[0, 1, 2].map((i) => (
-            <li
-              key={i}
-              className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
-            />
-          ))}
-        </ul>
-      )}
-
-      {!loading && !error && data && data.values.length === 0 && (
+      {data.values.length === 0 && (
         <div className="rounded-md bg-agentic-soft p-6 text-center">
           <p className="text-base font-medium text-agentic-foreground">
             {intl.formatMessage({ id: "config.empty.title" })}
@@ -244,7 +212,7 @@ function ConfigPage() {
         </div>
       )}
 
-      {!loading && !error && data && data.values.length > 0 && (
+      {data.values.length > 0 && (
         <div className="space-y-2">
           <div
             role="presentation"
