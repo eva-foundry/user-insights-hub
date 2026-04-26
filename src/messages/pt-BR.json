@@ -507,5 +507,17 @@
   "proposal_status.pending": "Pending",
   "proposal_status.approved": "Approved",
   "proposal_status.modified": "Modified",
-  "proposal_status.rejected": "Rejected"
+  "proposal_status.rejected": "Rejected",
+  "nav.impact": "Impacto",
+  "impact.heading": "Impacto de citação",
+  "impact.lede": "Encontre cada ConfigValue que referencia uma citação, em todas as jurisdições.",
+  "impact.search.placeholder": "Cole uma citação (ex.: Lei OAS, art. 3(1))",
+  "impact.summary": "{n, plural, one {# registro} other {# registros}} em {m, plural, one {# jurisdição} other {# jurisdições}} referenciando «{query}»",
+  "impact.section.global": "Global / interjurisdicional",
+  "impact.section.count": "{count, plural, one {# registro} other {# registros}}",
+  "impact.empty.title": "Nenhum registro referencia esta citação ainda.",
+  "impact.empty.body": "Verifique a cadeia de autoridade para confirmar que a citação existe.",
+  "impact.empty.cta": "Explorar cadeia de autoridade",
+  "impact.error.title": "Não foi possível executar a consulta de impacto",
+  "impact.error.retry": "Tentar novamente"
 }

@@ -507,5 +507,17 @@
   "proposal_status.pending": "Pending",
   "proposal_status.approved": "Approved",
   "proposal_status.modified": "Modified",
-  "proposal_status.rejected": "Rejected"
+  "proposal_status.rejected": "Rejected",
+  "nav.impact": "Impact",
+  "impact.heading": "Citation impact",
+  "impact.lede": "Find every ConfigValue that references a given citation, across all jurisdictions.",
+  "impact.search.placeholder": "Paste a citation (e.g. OAS Act, s. 3(1))",
+  "impact.summary": "{n, plural, one {# record} other {# records}} across {m, plural, one {# jurisdiction} other {# jurisdictions}} referencing «{query}»",
+  "impact.section.global": "Global / cross-jurisdictional",
+  "impact.section.count": "{count, plural, one {# record} other {# records}}",
+  "impact.empty.title": "No records reference this citation yet.",
+  "impact.empty.body": "Try the authority chain to confirm the citation exists.",
+  "impact.empty.cta": "Browse authority chain",
+  "impact.error.title": "Couldn't run the impact query",
+  "impact.error.retry": "Retry"
 }

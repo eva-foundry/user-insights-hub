@@ -30,6 +30,7 @@ import type {
   CreateConfigValueRequest,
   HealthResponse,
   HumanReviewAction,
+  ImpactResponse,
   Jurisdiction,
   LegalDocument,
   LegalRule,
@@ -472,5 +473,19 @@ export async function commitBatch(batchId: string): Promise<{ committed_rule_ids
     );
   } catch {
     return (await loadEncodeMocks()).mockCommitBatch(batchId);
+  }
+}
+
+// ---- Citation impact (govops-014) ------------------------------------------
+
+export async function impactByCitation(citation: string): Promise<ImpactResponse> {
+  const trimmed = citation.trim();
+  if (!trimmed) return { query: "", total: 0, jurisdiction_count: 0, results: [] };
+  const qs = new URLSearchParams({ citation: trimmed }).toString();
+  try {
+    return await fetcher<ImpactResponse>(`/api/impact?${qs}`);
+  } catch {
+    const { MOCK_IMPACT_RESPONSE } = await import("./mock-impact");
+    return MOCK_IMPACT_RESPONSE(trimmed);
   }
 }

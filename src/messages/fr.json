@@ -507,5 +507,17 @@
   "proposal_status.pending": "Pending",
   "proposal_status.approved": "Approved",
   "proposal_status.modified": "Modified",
-  "proposal_status.rejected": "Rejected"
+  "proposal_status.rejected": "Rejected",
+  "nav.impact": "Impact",
+  "impact.heading": "Impact des citations",
+  "impact.lede": "Trouvez chaque ConfigValue qui référence une citation donnée, dans toutes les juridictions.",
+  "impact.search.placeholder": "Collez une citation (p. ex. Loi sur la SV, art. 3(1))",
+  "impact.summary": "{n, plural, one {# enregistrement} other {# enregistrements}} dans {m, plural, one {# juridiction} other {# juridictions}} référençant «{query}»",
+  "impact.section.global": "Global / inter-juridictionnel",
+  "impact.section.count": "{count, plural, one {# enregistrement} other {# enregistrements}}",
+  "impact.empty.title": "Aucun enregistrement ne référence cette citation pour le moment.",
+  "impact.empty.body": "Consultez la chaîne d'autorité pour confirmer que la citation existe.",
+  "impact.empty.cta": "Parcourir la chaîne d'autorité",
+  "impact.error.title": "Impossible d'exécuter la requête d'impact",
+  "impact.error.retry": "Réessayer"
 }
