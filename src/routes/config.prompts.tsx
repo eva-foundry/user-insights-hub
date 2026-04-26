@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/config/prompts/")({
+export const Route = createFileRoute("/config/prompts")({
   head: () => ({
     meta: [
       { title: "Prompts — GovOps" },
@@ -36,8 +36,14 @@ export const Route = createFileRoute("/config/prompts/")({
   },
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={120} />,
-  component: PromptsPage,
+  component: PromptsRouteComponent,
 });
+
+function PromptsRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <PromptsPage />;
+}
 
 /**
  * Humanize the trailing key segment ("global.prompt.eligibility.check" →

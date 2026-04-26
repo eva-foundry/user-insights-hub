@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useChildMatches, useNavigate, useSearch } from "@tanstack/react-router";
 import { useCallback, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -29,7 +29,7 @@ type ConfigSearch = {
   sort?: SortKey;
 };
 
-export const Route = createFileRoute("/config/")({
+export const Route = createFileRoute("/config")({
   head: () => ({
     meta: [
       { title: "Configuration — GovOps" },
@@ -73,8 +73,14 @@ export const Route = createFileRoute("/config/")({
   },
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={68} />,
-  component: ConfigPage,
+  component: ConfigRouteComponent,
 });
+
+function ConfigRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <ConfigPage />;
+}
 
 function ConfigPage() {
   const intl = useIntl();

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { listCases } from "@/lib/api";
 import type { CaseListItem, CaseStatus } from "@/lib/types";
@@ -16,7 +16,7 @@ const STATUSES: CaseStatus[] = [
   "escalated",
 ];
 
-export const Route = createFileRoute("/cases/")({
+export const Route = createFileRoute("/cases")({
   head: () => ({
     meta: [
       { title: "Cases — GovOps" },
@@ -33,8 +33,14 @@ export const Route = createFileRoute("/cases/")({
   },
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={5} />,
-  component: CasesListPage,
+  component: CasesRouteComponent,
 });
+
+function CasesRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <CasesListPage />;
+}
 
 function CasesListPage() {
   const intl = useIntl();

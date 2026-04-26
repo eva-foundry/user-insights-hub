@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { Plus } from "lucide-react";
 import { listEncodingBatches } from "@/lib/api";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
 
-export const Route = createFileRoute("/encode/")({
+export const Route = createFileRoute("/encode")({
   head: () => ({
     meta: [
       { title: "Encode — GovOps" },
@@ -24,8 +24,14 @@ export const Route = createFileRoute("/encode/")({
   },
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={4} />,
-  component: EncodeListPage,
+  component: EncodeRouteComponent,
 });
+
+function EncodeRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <EncodeListPage />;
+}
 
 function EncodeListPage() {
   const intl = useIntl();
