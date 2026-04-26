@@ -569,5 +569,22 @@
   "screen.howto.heading": "Як подати заяву",
   "screen.howto.body": "Подайте заяву через {program}, щоб отримати офіційне рішення.",
   "screen.preview_mode": "Режим перегляду — макетні дані",
-  "screen.rerun": "Запустити знову"
+  "screen.rerun": "Запустити знову",
+  "screen.form.reset": "Скинути форму",
+  "screen.draft.restored": "Ми відновили ваші незавершені відповіді з цієї сесії.",
+  "screen.draft.clear": "Очистити чернетку",
+  "screen.errors.summary": "Виправте підсвічені поля перед перевіркою права на допомогу.",
+  "screen.errors.dob.required": "Будь ласка, вкажіть дату народження.",
+  "screen.errors.dob.too_old": "Дата нереалістично далеко в минулому.",
+  "screen.errors.dob.future": "Дата народження не може бути в майбутньому.",
+  "screen.errors.legal_status.required": "Будь ласка, оберіть ваш правовий статус.",
+  "screen.errors.residency.required": "Додайте хоча б один період проживання.",
+  "screen.errors.residency.country_required": "Оберіть країну.",
+  "screen.errors.residency.start_required": "Дата початку обов'язкова.",
+  "screen.errors.residency.start_too_old": "Дата початку нереалістично далеко в минулому.",
+  "screen.errors.residency.start_future": "Дата початку не може бути в майбутньому.",
+  "screen.errors.residency.start_before_dob": "Дата початку передує даті народження.",
+  "screen.errors.residency.end_future": "Дата завершення не може бути в майбутньому.",
+  "screen.errors.residency.end_before_start": "Дата завершення має бути не раніше дати початку.",
+  "screen.errors.residency.overlap": "Цей період перетинається з іншим періодом проживання."
 }

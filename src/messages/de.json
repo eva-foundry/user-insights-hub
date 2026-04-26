@@ -569,5 +569,22 @@
   "screen.howto.heading": "So beantragen Sie",
   "screen.howto.body": "Beantragen Sie über {program}, um eine amtliche Entscheidung zu erhalten.",
   "screen.preview_mode": "Vorschaumodus — Beispiel­daten",
-  "screen.rerun": "Erneut prüfen"
+  "screen.rerun": "Erneut prüfen",
+  "screen.form.reset": "Formular zurücksetzen",
+  "screen.draft.restored": "Wir haben Ihre laufenden Antworten dieser Sitzung wiederhergestellt.",
+  "screen.draft.clear": "Entwurf löschen",
+  "screen.errors.summary": "Bitte korrigieren Sie die markierten Felder, bevor Sie die Berechtigung prüfen.",
+  "screen.errors.dob.required": "Bitte geben Sie Ihr Geburtsdatum ein.",
+  "screen.errors.dob.too_old": "Datum liegt unrealistisch weit in der Vergangenheit.",
+  "screen.errors.dob.future": "Das Geburtsdatum darf nicht in der Zukunft liegen.",
+  "screen.errors.legal_status.required": "Bitte wählen Sie Ihren rechtlichen Status.",
+  "screen.errors.residency.required": "Fügen Sie mindestens einen Aufenthaltszeitraum hinzu.",
+  "screen.errors.residency.country_required": "Wählen Sie ein Land aus.",
+  "screen.errors.residency.start_required": "Startdatum ist erforderlich.",
+  "screen.errors.residency.start_too_old": "Startdatum liegt unrealistisch weit in der Vergangenheit.",
+  "screen.errors.residency.start_future": "Startdatum darf nicht in der Zukunft liegen.",
+  "screen.errors.residency.start_before_dob": "Startdatum liegt vor Ihrem Geburtsdatum.",
+  "screen.errors.residency.end_future": "Enddatum darf nicht in der Zukunft liegen.",
+  "screen.errors.residency.end_before_start": "Enddatum muss am oder nach dem Startdatum liegen.",
+  "screen.errors.residency.overlap": "Dieser Zeitraum überschneidet sich mit einem anderen Aufenthaltszeitraum."
 }
