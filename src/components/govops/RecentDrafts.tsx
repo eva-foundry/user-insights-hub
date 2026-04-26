@@ -8,6 +8,7 @@ import {
   emitDraftsChanged,
   listRecentDrafts,
   removeRecentDraft,
+  clearAllRecentDrafts,
   type RecentDraft,
 } from "@/lib/draftStorage";
 
@@ -42,7 +43,25 @@ export function RecentDrafts({ activeSearch }: { activeSearch?: string }) {
         className="mb-2 text-xs uppercase tracking-[0.18em] text-foreground-subtle"
         style={{ fontFamily: "var(--font-mono)" }}
       >
-        {intl.formatMessage({ id: "draft.recent.title" })}
+        <span className="flex items-center justify-between gap-2">
+          <span>{intl.formatMessage({ id: "draft.recent.title" })}</span>
+          <button
+            type="button"
+            onClick={() => {
+              if (
+                !window.confirm(
+                  intl.formatMessage({ id: "draft.recent.clear_confirm" }),
+                )
+              )
+                return;
+              clearAllRecentDrafts();
+              emitDraftsChanged();
+            }}
+            className="text-[10px] normal-case tracking-normal text-foreground-muted underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {intl.formatMessage({ id: "draft.recent.clear" })}
+          </button>
+        </span>
       </h2>
       <ul role="list" className="space-y-1.5">
         {drafts.map((d) => {

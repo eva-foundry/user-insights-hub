@@ -198,5 +198,9 @@
   "validators.effective_from.format": "Deve ser ISO-8601 UTC, ex.: 2026-01-15T00:00:00Z",
   "validators.effective_from.invalid": "Data inválida.",
   "draft.recent.title": "Rascunhos recentes",
-  "draft.recent.remove": "Remover rascunho {label}"
+  "draft.recent.remove": "Remover rascunho {label}",
+  "draft.field.effective_from.format_help": "Formato: YYYY-MM-DDTHH:mm[:ss[.sss]]Z",
+  "draft.saved.blocked": "Não é possível salvar: effective_from inválido.",
+  "draft.recent.clear": "Limpar tudo",
+  "draft.recent.clear_confirm": "Apagar todos os rascunhos salvos neste dispositivo?"
 }

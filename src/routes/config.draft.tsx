@@ -89,12 +89,18 @@ function DraftPage() {
     });
   }
 
+  // Re-key the form on the serialized search so navigating to a different
+  // Recent draft (or a save-as-draft URL change) fully resets dirty/touched
+  // state and re-hydrates field values from the new search params.
+  const formKey = new URLSearchParams(search as Record<string, string>).toString() || "blank";
+
   return (
     <div className="space-y-6">
       <RecentDrafts
-        activeSearch={new URLSearchParams(search as Record<string, string>).toString()}
+        activeSearch={formKey === "blank" ? "" : formKey}
       />
       <DraftConfigForm
+        key={formKey}
         initial={search}
         prior={prior}
         onSubmit={onSubmit}
