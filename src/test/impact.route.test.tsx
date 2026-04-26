@@ -118,9 +118,10 @@ describe("/impact route integration", () => {
     impactSpy.mockResolvedValue(MOCK_IMPACT_RESPONSE("a", { limit: 10, page: 1 }));
     renderImpactAt("/impact?citation=a&limit=10");
     await waitFor(() => {
-      expect(screen.getByTestId("impact-page-status")).toBeInTheDocument();
+      // The page renders one pagination bar above and one below the results.
+      expect(screen.getAllByTestId("impact-page-status").length).toBeGreaterThan(0);
     });
-    const limitSelect = screen.getByTestId<HTMLSelectElement>("impact-limit");
+    const limitSelect = screen.getAllByTestId<HTMLSelectElement>("impact-limit")[0];
     expect(limitSelect.value).toBe("10");
     // The api was called with the URL's limit forwarded.
     expect(impactSpy).toHaveBeenCalledWith("a", expect.objectContaining({ limit: 10 }));
