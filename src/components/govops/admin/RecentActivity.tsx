@@ -1,4 +1,3 @@
-
 import { useIntl } from "react-intl";
 import type { ActivityEvent } from "@/lib/aggregations";
 
@@ -41,8 +40,8 @@ export function RecentActivity({ events }: { events: ActivityEvent[] }) {
                 <span style={{ fontFamily: "var(--font-mono)" }}>{e.event_type}</span>
                 <span>·</span>
                 <span style={{ fontFamily: "var(--font-mono)" }}>{e.actor}</span>
-                <Link
-                  to={e.source.to}
+                <a
+                  href={e.source.to}
                   className="ms-auto text-xs underline-offset-2 hover:underline"
                 >
                   {relative(intl, e.timestamp)}
