@@ -10,6 +10,12 @@ import { ValueDiff } from "@/components/govops/ValueDiff";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { resolveCurrentConfigValue, createConfigValue } from "@/lib/api";
 import { getCurrentUser } from "@/lib/currentUser";
+import {
+  validatePromptKey,
+  validatePromptText,
+  PROMPT_TEXT_MAX,
+  PROMPT_TEXT_MIN,
+} from "@/lib/validators";
 import type { ConfigValue } from "@/lib/types";
 
 export const Route = createFileRoute(
@@ -112,10 +118,27 @@ function PromptEditPage() {
     setValue(String(current.value ?? ""));
   }, [current]);
 
+  // ── Inline validation (govops-008).
+  const keyError = useMemo(() => validatePromptKey(key), [key]);
+  const textError = useMemo(() => validatePromptText(value), [value]);
+  const blocked = Boolean(keyError) || Boolean(textError);
+  const blockedReason = keyError
+    ? intl.formatMessage({ id: keyError })
+    : textError
+      ? intl.formatMessage(
+          { id: textError },
+          { min: PROMPT_TEXT_MIN, max: PROMPT_TEXT_MAX },
+        )
+      : undefined;
+
   // ── Submit (save as draft).
   const [submitting, setSubmitting] = useState(false);
   const onSubmit = async () => {
     if (!current) return;
+    if (blocked) {
+      if (blockedReason) toast.error(blockedReason);
+      return;
+    }
     setSubmitting(true);
     try {
       const cv = await createConfigValue({
@@ -162,7 +185,12 @@ function PromptEditPage() {
     />
   );
   const testPane = (
-    <FixtureTestPanel promptKey={key} promptText={value} />
+    <FixtureTestPanel
+      promptKey={key}
+      promptText={value}
+      disabled={blocked}
+      disabledReason={blockedReason}
+    />
   );
 
   return (
