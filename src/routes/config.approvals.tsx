@@ -1,11 +1,21 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { ApprovalRow } from "@/components/govops/ApprovalRow";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { listApprovals } from "@/lib/api";
 import type { ConfigValue } from "@/lib/types";
+
+type StatusFilter = "all" | "draft" | "pending";
+const PAGE_SIZES = [10, 20, 50] as const;
+type PageSize = (typeof PAGE_SIZES)[number];
+
+type ApprovalsSearch = {
+  q?: string;
+  status?: StatusFilter;
+  page_size?: PageSize;
+};
 
 export const Route = createFileRoute("/config/approvals")({
   head: () => ({
@@ -18,16 +28,60 @@ export const Route = createFileRoute("/config/approvals")({
       },
     ],
   }),
+  validateSearch: (s: Record<string, unknown>): ApprovalsSearch => {
+    const status =
+      s.status === "draft" || s.status === "pending" || s.status === "all"
+        ? (s.status as StatusFilter)
+        : undefined;
+    const ps = Number(s.page_size);
+    const page_size = (PAGE_SIZES as readonly number[]).includes(ps)
+      ? (ps as PageSize)
+      : undefined;
+    return {
+      q: typeof s.q === "string" && s.q.length ? s.q : undefined,
+      status,
+      page_size,
+    };
+  },
   component: ApprovalsPage,
 });
 
 function ApprovalsPage() {
   const intl = useIntl();
+  const nav = useNavigate({ from: "/config/approvals" });
+  const search = Route.useSearch();
+  const q = search.q ?? "";
+  const statusFilter: StatusFilter = search.status ?? "all";
+  const pageSize: PageSize = search.page_size ?? 10;
+
   const [values, setValues] = useState<ConfigValue[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const PAGE_SIZE = 10;
-  const [visible, setVisible] = useState(PAGE_SIZE);
+  const [visible, setVisible] = useState(pageSize);
+
+  function setSearch(next: Partial<ApprovalsSearch>) {
+    nav({
+      search: (prev: ApprovalsSearch) => ({
+        ...prev,
+        ...next,
+        // Drop default-equivalent values to keep URLs clean.
+        q: next.q !== undefined ? (next.q || undefined) : prev.q,
+        status:
+          next.status !== undefined
+            ? next.status === "all"
+              ? undefined
+              : next.status
+            : prev.status,
+        page_size:
+          next.page_size !== undefined
+            ? next.page_size === 10
+              ? undefined
+              : next.page_size
+            : prev.page_size,
+      }),
+      replace: true,
+    });
+  }
 
   function load() {
     setLoading(true);
@@ -39,7 +93,7 @@ function ApprovalsPage() {
           b.created_at.localeCompare(a.created_at),
         );
         setValues(sorted);
-        setVisible(PAGE_SIZE);
+        setVisible(pageSize);
         setLoading(false);
       })
       .catch((e: Error) => {
@@ -50,7 +104,30 @@ function ApprovalsPage() {
 
   useEffect(() => {
     load();
+    // Re-load only on mount; filters operate client-side over the cached set.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reset the visible window whenever filters or page size change so that
+  // changing the filter doesn't leave us paginated past the filtered total.
+  useEffect(() => {
+    setVisible(pageSize);
+  }, [pageSize, q, statusFilter]);
+
+  const filtered = useMemo<ConfigValue[]>(() => {
+    if (!values) return [];
+    const needle = q.trim().toLowerCase();
+    return values.filter((v) => {
+      if (statusFilter !== "all" && v.status !== statusFilter) return false;
+      if (!needle) return true;
+      return (
+        v.key.toLowerCase().includes(needle) ||
+        v.author.toLowerCase().includes(needle) ||
+        (v.rationale ?? "").toLowerCase().includes(needle) ||
+        (v.jurisdiction_id ?? "").toLowerCase().includes(needle)
+      );
+    });
+  }, [values, q, statusFilter]);
 
   return (
     <section aria-labelledby="approvals-heading" className="space-y-8">
@@ -75,6 +152,78 @@ function ApprovalsPage() {
           </p>
         </div>
       </header>
+
+      {!error && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+          <div>
+            <label
+              htmlFor="approvals-search"
+              className="sr-only"
+            >
+              {intl.formatMessage({ id: "approvals.search.label" })}
+            </label>
+            <input
+              id="approvals-search"
+              type="search"
+              value={q}
+              onChange={(e) => setSearch({ q: e.target.value })}
+              placeholder={intl.formatMessage({ id: "approvals.search.placeholder" })}
+              className="h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-foreground placeholder:text-foreground-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              style={{ fontFamily: "var(--font-mono)" }}
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="approvals-status"
+              className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {intl.formatMessage({ id: "approvals.filter.status.label" })}
+            </label>
+            <select
+              id="approvals-status"
+              value={statusFilter}
+              onChange={(e) =>
+                setSearch({ status: e.target.value as StatusFilter })
+              }
+              className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground hover:bg-surface-sunken"
+            >
+              <option value="all">
+                {intl.formatMessage({ id: "approvals.filter.status.all" })}
+              </option>
+              <option value="pending">
+                {intl.formatMessage({ id: "status.pending" })}
+              </option>
+              <option value="draft">
+                {intl.formatMessage({ id: "status.draft" })}
+              </option>
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor="approvals-pagesize"
+              className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {intl.formatMessage({ id: "approvals.pagination.per_page" })}
+            </label>
+            <select
+              id="approvals-pagesize"
+              value={pageSize}
+              onChange={(e) =>
+                setSearch({ page_size: Number(e.target.value) as PageSize })
+              }
+              className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground hover:bg-surface-sunken"
+            >
+              {PAGE_SIZES.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div
@@ -140,7 +289,29 @@ function ApprovalsPage() {
         </div>
       )}
 
-      {!loading && !error && values && values.length > 0 && (
+      {!loading && !error && values && values.length > 0 && filtered.length === 0 && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="rounded-md border border-dashed border-border bg-surface-sunken p-6 text-center text-sm text-foreground-muted"
+        >
+          <p className="font-medium text-foreground">
+            {intl.formatMessage({ id: "approvals.filter.empty.title" })}
+          </p>
+          <p className="mt-1">
+            {intl.formatMessage({ id: "approvals.filter.empty.body" })}
+          </p>
+          <button
+            type="button"
+            onClick={() => setSearch({ q: "", status: "all" })}
+            className="mt-3 inline-flex h-8 items-center rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface-sunken"
+          >
+            {intl.formatMessage({ id: "approvals.filter.clear" })}
+          </button>
+        </div>
+      )}
+
+      {!loading && !error && values && values.length > 0 && filtered.length > 0 && (
         <div className="space-y-4">
           <p
             aria-live="polite"
@@ -150,26 +321,26 @@ function ApprovalsPage() {
             <FormattedMessage
               id="approvals.pagination.showing"
               values={{
-                shown: Math.min(visible, values.length),
-                total: values.length,
+                shown: Math.min(visible, filtered.length),
+                total: filtered.length,
               }}
             />
           </p>
           <ol role="list" className="space-y-2">
-            {values.slice(0, visible).map((cv) => (
+            {filtered.slice(0, visible).map((cv) => (
               <ApprovalRow key={cv.id} cv={cv} />
             ))}
           </ol>
-          {visible < values.length && (
+          {visible < filtered.length && (
             <div className="flex justify-center pt-2">
               <button
                 type="button"
-                onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                onClick={() => setVisible((v) => v + pageSize)}
                 className="inline-flex h-10 items-center rounded-md border border-border bg-surface px-5 text-sm font-medium text-foreground transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <FormattedMessage
                   id="approvals.pagination.load_more"
-                  values={{ count: Math.min(PAGE_SIZE, values.length - visible) }}
+                  values={{ count: Math.min(pageSize, filtered.length - visible) }}
                 />
               </button>
             </div>
