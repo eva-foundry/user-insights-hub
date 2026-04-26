@@ -21,8 +21,36 @@ import type {
   ListConfigValuesResponse,
   ListVersionsResponse,
 } from "./types";
-import type { ConfigValue, CreateConfigValueRequest } from "./types";
+import type {
+  AuditPackage,
+  AuthorityReference,
+  CaseDetail,
+  CaseListItem,
+  ConfigValue,
+  CreateConfigValueRequest,
+  HealthResponse,
+  HumanReviewAction,
+  Jurisdiction,
+  LegalDocument,
+  LegalRule,
+  Recommendation,
+  ReviewActionType,
+  DecisionOutcome,
+} from "./types";
 import { MOCK_CONFIG_VALUES } from "./mock-config-values";
+import {
+  MOCK_AUTHORITY_CHAIN,
+  MOCK_JURISDICTION,
+  MOCK_LEGAL_DOCUMENTS,
+  MOCK_LEGAL_RULES,
+} from "./mock-authority";
+import {
+  MOCK_CASE_LIST,
+  mockEvaluateCase,
+  mockGetAudit,
+  mockGetCase,
+  mockReviewCase,
+} from "./mock-cases";
 
 /**
  * Lazy mock loader — dynamic import so production bundles tree-shake the
@@ -229,5 +257,119 @@ export async function resolveCurrentConfigValue(
     if (candidates.length === 0) return null;
     candidates.sort((a, b) => b.effective_from.localeCompare(a.effective_from));
     return candidates[0];
+  }
+}
+
+// ---- Authority chain (govops-010) ------------------------------------------
+
+export async function getAuthorityChain(): Promise<{
+  jurisdiction: Jurisdiction;
+  chain: AuthorityReference[];
+}> {
+  try {
+    return await fetcher("/api/authority-chain");
+  } catch {
+    return { jurisdiction: MOCK_JURISDICTION, chain: MOCK_AUTHORITY_CHAIN };
+  }
+}
+
+export async function listLegalDocuments(): Promise<{ documents: LegalDocument[] }> {
+  try {
+    return await fetcher("/api/legal-documents");
+  } catch {
+    return { documents: MOCK_LEGAL_DOCUMENTS };
+  }
+}
+
+export async function listRules(): Promise<{ rules: LegalRule[] }> {
+  try {
+    return await fetcher("/api/rules");
+  } catch {
+    return { rules: MOCK_LEGAL_RULES };
+  }
+}
+
+// ---- Cases (govops-009) ----------------------------------------------------
+
+export async function listCases(): Promise<{ cases: CaseListItem[] }> {
+  try {
+    return await fetcher<{ cases: CaseListItem[] }>("/api/cases");
+  } catch {
+    return { cases: MOCK_CASE_LIST };
+  }
+}
+
+export async function getCase(caseId: string): Promise<CaseDetail | null> {
+  try {
+    return await fetcher<CaseDetail>(`/api/cases/${encodeURIComponent(caseId)}`);
+  } catch {
+    return mockGetCase(caseId);
+  }
+}
+
+export async function evaluateCase(
+  caseId: string,
+): Promise<{ recommendation: Recommendation }> {
+  try {
+    return await fetcher(`/api/cases/${encodeURIComponent(caseId)}/evaluate`, {
+      method: "POST",
+    });
+  } catch {
+    return mockEvaluateCase(caseId);
+  }
+}
+
+export interface ReviewRequestBody {
+  action: ReviewActionType;
+  rationale: string;
+  final_outcome: DecisionOutcome | null;
+}
+
+export async function reviewCase(
+  caseId: string,
+  body: ReviewRequestBody,
+): Promise<{ review: HumanReviewAction }> {
+  try {
+    return await fetcher(`/api/cases/${encodeURIComponent(caseId)}/review`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return mockReviewCase(caseId, body);
+  }
+}
+
+export async function getCaseAudit(caseId: string): Promise<AuditPackage> {
+  try {
+    return await fetcher<AuditPackage>(`/api/cases/${encodeURIComponent(caseId)}/audit`);
+  } catch {
+    return mockGetAudit(caseId);
+  }
+}
+
+// ---- Health & jurisdiction switch (govops-012) -----------------------------
+
+export async function health(): Promise<HealthResponse> {
+  try {
+    return await fetcher<HealthResponse>("/api/health");
+  } catch {
+    return {
+      status: "preview",
+      engine: "mock",
+      version: "0.0.0-preview",
+      jurisdiction: MOCK_JURISDICTION.id,
+      program: "Old Age Security",
+      available_jurisdictions: [MOCK_JURISDICTION.id],
+    };
+  }
+}
+
+export async function switchJurisdiction(
+  code: string,
+): Promise<{ jurisdiction: string; name: string; program: string }> {
+  try {
+    return await fetcher(`/api/jurisdiction/${encodeURIComponent(code)}`, { method: "POST" });
+  } catch {
+    return { jurisdiction: code, name: code, program: "Old Age Security" };
   }
 }
