@@ -97,9 +97,12 @@ function AuthorityPage() {
   // Highlight subset based on chain selection. With the OAS fixture every doc
   // and rule maps to the act/regulation/policy layers; we use a simple heuristic
   // tying layer → document_type. In real backend this would come from the link table.
-  const { highlightedDocIds, highlightedRuleIds } = useMemo(() => {
+  const { highlightedDocIds, highlightedRuleIds } = useMemo<{
+    highlightedDocIds: Set<string> | null;
+    highlightedRuleIds: Set<string> | null;
+  }>(() => {
     if (!selectedNodeId) return { highlightedDocIds: null, highlightedRuleIds: null };
-    const node = chain.chain.find((n) => n.id === selectedNodeId);
+    const node = chain.chain.find((n: AuthorityReference) => n.id === selectedNodeId);
     if (!node) return { highlightedDocIds: null, highlightedRuleIds: null };
     const layerToType: Record<string, DocumentType[]> = {
       act: ["statute"],
@@ -107,9 +110,13 @@ function AuthorityPage() {
       policy: ["policy_manual", "guidance"],
     };
     const types = layerToType[node.layer] ?? [];
-    const docIds = new Set(documents.filter((d) => types.includes(d.document_type)).map((d) => d.id));
-    const ruleIds = new Set(
-      rules.filter((r) => docIds.has(r.source_document_id)).map((r) => r.id),
+    const docIds = new Set<string>(
+      documents
+        .filter((d: LegalDocument) => types.includes(d.document_type))
+        .map((d: LegalDocument) => d.id),
+    );
+    const ruleIds = new Set<string>(
+      rules.filter((r: LegalRule) => docIds.has(r.source_document_id)).map((r: LegalRule) => r.id),
     );
     return { highlightedDocIds: docIds, highlightedRuleIds: ruleIds };
   }, [selectedNodeId, chain.chain, documents, rules]);
@@ -199,7 +206,8 @@ function AuthorityPage() {
               {
                 docs: highlightedDocIds?.size ?? 0,
                 rules: highlightedRuleIds?.size ?? 0,
-                title: chain.chain.find((n) => n.id === selectedNodeId)?.title ?? "",
+                title:
+                  chain.chain.find((n: AuthorityReference) => n.id === selectedNodeId)?.title ?? "",
               },
             )
           : ""}
