@@ -519,5 +519,12 @@
   "impact.empty.body": "Consultez la chaîne d'autorité pour confirmer que la citation existe.",
   "impact.empty.cta": "Parcourir la chaîne d'autorité",
   "impact.error.title": "Impossible d'exécuter la requête d'impact",
-  "impact.error.retry": "Réessayer"
+  "impact.error.retry": "Réessayer",
+  "impact.match.aria": "correspond à la recherche : {query}",
+  "impact.results.region": "Résultats d'impact des citations",
+  "impact.pagination.aria": "Pagination des résultats d'impact",
+  "impact.pagination.limit": "Par page",
+  "impact.pagination.prev": "Précédent",
+  "impact.pagination.next": "Suivant",
+  "impact.pagination.status": "Page {page} sur {pageCount}"
 }

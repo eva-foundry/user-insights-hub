@@ -519,5 +519,12 @@
   "impact.empty.body": "Prüfen Sie die Autoritätskette, um zu bestätigen, dass die Fundstelle existiert.",
   "impact.empty.cta": "Autoritätskette durchsuchen",
   "impact.error.title": "Auswirkungsanfrage konnte nicht ausgeführt werden",
-  "impact.error.retry": "Erneut versuchen"
+  "impact.error.retry": "Erneut versuchen",
+  "impact.match.aria": "entspricht der Suche: {query}",
+  "impact.results.region": "Ergebnisse der Zitatauswirkung",
+  "impact.pagination.aria": "Seitennavigation der Auswirkungsergebnisse",
+  "impact.pagination.limit": "Pro Seite",
+  "impact.pagination.prev": "Zurück",
+  "impact.pagination.next": "Weiter",
+  "impact.pagination.status": "Seite {page} von {pageCount}"
 }

@@ -519,5 +519,12 @@
   "impact.empty.body": "Consulta la cadena de autoridad para confirmar que la citación existe.",
   "impact.empty.cta": "Explorar cadena de autoridad",
   "impact.error.title": "No se pudo ejecutar la consulta de impacto",
-  "impact.error.retry": "Reintentar"
+  "impact.error.retry": "Reintentar",
+  "impact.match.aria": "coincide con la búsqueda: {query}",
+  "impact.results.region": "Resultados de impacto de la cita",
+  "impact.pagination.aria": "Paginación de resultados de impacto",
+  "impact.pagination.limit": "Por página",
+  "impact.pagination.prev": "Anterior",
+  "impact.pagination.next": "Siguiente",
+  "impact.pagination.status": "Página {page} de {pageCount}"
 }
