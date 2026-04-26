@@ -213,7 +213,7 @@ export async function resolveCurrentConfigValue(
   const params = new URLSearchParams({ key, evaluation_date: evaluationDate });
   if (jurisdictionId) params.set("jurisdiction_id", jurisdictionId);
   try {
-    return await fetcher<ConfigValue>(`/api/config/resolve?${params.toString()}`);
+    return await fetcher<ConfigValue | null>(`/api/config/resolve?${params.toString()}`);
   } catch {
     const evalTs = new Date(evaluationDate).getTime();
     const candidates = MOCK_CONFIG_VALUES.filter((v) => {
