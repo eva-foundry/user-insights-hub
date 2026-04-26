@@ -87,7 +87,7 @@ export const Route = createFileRoute("/screen/$jurisdictionId")({
 
 function ScreenFormPage() {
   const { jurisdictionId } = Route.useParams() as { jurisdictionId: ScreenJurisdictionId };
-  const { live, data } = Route.useLoaderData();
+  const { live, data } = Route.useLoaderData() as LoaderData;
   const intl = useIntl();
 
   const [loading, setLoading] = useState(false);
