@@ -48,35 +48,15 @@ export function ApprovalActions({
   const intl = useIntl();
   // Per-approval comment draft, persisted so refresh / accidental nav don't
   // wipe carefully-worded review notes. Cleared on successful action below.
-  const [comment, setComment] = useState<string>(() => {
-    if (typeof window === "undefined") return "";
-    try {
-      return window.localStorage.getItem(COMMENT_KEY(cv.id)) ?? "";
-    } catch {
-      return "";
-    }
-  });
+  // SSR-safe: start empty, hydrate from storage in an effect.
+  const [comment, setComment] = useState<string>("");
   // Whether the comment + actions panel body is expanded. Persisted across
   // sessions; defaults to expanded so the primary surface is visible.
-  const [expanded, setExpanded] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
-    try {
-      const v = window.localStorage.getItem(EXPANDED_KEY);
-      return v === null ? true : v === "1";
-    } catch {
-      return true;
-    }
-  });
+  const [expanded, setExpanded] = useState<boolean>(true);
   // Per-session preference: persisted in sessionStorage so the legend's
   // visibility survives a refresh but doesn't leak across browser sessions.
-  const [showHelp, setShowHelp] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return window.sessionStorage.getItem(HELP_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
+  const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [hydrated, setHydrated] = useState(false);
   const [pending, setPending] = useState<ApprovalAction | null>(null);
   const [busy, setBusy] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -85,34 +65,49 @@ export function ApprovalActions({
   const isSelfApproval = user === cv.author;
   const commentOk = comment.trim().length >= COMMENT_MIN;
 
+  // Hydrate persisted UI state from storage after mount (avoids SSR mismatch).
+  useEffect(() => {
+    try {
+      const c = window.localStorage.getItem(COMMENT_KEY(cv.id));
+      if (c) setComment(c);
+      const e = window.localStorage.getItem(EXPANDED_KEY);
+      if (e !== null) setExpanded(e === "1");
+      const h = window.sessionStorage.getItem(HELP_KEY);
+      if (h !== null) setShowHelp(h === "1");
+    } catch {
+      /* ignore */
+    }
+    setHydrated(true);
+  }, [cv.id]);
+
   // Persist the in-progress comment per approval.
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!hydrated) return;
     try {
       if (comment) window.localStorage.setItem(COMMENT_KEY(cv.id), comment);
       else window.localStorage.removeItem(COMMENT_KEY(cv.id));
     } catch {
       /* ignore */
     }
-  }, [comment, cv.id]);
+  }, [comment, cv.id, hydrated]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!hydrated) return;
     try {
       window.localStorage.setItem(EXPANDED_KEY, expanded ? "1" : "0");
     } catch {
       /* ignore */
     }
-  }, [expanded]);
+  }, [expanded, hydrated]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!hydrated) return;
     try {
       window.sessionStorage.setItem(HELP_KEY, showHelp ? "1" : "0");
     } catch {
       /* ignore */
     }
-  }, [showHelp]);
+  }, [showHelp, hydrated]);
 
   // Auto-focus the comment textarea whenever the panel is (or becomes)
   // expanded so reviewers can start typing immediately. Skipped when the
