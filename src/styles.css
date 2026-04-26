@@ -234,3 +234,12 @@
     border-radius: var(--radius-sm);
   }
 }
+
+/* Statute typography (govops-010): serif at reading size with generous leading. */
+.statute-text {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  max-width: 65ch;
+  color: var(--foreground);
+}

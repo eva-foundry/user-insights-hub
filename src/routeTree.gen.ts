@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
+import { Route as AuthorityRouteImport } from './routes/authority'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
@@ -29,6 +30,11 @@ const PoliciesRoute = PoliciesRouteImport.update({
 const ConfigRoute = ConfigRouteImport.update({
   id: '/config',
   path: '/config',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthorityRoute = AuthorityRouteImport.update({
+  id: '/authority',
+  path: '/authority',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -81,6 +87,7 @@ const ConfigPromptsKeyJurisdictionIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/authority': typeof AuthorityRoute
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/authority': typeof AuthorityRoute
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
@@ -108,6 +116,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/authority': typeof AuthorityRoute
   '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/authority'
     | '/config'
     | '/policies'
     | '/config/approvals'
@@ -136,6 +146,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/authority'
     | '/config'
     | '/policies'
     | '/config/approvals'
@@ -149,6 +160,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/authority'
     | '/config'
     | '/policies'
     | '/config/approvals'
@@ -163,6 +175,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AuthorityRoute: typeof AuthorityRoute
   ConfigRoute: typeof ConfigRouteWithChildren
   PoliciesRoute: typeof PoliciesRoute
 }
@@ -181,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: '/config'
       fullPath: '/config'
       preLoaderRoute: typeof ConfigRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authority': {
+      id: '/authority'
+      path: '/authority'
+      fullPath: '/authority'
+      preLoaderRoute: typeof AuthorityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -296,6 +316,7 @@ const ConfigRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AuthorityRoute: AuthorityRoute,
   ConfigRoute: ConfigRouteWithChildren,
   PoliciesRoute: PoliciesRoute,
 }
