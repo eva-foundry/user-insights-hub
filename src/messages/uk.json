@@ -571,8 +571,6 @@
   "screen.preview_mode": "Режим перегляду — макетні дані",
   "screen.rerun": "Запустити знову",
   "screen.form.reset": "Скинути форму",
-  "screen.draft.restored": "Ми відновили ваші незавершені відповіді з цієї сесії.",
-  "screen.draft.clear": "Очистити чернетку",
   "screen.errors.summary": "Виправте підсвічені поля перед перевіркою права на допомогу.",
   "screen.errors.dob.required": "Будь ласка, вкажіть дату народження.",
   "screen.errors.dob.too_old": "Дата нереалістично далеко в минулому.",
@@ -589,8 +587,8 @@
   "screen.errors.residency.overlap": "Цей період перетинається з іншим періодом проживання.",
   "screen.errors.summary.heading": "{count, plural, one {# поле потребує уваги} few {# поля потребують уваги} other {# полів потребують уваги}} перед перевіркою права на допомогу.",
   "screen.errors.summary.more": "та ще {count, plural, one {#} other {#}}…",
-  "screen.reset.title": "Скасувати чернетку?",
-  "screen.reset.body": "Це очистить усі поля форми. Чернетка зберігається лише в цій вкладці — нічого не надсилається.",
-  "screen.reset.keep": "Залишити чернетку",
-  "screen.reset.discard": "Скасувати чернетку"
+  "screen.reset.title": "Скасувати відповіді?",
+  "screen.reset.body": "Очистити всі відповіді в цій формі й почати спочатку?",
+  "screen.reset.keep": "Залишити відповіді",
+  "screen.reset.discard": "Скасувати відповіді"
 }

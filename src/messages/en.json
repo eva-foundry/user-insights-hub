@@ -571,8 +571,6 @@
   "screen.preview_mode": "Preview mode — running on mock data",
   "screen.rerun": "Rerun",
   "screen.form.reset": "Reset form",
-  "screen.draft.restored": "We restored your in-progress answers from this session.",
-  "screen.draft.clear": "Clear draft",
   "screen.errors.summary": "Please fix the highlighted fields before checking eligibility.",
   "screen.errors.dob.required": "Please enter your date of birth.",
   "screen.errors.dob.too_old": "Date is unrealistically far in the past.",
@@ -589,8 +587,8 @@
   "screen.errors.residency.overlap": "This period overlaps another residency period.",
   "screen.errors.summary.heading": "{count, plural, one {# field needs your attention} other {# fields need your attention}} before we can check eligibility.",
   "screen.errors.summary.more": "and {count, plural, one {# more} other {# more}}…",
-  "screen.reset.title": "Discard your draft?",
-  "screen.reset.body": "This will clear every field on this form. Your draft is only stored in this browser tab — it isn't sent anywhere.",
-  "screen.reset.keep": "Keep my draft",
-  "screen.reset.discard": "Discard draft"
+  "screen.reset.title": "Discard your answers?",
+  "screen.reset.body": "Clear every answer on this form and start over?",
+  "screen.reset.keep": "Keep my answers",
+  "screen.reset.discard": "Discard answers"
 }

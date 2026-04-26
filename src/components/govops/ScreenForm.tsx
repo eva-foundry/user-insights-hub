@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import type {
   ScreenLegalStatus,
@@ -20,11 +20,6 @@ import {
   isValid as isErrorFree,
   type ScreenFormErrors,
 } from "@/lib/screenValidation";
-import {
-  loadScreenDraft,
-  saveScreenDraft,
-  clearScreenDraft,
-} from "@/lib/screenDraft";
 
 const MIN_DOB = "1900-01-01";
 const TODAY = () => new Date().toISOString().slice(0, 10);
@@ -76,29 +71,8 @@ export function ScreenForm({
   const intl = useIntl();
   const [state, setState] = useState<ScreenFormState>(EMPTY);
   const [submitted, setSubmitted] = useState(false);
-  const [restored, setRestored] = useState(false);
-  const restoredRef = useRef(false);
   const [resetOpen, setResetOpen] = useState(false);
   const summaryRef = useRef<HTMLDivElement>(null);
-
-  // ── Restore session draft on mount (per-jurisdiction) ─────────────────
-  useEffect(() => {
-    const saved = loadScreenDraft(jurisdictionId) as ScreenFormState | null;
-    if (saved && typeof saved === "object" && Array.isArray(saved.residency_periods)) {
-      setState(saved);
-      setRestored(true);
-      restoredRef.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jurisdictionId]);
-
-  // ── Persist on every change (session-scoped, no PII written to disk) ──
-  useEffect(() => {
-    // Skip the initial empty render to avoid clobbering an existing draft
-    // before restore lands.
-    if (state === EMPTY && !restoredRef.current) return;
-    saveScreenDraft(jurisdictionId, state);
-  }, [state, jurisdictionId]);
 
   const errors: ScreenFormErrors = useMemo(
     () =>
@@ -119,12 +93,9 @@ export function ScreenForm({
     onChange?.();
   };
 
-  const clearDraft = () => {
+  const resetAll = () => {
     setState(EMPTY);
     setSubmitted(false);
-    setRestored(false);
-    restoredRef.current = false;
-    clearScreenDraft();
   };
 
   /** Click handler for the Reset button — opens confirm dialog when there
@@ -140,7 +111,7 @@ export function ScreenForm({
         (p) => p.country !== "" || p.start_date !== "" || p.end_date !== null,
       );
     if (dirty) setResetOpen(true);
-    else clearDraft();
+    else resetAll();
   };
 
   const focusFieldById = (id: string) => {
@@ -228,24 +199,6 @@ export function ScreenForm({
               )}
             </p>
           )}
-        </div>
-      )}
-
-      {restored && (
-        <div
-          role="status"
-          className="flex items-center justify-between gap-3 rounded border border-border bg-surface-sunken px-3 py-2 text-sm"
-        >
-          <span className="text-foreground-muted">
-            {intl.formatMessage({ id: "screen.draft.restored" })}
-          </span>
-          <button
-            type="button"
-            onClick={onResetClicked}
-            className="underline underline-offset-2 text-foreground hover:opacity-80"
-          >
-            {intl.formatMessage({ id: "screen.draft.clear" })}
-          </button>
         </div>
       )}
 
@@ -391,7 +344,7 @@ export function ScreenForm({
             <Button
               variant="destructive"
               onClick={() => {
-                clearDraft();
+                resetAll();
                 setResetOpen(false);
               }}
             >
