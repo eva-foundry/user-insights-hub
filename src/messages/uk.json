@@ -293,5 +293,21 @@
   "prompt.fixture.error.timeout": "Час очікування вичерпано.",
   "prompt.fixture.error.no_response": "Запуск не вдався",
   "prompt.dual_approval.badge": "Потрібне подвійне схвалення",
-  "prompt.dual_approval.tooltip": "Політика Фази 4: затвердження промптів вимагатиме двох людських затверджувачів."
+  "prompt.dual_approval.tooltip": "Політика Фази 4: затвердження промптів вимагатиме двох людських затверджувачів.",
+  "prompts.pagination.showing": "Показано {shown} з {total}",
+  "prompts.pagination.per_page": "На сторінку",
+  "prompts.pagination.load_more": "Завантажити ще {count}",
+  "validators.prompt_key.must_contain_prompt": "Ключ має містити сегмент `prompt` (напр. `<scope>.prompt.<name>`).",
+  "validators.prompt_text.required": "Потрібен текст промпта.",
+  "validators.prompt_text.too_short": "Замало символів (мін {min}).",
+  "validators.prompt_text.too_long": "Забагато символів (макс {max}).",
+  "prompt.fixture.history.label": "Переглянути останній запуск",
+  "prompt.fixture.compare.label": "Порівняти з",
+  "prompt.fixture.compare.none": "— без порівняння —",
+  "prompt.fixture.compare.heading": "Порівняння (A vs B)",
+  "prompt.fixture.compare.added": "{count, plural, one {# додано} few {# додано} many {# додано} other {# додано}}",
+  "prompt.fixture.compare.removed": "{count, plural, one {# видалено} few {# видалено} many {# видалено} other {# видалено}}",
+  "prompt.fixture.compare.unchanged": "{count, plural, one {# незмінна пропозиція} few {# незмінні пропозиції} many {# незмінних пропозицій} other {# незмінних пропозицій}}",
+  "prompt.fixture.export": "Експортувати звіт (PDF)",
+  "prompt.fixture.export.done": "Звіт завантажено"
 }

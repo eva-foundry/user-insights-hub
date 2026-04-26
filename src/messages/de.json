@@ -293,5 +293,21 @@
   "prompt.fixture.error.timeout": "Zeitüberschreitung.",
   "prompt.fixture.error.no_response": "Lauf fehlgeschlagen",
   "prompt.dual_approval.badge": "Doppelte Genehmigung",
-  "prompt.dual_approval.tooltip": "Phase-4-Richtlinie: Prompts erfordern künftig zwei menschliche Genehmiger."
+  "prompt.dual_approval.tooltip": "Phase-4-Richtlinie: Prompts erfordern künftig zwei menschliche Genehmiger.",
+  "prompts.pagination.showing": "{shown} von {total} angezeigt",
+  "prompts.pagination.per_page": "Pro Seite",
+  "prompts.pagination.load_more": "{count} weitere laden",
+  "validators.prompt_key.must_contain_prompt": "Schlüssel muss ein `prompt`-Segment enthalten (z. B. `<scope>.prompt.<name>`).",
+  "validators.prompt_text.required": "Prompt-Text erforderlich.",
+  "validators.prompt_text.too_short": "Prompt zu kurz (min {min} Zeichen).",
+  "validators.prompt_text.too_long": "Prompt zu lang (max {max} Zeichen).",
+  "prompt.fixture.history.label": "Letzten Lauf ansehen",
+  "prompt.fixture.compare.label": "Vergleichen mit",
+  "prompt.fixture.compare.none": "— kein Vergleich —",
+  "prompt.fixture.compare.heading": "Lauf-Vergleich (A vs B)",
+  "prompt.fixture.compare.added": "{count, plural, one {# hinzugefügt} other {# hinzugefügt}}",
+  "prompt.fixture.compare.removed": "{count, plural, one {# entfernt} other {# entfernt}}",
+  "prompt.fixture.compare.unchanged": "{count, plural, one {# unveränderter Vorschlag} other {# unveränderte Vorschläge}}",
+  "prompt.fixture.export": "Bericht exportieren (PDF)",
+  "prompt.fixture.export.done": "Bericht heruntergeladen"
 }
