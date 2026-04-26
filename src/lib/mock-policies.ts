@@ -18,7 +18,6 @@ export const MOCK_POLICIES: Policy[] = [
     title: {
       en: "Open data publication standard",
       fr: "Norme de publication des données ouvertes",
-      ar: "معيار نشر البيانات المفتوحة",
     },
     verdict: "enacted",
     provenance: "human",
@@ -30,7 +29,6 @@ export const MOCK_POLICIES: Policy[] = [
     title: {
       en: "Algorithmic transparency for public services",
       fr: "Transparence algorithmique pour les services publics",
-      ar: "الشفافية الخوارزمية للخدمات العامة",
     },
     verdict: "pending",
     provenance: "hybrid",
@@ -42,7 +40,6 @@ export const MOCK_POLICIES: Policy[] = [
     title: {
       en: "Citizen participation in spatial planning",
       fr: "Participation citoyenne à l'aménagement du territoire",
-      ar: "مشاركة المواطنين في التخطيط العمراني",
     },
     verdict: "draft",
     provenance: "agent",
@@ -54,7 +51,6 @@ export const MOCK_POLICIES: Policy[] = [
     title: {
       en: "Mandatory facial recognition in transit",
       fr: "Reconnaissance faciale obligatoire dans les transports",
-      ar: "التعرف على الوجه الإلزامي في وسائل النقل",
     },
     verdict: "rejected",
     provenance: "citizen",
@@ -66,7 +62,6 @@ export const MOCK_POLICIES: Policy[] = [
     title: {
       en: "AI usage disclosure in administrative decisions",
       fr: "Divulgation de l'usage de l'IA dans les décisions administratives",
-      ar: "الإفصاح عن استخدام الذكاء الاصطناعي في القرارات الإدارية",
     },
     verdict: "enacted",
     provenance: "hybrid",
@@ -78,7 +73,6 @@ export const MOCK_POLICIES: Policy[] = [
     title: {
       en: "Automated tax-credit eligibility check",
       fr: "Vérification automatisée de l'éligibilité au crédit d'impôt",
-      ar: "التحقق الآلي من أهلية الاعتماد الضريبي",
     },
     verdict: "pending",
     provenance: "system",
