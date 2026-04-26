@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { DraftConfigForm } from "@/components/govops/DraftConfigForm";
 import { RecentDrafts } from "@/components/govops/RecentDrafts";
 import { createConfigValue, getConfigValue } from "@/lib/api";
 import { MOCK_CONFIG_VALUES } from "@/lib/mock-config-values";
 import type { ConfigValue, CreateConfigValueRequest } from "@/lib/types";
+import { RouteError } from "@/components/govops/RouteError";
 
 type DraftSearch = {
   key?: string;
@@ -39,6 +40,19 @@ export const Route = createFileRoute("/config/draft")({
       language: pick("language"),
     };
   },
+  loaderDeps: ({ search }) => ({ supersedes_id: search.supersedes_id }),
+  loader: async ({ deps }): Promise<ConfigValue | null> => {
+    if (!deps.supersedes_id) return null;
+    const id = deps.supersedes_id;
+    try {
+      return await getConfigValue(id);
+    } catch {
+      return MOCK_CONFIG_VALUES.find((v) => v.id === id) ?? null;
+    }
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
   component: DraftPage,
 });
 
@@ -46,24 +60,7 @@ function DraftPage() {
   const search = Route.useSearch();
   const nav = useNavigate();
   const [submitting, setSubmitting] = useState(false);
-  const [prior, setPrior] = useState<ConfigValue | null>(null);
-
-  // Load the prior version when superseding (live → mock fallback).
-  useEffect(() => {
-    if (!search.supersedes_id) {
-      setPrior(null);
-      return;
-    }
-    let cancelled = false;
-    getConfigValue(search.supersedes_id)
-      .catch(() => MOCK_CONFIG_VALUES.find((v) => v.id === search.supersedes_id) ?? null)
-      .then((v) => {
-        if (!cancelled) setPrior(v ?? null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [search.supersedes_id]);
+  const prior: ConfigValue | null = Route.useLoaderData();
 
   async function onSubmit(body: CreateConfigValueRequest) {
     setSubmitting(true);
