@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { ProvenanceRibbon, type ProvenanceVariant } from "@/components/govops/ProvenanceRibbon";
+import { BrandingCheck } from "@/components/govops/BrandingCheck";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -135,6 +136,8 @@ function About() {
           ))}
         </ul>
       </section>
+
+      <BrandingCheck />
     </div>
   );
 }
