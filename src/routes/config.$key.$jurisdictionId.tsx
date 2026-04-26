@@ -143,10 +143,18 @@ function ConfigDetailPage() {
 
             <button
               type="button"
-              disabled
-              aria-disabled
-              title="govops-006"
-              className="inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() =>
+                navigate({
+                  to: "/config/draft",
+                  search: {
+                    key: decodedKey,
+                    jurisdiction_id: decodedJur,
+                    value_type: current?.value_type,
+                    supersedes_id: current?.id,
+                  },
+                })
+              }
+              className="inline-flex h-9 items-center rounded-md border px-4 text-sm font-medium transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               style={{
                 borderColor: "var(--authority)",
                 color: "var(--authority)",
