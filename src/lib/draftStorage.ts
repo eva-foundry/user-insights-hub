@@ -73,6 +73,15 @@ export function removeRecentDraft(id: string): void {
   }
 }
 
+export function clearAllRecentDrafts(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    /* swallow */
+  }
+}
+
 /** Subscribe to cross-tab + same-tab updates. Returns an unsubscribe fn. */
 export const DRAFTS_EVENT = "govops:recent-drafts:changed";
 export function emitDraftsChanged() {
