@@ -44,6 +44,68 @@ import {
   mockRejectConfigValue,
   mockRequestChangesConfigValue,
 } from "./api.mock";
+import { mockListFixtures, mockRunFixtureWithPrompt } from "./api.mock";
+
+// ---- Fixture batches (govops-008) ------------------------------------------
+
+export interface FixtureBatchSummary {
+  id: string;
+  jurisdiction_id: string;
+  document_title: string;
+  document_citation: string;
+  text_length: number;
+  created_at: string;
+}
+
+export interface FixtureRunResult {
+  fixture_id: string;
+  prompt_key: string;
+  proposals_count: number;
+  proposals: Array<{
+    rule_type: string;
+    description: string;
+    citation: string;
+    parameters: Record<string, unknown>;
+  }>;
+  raw_response: string;
+  latency_ms: number;
+  token_count: number | null;
+}
+
+/**
+ * List the saved fixture batches a maintainer can dry-run a prompt against.
+ * Phase 1 backend does not implement /api/encode/fixtures; falls back to mock.
+ */
+export async function listFixtures(): Promise<FixtureBatchSummary[]> {
+  if (import.meta.env.VITE_USE_MOCK_API === "true") return mockListFixtures();
+  try {
+    return await fetcher<FixtureBatchSummary[]>("/api/encode/fixtures");
+  } catch {
+    return mockListFixtures();
+  }
+}
+
+/**
+ * Execute the encoder against a saved fixture using the supplied prompt body.
+ * Returns proposals + raw LLM response WITHOUT committing rules. Mocked when
+ * the backend is unavailable so the prompt-admin UI is exercisable in preview.
+ */
+export async function runFixtureWithPrompt(
+  fixtureId: string,
+  body: { prompt_text: string; prompt_key: string },
+): Promise<FixtureRunResult> {
+  if (import.meta.env.VITE_USE_MOCK_API === "true") {
+    return mockRunFixtureWithPrompt(fixtureId, body);
+  }
+  try {
+    return await fetcher<FixtureRunResult>(
+      `/api/encode/fixtures/${encodeURIComponent(fixtureId)}/run-with-prompt`,
+      { method: "POST", body: JSON.stringify(body) },
+    );
+  } catch {
+    return mockRunFixtureWithPrompt(fixtureId, body);
+  }
+}
 
 export async function listConfigValues(
   params: ListConfigValuesParams,

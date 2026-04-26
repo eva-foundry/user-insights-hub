@@ -4,6 +4,7 @@ import type { ConfigValue } from "@/lib/types";
 import { ProvenanceRibbon } from "./ProvenanceRibbon";
 import { ValueRenderer } from "./ValueRenderer";
 import { JurisdictionChip } from "./JurisdictionChip";
+import { DualApprovalBadge } from "./DualApprovalBadge";
 
 /**
  * Single row in the approvals queue. Mirrors the visual rhythm of
@@ -63,6 +64,7 @@ export function ApprovalRow({ cv }: { cv: ConfigValue }) {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <JurisdictionChip id={cv.jurisdiction_id} />
+              {cv.value_type === "prompt" && <DualApprovalBadge />}
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
                 style={{

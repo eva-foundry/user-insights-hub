@@ -167,3 +167,79 @@ export async function mockRejectConfigValue(
   void body;
   return applyAction(id, "rejected");
 }
+
+// ---- Fixture batches (govops-008) ------------------------------------------
+
+import type { FixtureBatchSummary, FixtureRunResult } from "./api";
+
+const MOCK_FIXTURES: FixtureBatchSummary[] = [
+  {
+    id: "fxt_oas_2025_amendments",
+    jurisdiction_id: "ca-oas",
+    document_title: "OAS Act — 2025 amendments excerpt",
+    document_citation: "OAS Act, ss. 3–8 (rev. 2025)",
+    text_length: 4821,
+    created_at: "2026-02-01T09:30:00Z",
+  },
+  {
+    id: "fxt_us_ssa_eligibility",
+    jurisdiction_id: "us-fed",
+    document_title: "SSA Title II — early retirement eligibility",
+    document_citation: "42 U.S.C. § 402(q)–(r)",
+    text_length: 6310,
+    created_at: "2026-02-08T14:11:00Z",
+  },
+  {
+    id: "fxt_uk_state_pension",
+    jurisdiction_id: "uk-gov",
+    document_title: "Pensions Act 2014 — qualifying years schedule",
+    document_citation: "Pensions Act 2014, Sch. 1",
+    text_length: 3240,
+    created_at: "2026-02-12T08:00:00Z",
+  },
+];
+
+export async function mockListFixtures(): Promise<FixtureBatchSummary[]> {
+  await new Promise((r) => setTimeout(r, 200));
+  return MOCK_FIXTURES;
+}
+
+/**
+ * Synthesize a plausible extraction result. The proposal count varies a bit
+ * based on the prompt length so successive runs feel meaningful when comparing.
+ */
+export async function mockRunFixtureWithPrompt(
+  fixtureId: string,
+  body: { prompt_text: string; prompt_key: string },
+): Promise<FixtureRunResult> {
+  await new Promise((r) => setTimeout(r, 900));
+  const fxt = MOCK_FIXTURES.find((f) => f.id === fixtureId);
+  if (!fxt) throw new Error(`Fixture ${fixtureId} not found`);
+  const len = body.prompt_text.length;
+  const base = fxt.id === "fxt_oas_2025_amendments" ? 3 : fxt.id === "fxt_us_ssa_eligibility" ? 4 : 2;
+  const variance = (len % 3) - 1; // -1, 0, +1
+  const count = Math.max(1, base + variance);
+  const proposals = Array.from({ length: count }, (_, i) => ({
+    rule_type: i % 2 === 0 ? "eligibility.min_age" : "eligibility.residency_years",
+    description:
+      i % 2 === 0
+        ? `Minimum qualifying age clause #${i + 1} extracted from ${fxt.document_title}.`
+        : `Residency requirement clause #${i + 1} extracted from ${fxt.document_title}.`,
+    citation: `${fxt.document_citation} ¶${i + 1}`,
+    parameters:
+      i % 2 === 0
+        ? { jurisdiction: fxt.jurisdiction_id, min_age: 60 + ((len + i) % 8) }
+        : { jurisdiction: fxt.jurisdiction_id, residency_years: 10 + ((len + i) % 5) },
+  }));
+  return {
+    fixture_id: fixtureId,
+    prompt_key: body.prompt_key,
+    proposals_count: count,
+    proposals,
+    raw_response: `# Mock LLM response\n\nUsing prompt key \`${body.prompt_key}\` (${len} chars) against ${fxt.document_title}.\n\n${proposals
+      .map((p, i) => `${i + 1}. ${p.description}\n   citation: ${p.citation}`)
+      .join("\n")}`,
+    latency_ms: 700 + (len % 600),
+    token_count: 180 + Math.floor(len / 4),
+  };
+}

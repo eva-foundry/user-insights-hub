@@ -13,11 +13,13 @@ import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
 import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
 import { Route as ConfigApprovalsRouteImport } from './routes/config.approvals'
 import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals.$id'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
+import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes/config.prompts.$key.$jurisdictionId.edit'
 
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
@@ -38,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigPromptsRoute = ConfigPromptsRouteImport.update({
+  id: '/prompts',
+  path: '/prompts',
+  getParentRoute: () => ConfigRoute,
 } as any)
 const ConfigDraftRoute = ConfigDraftRouteImport.update({
   id: '/draft',
@@ -64,6 +71,12 @@ const ConfigKeyJurisdictionIdRoute = ConfigKeyJurisdictionIdRouteImport.update({
   path: '/$key/$jurisdictionId',
   getParentRoute: () => ConfigRoute,
 } as any)
+const ConfigPromptsKeyJurisdictionIdEditRoute =
+  ConfigPromptsKeyJurisdictionIdEditRouteImport.update({
+    id: '/$key/$jurisdictionId/edit',
+    path: '/$key/$jurisdictionId/edit',
+    getParentRoute: () => ConfigPromptsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,8 +86,10 @@ export interface FileRoutesByFullPath {
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
+  '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
+  '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,8 +99,10 @@ export interface FileRoutesByTo {
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
+  '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
+  '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,8 +113,10 @@ export interface FileRoutesById {
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
+  '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
+  '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,8 +128,10 @@ export interface FileRouteTypes {
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
+    | '/config/prompts'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
+    | '/config/prompts/$key/$jurisdictionId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -120,8 +141,10 @@ export interface FileRouteTypes {
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
+    | '/config/prompts'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
+    | '/config/prompts/$key/$jurisdictionId/edit'
   id:
     | '__root__'
     | '/'
@@ -131,8 +154,10 @@ export interface FileRouteTypes {
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
+    | '/config/prompts'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
+    | '/config/prompts/$key/$jurisdictionId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -172,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/config/prompts': {
+      id: '/config/prompts'
+      path: '/prompts'
+      fullPath: '/config/prompts'
+      preLoaderRoute: typeof ConfigPromptsRouteImport
+      parentRoute: typeof ConfigRoute
+    }
     '/config/draft': {
       id: '/config/draft'
       path: '/draft'
@@ -207,6 +239,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfigKeyJurisdictionIdRouteImport
       parentRoute: typeof ConfigRoute
     }
+    '/config/prompts/$key/$jurisdictionId/edit': {
+      id: '/config/prompts/$key/$jurisdictionId/edit'
+      path: '/$key/$jurisdictionId/edit'
+      fullPath: '/config/prompts/$key/$jurisdictionId/edit'
+      preLoaderRoute: typeof ConfigPromptsKeyJurisdictionIdEditRouteImport
+      parentRoute: typeof ConfigPromptsRoute
+    }
   }
 }
 
@@ -222,10 +261,24 @@ const ConfigApprovalsRouteWithChildren = ConfigApprovalsRoute._addFileChildren(
   ConfigApprovalsRouteChildren,
 )
 
+interface ConfigPromptsRouteChildren {
+  ConfigPromptsKeyJurisdictionIdEditRoute: typeof ConfigPromptsKeyJurisdictionIdEditRoute
+}
+
+const ConfigPromptsRouteChildren: ConfigPromptsRouteChildren = {
+  ConfigPromptsKeyJurisdictionIdEditRoute:
+    ConfigPromptsKeyJurisdictionIdEditRoute,
+}
+
+const ConfigPromptsRouteWithChildren = ConfigPromptsRoute._addFileChildren(
+  ConfigPromptsRouteChildren,
+)
+
 interface ConfigRouteChildren {
   ConfigApprovalsRoute: typeof ConfigApprovalsRouteWithChildren
   ConfigDiffRoute: typeof ConfigDiffRoute
   ConfigDraftRoute: typeof ConfigDraftRoute
+  ConfigPromptsRoute: typeof ConfigPromptsRouteWithChildren
   ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
 }
 
@@ -233,6 +286,7 @@ const ConfigRouteChildren: ConfigRouteChildren = {
   ConfigApprovalsRoute: ConfigApprovalsRouteWithChildren,
   ConfigDiffRoute: ConfigDiffRoute,
   ConfigDraftRoute: ConfigDraftRoute,
+  ConfigPromptsRoute: ConfigPromptsRouteWithChildren,
   ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
 }
 
