@@ -206,6 +206,19 @@
   }
 }
 
+/* Diff print stylesheet (govops-005): force side-by-side, drop chrome. */
+@media print {
+  header[role="banner"],
+  footer[role="contentinfo"],
+  .print\:hidden {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
