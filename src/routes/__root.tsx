@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { Masthead } from "@/components/govops/Masthead";
 import { SkipToContent } from "@/components/govops/SkipToContent";
 import { Toaster } from "@/components/ui/sonner";
+import { RouteError } from "@/components/govops/RouteError";
 
 function NotFoundComponent() {
   return (
@@ -60,6 +61,11 @@ export const Route = createRootRoute({
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
+  errorComponent: ({ error, reset }) => (
+    <main id="main" className="mx-auto max-w-5xl px-6 py-10">
+      <RouteError error={error as Error} reset={reset} />
+    </main>
+  ),
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
