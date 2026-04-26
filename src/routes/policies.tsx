@@ -28,22 +28,9 @@ export const Route = createFileRoute("/policies")({
   errorComponent: ({ error, reset }) => (
     <RouteError error={error as Error} reset={reset} />
   ),
-  pendingComponent: PoliciesSkeleton,
+  pendingComponent: () => <RouteLoading rows={3} rowHeight={68} />,
   component: PoliciesPage,
 });
-
-function PoliciesSkeleton() {
-  return (
-    <ul role="list" className="space-y-2" aria-busy="true">
-      {[0, 1, 2].map((i) => (
-        <li
-          key={i}
-          className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
-        />
-      ))}
-    </ul>
-  );
-}
 
 function PoliciesPage() {
   const intl = useIntl();
