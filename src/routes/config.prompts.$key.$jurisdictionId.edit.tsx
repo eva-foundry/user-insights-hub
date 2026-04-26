@@ -265,6 +265,38 @@ function PromptEditPage() {
         </span>
       </div>
 
+      {/* Inline validation errors (govops-008) */}
+      {(keyError || textError) && (
+        <div
+          role="alert"
+          aria-live="polite"
+          className="space-y-1 rounded-md border p-3 text-xs"
+          style={{
+            borderColor: "var(--verdict-rejected)",
+            backgroundColor:
+              "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
+            color: "var(--verdict-rejected)",
+            fontFamily: "var(--font-mono)",
+          }}
+        >
+          {keyError && (
+            <p>
+              <span className="font-semibold">key:</span>{" "}
+              {intl.formatMessage({ id: keyError })}
+            </p>
+          )}
+          {textError && (
+            <p>
+              <span className="font-semibold">text:</span>{" "}
+              {intl.formatMessage(
+                { id: textError },
+                { min: PROMPT_TEXT_MIN, max: PROMPT_TEXT_MAX },
+              )}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Diff overlay */}
       {showDiff && current && draftAsConfigValue && (
         <section
@@ -335,7 +367,9 @@ function PromptEditPage() {
         <button
           type="button"
           onClick={onSubmit}
-          disabled={submitting || !current || value.trim().length === 0}
+          disabled={submitting || !current || blocked}
+          aria-disabled={blocked || undefined}
+          title={blocked ? blockedReason : undefined}
           className="inline-flex h-9 items-center rounded-md px-4 text-sm font-medium text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-50"
           style={{ backgroundColor: "var(--civic-gold-600)" }}
         >
