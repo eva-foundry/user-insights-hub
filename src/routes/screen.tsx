@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useIntl } from "react-intl";
 import { ArrowRight } from "lucide-react";
 import { ScreenShell } from "@/components/govops/ScreenShell";
@@ -24,8 +24,17 @@ export const Route = createFileRoute("/screen")({
       },
     ],
   }),
-  component: ScreenLanding,
+  component: ScreenLayout,
 });
+
+function ScreenLayout() {
+  // When a child route (e.g. /screen/$jurisdictionId) is active, render only
+  // the Outlet — the child supplies its own ScreenShell. Otherwise render
+  // the landing/jurisdiction-picker.
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <ScreenLanding />;
+}
 
 function ScreenLanding() {
   const intl = useIntl();
