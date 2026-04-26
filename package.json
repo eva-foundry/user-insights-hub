@@ -4,8 +4,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/clean-route-tree.mjs",
     "dev": "vite dev",
-    "prebuild": "node scripts/check-i18n-keys.mjs && node scripts/check-i18n-icu.mjs && node scripts/check-impact-i18n.mjs",
+    "prebuild": "node scripts/clean-route-tree.mjs && node scripts/check-i18n-keys.mjs && node scripts/check-i18n-icu.mjs && node scripts/check-impact-i18n.mjs && node scripts/check-route-tree-duplicates.mjs",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
@@ -14,6 +15,7 @@
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "check:i18n:icu": "node scripts/check-i18n-icu.mjs",
     "check:i18n:impact": "node scripts/check-impact-i18n.mjs",
+    "check:route-tree": "node scripts/check-route-tree-duplicates.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
