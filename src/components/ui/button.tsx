@@ -16,6 +16,11 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // GovOps semantic variants — see govops-001/006.
+        agent:
+          "bg-agentic-soft text-agentic-foreground shadow-sm border border-transparent hover:opacity-90 focus-visible:ring-ring",
+        authority:
+          "text-primary-foreground shadow-sm hover:opacity-90 focus-visible:ring-ring [background-color:var(--authority)]",
       },
       size: {
         default: "h-9 px-4 py-2",
