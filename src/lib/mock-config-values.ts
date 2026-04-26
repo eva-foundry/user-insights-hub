@@ -181,6 +181,45 @@ export const MOCK_CONFIG_VALUES: ConfigValue[] = [
     language: null,
     created_at: "2025-03-30T09:00:00Z",
   },
+  // ── Superseded versions, added so the timeline + diff have real history ──
+  {
+    id: "01HRX0AGENTOAS65MINAGE0000",
+    domain: "rule",
+    key: "ca-oas.rule.age-65.min_age",
+    jurisdiction_id: "ca-oas",
+    value: 60,
+    value_type: "number",
+    effective_from: "2010-01-01T00:00:00Z",
+    effective_to: "2024-12-31T23:59:59Z",
+    citation: "OAS Act, s. 3(1) (rev. 2009)",
+    author: "human:minister.seniors",
+    approved_by: "human:minister.seniors",
+    rationale: "Original statutory minimum age before the 2024 amendment.",
+    supersedes: null,
+    status: "approved",
+    language: null,
+    created_at: "2009-12-01T10:00:00Z",
+  },
+  {
+    id: "01HRX0PROMPTELIGCHECK00004",
+    domain: "prompt",
+    key: "global.prompt.eligibility.check",
+    jurisdiction_id: null,
+    value:
+      "Decide eligibility from the inputs. Reference applicable rules.",
+    value_type: "prompt",
+    effective_from: "2025-06-01T00:00:00Z",
+    effective_to: "2026-01-07T23:59:59Z",
+    citation: "Internal: prompt-library/v2",
+    author: "agent:prompt-curator",
+    approved_by: "human:lead.ai",
+    rationale:
+      "Earlier eligibility-check prompt; superseded by the citation-aware v3.",
+    supersedes: null,
+    status: "approved",
+    language: "en",
+    created_at: "2025-05-25T09:00:00Z",
+  },
 ];
 
 export function filterMockConfigValues(

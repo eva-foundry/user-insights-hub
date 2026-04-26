@@ -82,7 +82,10 @@ function ConfigPage() {
   const setSort = useCallback(
     (next: SortKey) => {
       navigate({
-        search: (prev) => ({ ...prev, sort: next !== "key_asc" ? next : undefined }),
+        search: (prev: ConfigSearch) => ({
+          ...prev,
+          sort: next !== "key_asc" ? next : undefined,
+        }),
         replace: true,
       });
     },
