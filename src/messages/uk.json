@@ -114,5 +114,22 @@
   "branding.check.col.wordmark": "Wordmark",
   "branding.check.col.status": "Status",
   "branding.check.status.pass": "Pass",
-  "branding.check.status.fail": "Fail"
+  "branding.check.status.fail": "Fail",
+  "timeline.heading": "Історія версій",
+  "timeline.in_effect": "Чинна на даний час",
+  "timeline.scheduled": "Запланована",
+  "timeline.compare": "Порівняти",
+  "timeline.compare.cta": "Переглянути різницю (вибрано 2)",
+  "timeline.draft_new": "Створити нову версію",
+  "timeline.empty.title": "Немає історії для цього ключа в цій юрисдикції.",
+  "timeline.empty.body": "Спробуйте розширити фільтри в реєстрі.",
+  "timeline.copy_key": "Копіювати ключ",
+  "timeline.copied": "Скопійовано",
+  "timeline.card.aria": "Версія {key}, чинна з {date, date, medium}",
+  "status.draft": "Чернетка",
+  "status.pending": "На розгляді",
+  "status.rejected": "Відхилено",
+  "status.approved": "Затверджено",
+  "value.expand": "Розгорнути",
+  "value.collapse": "Згорнути"
 }

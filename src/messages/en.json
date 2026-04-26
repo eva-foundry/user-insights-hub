@@ -114,5 +114,22 @@
   "branding.check.col.wordmark": "Wordmark",
   "branding.check.col.status": "Status",
   "branding.check.status.pass": "Pass",
-  "branding.check.status.fail": "Fail"
+  "branding.check.status.fail": "Fail",
+  "timeline.heading": "Version history",
+  "timeline.in_effect": "Currently in effect",
+  "timeline.scheduled": "Scheduled",
+  "timeline.compare": "Compare",
+  "timeline.compare.cta": "View diff (2 selected)",
+  "timeline.draft_new": "Draft new version",
+  "timeline.empty.title": "No history for this key in this jurisdiction.",
+  "timeline.empty.body": "Try widening your filters in the registry.",
+  "timeline.copy_key": "Copy key",
+  "timeline.copied": "Copied",
+  "timeline.card.aria": "Version of {key} effective from {date, date, medium}",
+  "status.draft": "Draft",
+  "status.pending": "Pending",
+  "status.rejected": "Rejected",
+  "status.approved": "Approved",
+  "value.expand": "Expand",
+  "value.collapse": "Collapse"
 }

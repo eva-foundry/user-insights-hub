@@ -114,5 +114,22 @@
   "branding.check.col.wordmark": "Wordmark",
   "branding.check.col.status": "Status",
   "branding.check.status.pass": "Pass",
-  "branding.check.status.fail": "Fail"
+  "branding.check.status.fail": "Fail",
+  "timeline.heading": "Histórico de versões",
+  "timeline.in_effect": "Em vigor atualmente",
+  "timeline.scheduled": "Agendada",
+  "timeline.compare": "Comparar",
+  "timeline.compare.cta": "Ver diferença (2 selecionadas)",
+  "timeline.draft_new": "Redigir nova versão",
+  "timeline.empty.title": "Sem histórico para esta chave nesta jurisdição.",
+  "timeline.empty.body": "Tente ampliar os filtros no registro.",
+  "timeline.copy_key": "Copiar chave",
+  "timeline.copied": "Copiada",
+  "timeline.card.aria": "Versão de {key} em vigor desde {date, date, medium}",
+  "status.draft": "Rascunho",
+  "status.pending": "Pendente",
+  "status.rejected": "Rejeitada",
+  "status.approved": "Aprovada",
+  "value.expand": "Expandir",
+  "value.collapse": "Recolher"
 }
