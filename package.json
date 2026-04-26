@@ -18,7 +18,9 @@
     "check:i18n:impact": "node scripts/check-impact-i18n.mjs",
     "check:route-tree": "node scripts/check-route-tree-duplicates.mjs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:install": "playwright install chromium"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
