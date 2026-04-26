@@ -189,5 +189,10 @@
   "validators.rationale.too_long": "Обґрунтування задовге (макс. 2000).",
   "validators.citation.required": "Цитування обов'язкове для значень домену rule.",
   "validators.effective_from.required": "Дата чинності обов'язкова.",
-  "validators.language.required": "Мова обов'язкова для значень домену ui."
+  "validators.language.required": "Мова обов'язкова для значень домену ui.",
+  "draft.save_as_draft": "Зберегти чернетку (URL)",
+  "draft.saved": "Чернетку збережено в URL — додайте в закладки, щоб продовжити",
+  "draft.preview.title": "Попередній перегляд хронології",
+  "draft.preview.caption": "Так нова версія виглядатиме після подання.",
+  "draft.preview.supersedes": "Замінить версію, чинну з {date, date, medium}"
 }

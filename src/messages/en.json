@@ -189,5 +189,10 @@
   "validators.rationale.too_long": "Rationale is too long (max 2000).",
   "validators.citation.required": "Citation is required for rule-domain values.",
   "validators.effective_from.required": "Effective date is required.",
-  "validators.language.required": "Language is required for UI-domain values."
+  "validators.language.required": "Language is required for UI-domain values.",
+  "draft.save_as_draft": "Save as draft (URL)",
+  "draft.saved": "Draft saved to URL — bookmark to resume",
+  "draft.preview.title": "Live timeline preview",
+  "draft.preview.caption": "This is how the new version will appear once submitted.",
+  "draft.preview.supersedes": "Will replace the current version effective {date, date, medium}"
 }

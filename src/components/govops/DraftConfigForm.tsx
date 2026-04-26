@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useState, type FormEvent } from "react";
 import { useIntl } from "react-intl";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { ValueInput } from "./inputs/ValueInput";
 import { DateTimeInput } from "./inputs/DateTimeInput";
 import { SupersedesPanel } from "./SupersedesPanel";
+import { DraftPreview } from "./DraftPreview";
 import { useUnsavedChangesPrompt } from "@/lib/dirtyState";
 import {
   coerceValue,
@@ -48,12 +49,21 @@ type Initial = {
   jurisdiction_id?: string;
   value_type?: string;
   supersedes_id?: string;
+  // Save-as-draft hydration fields:
+  domain?: string;
+  value?: string;
+  effective_from?: string;
+  citation?: string;
+  rationale?: string;
+  language?: string;
 };
 
 type Errors = Partial<Record<
   "key" | "jurisdiction" | "domain" | "value_type" | "value" | "effective_from" | "citation" | "rationale" | "language",
   string
 >>;
+
+type FieldName = keyof Errors;
 
 /** Today midnight UTC, ISO-8601 with Z. */
 function todayMidnightUtc(): string {
@@ -63,16 +73,38 @@ function todayMidnightUtc(): string {
   ).padStart(2, "0")}T00:00:00.000Z`;
 }
 
+/** Hydrate a URL-serialized value back into its in-form runtime shape. */
+function hydrateValue(raw: string, type: ValueType): unknown {
+  if (raw === "") return type === "list" || type === "enum" ? [] : type === "bool" ? false : "";
+  if (type === "number") {
+    const n = Number(raw);
+    return Number.isNaN(n) ? raw : n;
+  }
+  if (type === "bool") return raw === "true";
+  if (type === "list" || type === "enum") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.map(String);
+    } catch {
+      /* fallthrough to comma-split */
+    }
+    return raw.split(",").map((s) => s.trim()).filter(Boolean);
+  }
+  return raw;
+}
+
 export function DraftConfigForm({
   initial,
   prior,
   onSubmit,
+  onSaveDraft,
   submitting,
   currentAuthor = "human:maintainer",
 }: {
   initial: Initial;
   prior: ConfigValue | null;
   onSubmit: (body: CreateConfigValueRequest) => Promise<void> | void;
+  onSaveDraft?: (params: Record<string, string>) => void;
   submitting: boolean;
   currentAuthor?: string;
 }) {
@@ -85,17 +117,22 @@ export function DraftConfigForm({
   const [jurisdiction, setJurisdiction] = useState<string>(
     initial.jurisdiction_id ?? prior?.jurisdiction_id ?? "global",
   );
-  const [domain, setDomain] = useState<string>(prior?.domain ?? "rule");
+  const [domain, setDomain] = useState<string>(initial.domain ?? prior?.domain ?? "rule");
   const [valueType, setValueType] = useState<ValueType>(
     (initial.value_type as ValueType) ?? prior?.value_type ?? "number",
   );
-  const [value, setValue] = useState<unknown>(prior?.value ?? "");
-  const [effectiveFrom, setEffectiveFrom] = useState<string>(todayMidnightUtc());
-  const [citation, setCitation] = useState<string>("");
-  const [rationale, setRationale] = useState<string>("");
-  const [language, setLanguage] = useState<string>(prior?.language ?? "en");
+  const [value, setValue] = useState<unknown>(
+    initial.value !== undefined ? hydrateValue(initial.value, (initial.value_type as ValueType) ?? prior?.value_type ?? "number") : prior?.value ?? "",
+  );
+  const [effectiveFrom, setEffectiveFrom] = useState<string>(initial.effective_from ?? todayMidnightUtc());
+  const [citation, setCitation] = useState<string>(initial.citation ?? "");
+  const [rationale, setRationale] = useState<string>(initial.rationale ?? "");
+  const [language, setLanguage] = useState<string>(initial.language ?? prior?.language ?? "en");
 
   const [errors, setErrors] = useState<Errors>({});
+  const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // -- locked fields when superseding --
@@ -116,8 +153,14 @@ export function DraftConfigForm({
 
   useUnsavedChangesPrompt(dirty, intl.formatMessage({ id: "draft.unsaved.body" }));
 
-  // Reset value when value_type changes (avoid type-mismatched residue).
+  // Reset value when value_type changes (avoid type-mismatched residue), but
+  // skip the very first render so URL-hydrated values survive.
+  const [vtMounted, setVtMounted] = useState(false);
   useEffect(() => {
+    if (!vtMounted) {
+      setVtMounted(true);
+      return;
+    }
     if (prior && valueType === prior.value_type) return;
     if (valueType === "bool") setValue(false);
     else if (valueType === "list" || valueType === "enum") setValue([]);
@@ -125,39 +168,89 @@ export function DraftConfigForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueType]);
 
+  // -- per-field validators (single source of truth) --
+  const computeFieldError = useCallback(
+    (field: FieldName, draftSnapshot?: Partial<Record<FieldName, unknown>>): string | undefined => {
+      const v = (k: FieldName, fallback: unknown) =>
+        draftSnapshot && k in draftSnapshot ? draftSnapshot[k] : fallback;
+      switch (field) {
+        case "key":
+          return validateKey(String(v("key", key))) ?? undefined;
+        case "effective_from":
+          return v("effective_from", effectiveFrom) ? undefined : "validators.effective_from.required";
+        case "citation":
+          return (v("domain", domain) === "rule" && !String(v("citation", citation)).trim())
+            ? "validators.citation.required"
+            : undefined;
+        case "rationale":
+          return validateRationale(String(v("rationale", rationale))) ?? undefined;
+        case "language":
+          return v("domain", domain) === "ui" && !v("language", language)
+            ? "validators.language.required"
+            : undefined;
+        case "value": {
+          const t = (v("value_type", valueType) as ValueType) ?? valueType;
+          const raw = v("value", value);
+          try {
+            const coerced = coerceValue(raw, t);
+            if (t === "number" && (raw === "" || raw === undefined || raw === null))
+              return "validators.value.required";
+            if ((t === "string" || t === "prompt") && !String(raw ?? "").trim())
+              return "validators.value.required";
+            if ((t === "list" || t === "enum") && (!Array.isArray(coerced) || coerced.length === 0))
+              return "validators.value.required";
+            return undefined;
+          } catch (e) {
+            return (e as Error).message;
+          }
+        }
+        default:
+          return undefined;
+      }
+    },
+    [key, effectiveFrom, citation, domain, rationale, language, valueType, value],
+  );
+
+  // Re-validate touched fields whenever their inputs change (live feedback).
+  useEffect(() => {
+    if (!submitAttempted && Object.keys(touched).length === 0) return;
+    setErrors((prev) => {
+      const next: Errors = { ...prev };
+      const fields: FieldName[] = ["key", "value", "effective_from", "citation", "rationale", "language"];
+      for (const f of fields) {
+        if (!submitAttempted && !touched[f]) continue;
+        const err = computeFieldError(f);
+        if (err) next[f] = err;
+        else delete next[f];
+      }
+      return next;
+    });
+  }, [computeFieldError, submitAttempted, touched]);
+
+  function markTouched(field: FieldName) {
+    setTouched((t) => (t[field] ? t : { ...t, [field]: true }));
+  }
+
   function validateAll(): { ok: boolean; coercedValue?: unknown } {
     const next: Errors = {};
-    const keyErr = validateKey(key);
-    if (keyErr) next.key = keyErr;
-
-    if (!effectiveFrom) next.effective_from = "validators.effective_from.required";
-
-    if (domain === "rule" && !citation.trim()) next.citation = "validators.citation.required";
-
-    const ratErr = validateRationale(rationale);
-    if (ratErr) next.rationale = ratErr;
-
+    const fields: FieldName[] = ["key", "value", "effective_from", "citation", "rationale", "language"];
+    for (const f of fields) {
+      const err = computeFieldError(f);
+      if (err) next[f] = err;
+    }
     let coerced: unknown;
     try {
       coerced = coerceValue(value, valueType);
-      if (valueType === "number" && (value === "" || value === undefined || value === null))
-        next.value = "validators.value.required";
-      if ((valueType === "string" || valueType === "prompt") && !String(value ?? "").trim())
-        next.value = "validators.value.required";
-      if ((valueType === "list" || valueType === "enum") && (!Array.isArray(coerced) || coerced.length === 0))
-        next.value = "validators.value.required";
-    } catch (e) {
-      next.value = (e as Error).message;
+    } catch {
+      // Already captured by computeFieldError("value").
     }
-
-    if (domain === "ui" && !language) next.language = "validators.language.required";
-
     setErrors(next);
     return { ok: Object.keys(next).length === 0, coercedValue: coerced };
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setSubmitAttempted(true);
     setSubmitError(null);
     const { ok, coercedValue } = validateAll();
     if (!ok) {
@@ -186,6 +279,35 @@ export function DraftConfigForm({
     } catch (err) {
       setSubmitError((err as Error).message);
     }
+  }
+
+  /**
+   * Save-as-draft: serialize the in-progress form into URL search params so
+   * the maintainer can bookmark, share, or resume later. Empty fields are
+   * omitted to keep the URL terse.
+   */
+  function handleSaveDraft() {
+    if (!onSaveDraft) return;
+    const params: Record<string, string> = {};
+    if (key) params.key = key;
+    if (jurisdiction) params.jurisdiction_id = jurisdiction;
+    if (domain) params.domain = domain;
+    if (valueType) params.value_type = valueType;
+    if (citation) params.citation = citation;
+    if (rationale) params.rationale = rationale;
+    if (effectiveFrom) params.effective_from = effectiveFrom;
+    if (domain === "ui" && language) params.language = language;
+    if (initial.supersedes_id) params.supersedes_id = initial.supersedes_id;
+    // Serialize value as JSON so arrays / numbers / booleans round-trip safely.
+    if (value !== "" && value !== undefined && value !== null) {
+      try {
+        params.value = typeof value === "string" ? value : JSON.stringify(value);
+      } catch {
+        /* skip un-serializable values */
+      }
+    }
+    onSaveDraft(params);
+    toast.success(intl.formatMessage({ id: "draft.saved" }));
   }
 
   function handleCancel() {
@@ -258,6 +380,7 @@ export function DraftConfigForm({
             type="text"
             value={key}
             onChange={(e) => setKey(e.target.value)}
+            onBlur={() => markTouched("key")}
             disabled={lockedKey}
             required
             aria-required="true"
@@ -317,7 +440,10 @@ export function DraftConfigForm({
           <DateTimeInput
             id={ids.effectiveFrom}
             value={effectiveFrom}
-            onChange={setEffectiveFrom}
+            onChange={(v) => {
+              setEffectiveFrom(v);
+              markTouched("effective_from");
+            }}
             ariaDescribedBy={`${ids.effectiveFrom}-help ${errors.effective_from ? `${ids.effectiveFrom}-error` : ""}`.trim()}
             ariaInvalid={!!errors.effective_from}
             required
@@ -325,6 +451,11 @@ export function DraftConfigForm({
           <p id={`${ids.effectiveFrom}-help`} className="text-xs text-foreground-muted">
             {intl.formatMessage({ id: "draft.field.effective_from.help" })}
           </p>
+          {errors.effective_from && (
+            <p id={`${ids.effectiveFrom}-error`} role="alert" className="text-xs" style={{ color: "var(--verdict-rejected)" }}>
+              {intl.formatMessage({ id: errors.effective_from })}
+            </p>
+          )}
         </div>
 
         {/* Value (full width) */}
@@ -336,7 +467,10 @@ export function DraftConfigForm({
             id={ids.value}
             type={valueType}
             value={value}
-            onChange={setValue}
+            onChange={(v) => {
+              setValue(v);
+              markTouched("value");
+            }}
             ariaDescribedBy={errors.value ? `${ids.value}-error` : undefined}
             ariaInvalid={!!errors.value}
           />
@@ -358,6 +492,7 @@ export function DraftConfigForm({
             type="text"
             value={citation}
             onChange={(e) => setCitation(e.target.value)}
+            onBlur={() => markTouched("citation")}
             aria-required={domain === "rule" || undefined}
             aria-invalid={!!errors.citation}
             aria-describedby={`${ids.citation}-help ${errors.citation ? `${ids.citation}-error` : ""}`.trim()}
@@ -395,6 +530,7 @@ export function DraftConfigForm({
             id={ids.rationale}
             value={rationale}
             onChange={(e) => setRationale(e.target.value)}
+            onBlur={() => markTouched("rationale")}
             required
             aria-required="true"
             aria-invalid={!!errors.rationale}
@@ -432,6 +568,11 @@ export function DraftConfigForm({
         <Button type="button" variant="outline" onClick={handleCancel} disabled={submitting}>
           {intl.formatMessage({ id: "draft.cancel" })}
         </Button>
+        {onSaveDraft && (
+          <Button type="button" variant="ghost" onClick={handleSaveDraft} disabled={submitting}>
+            {intl.formatMessage({ id: "draft.save_as_draft" })}
+          </Button>
+        )}
         <Button
           type="submit"
           variant={isAgent ? "agent" : "authority"}
@@ -442,6 +583,43 @@ export function DraftConfigForm({
             : intl.formatMessage({ id: "draft.submit" })}
         </Button>
       </div>
+
+      {/* Live timeline preview */}
+      <section className="space-y-2 border-t border-border pt-6">
+        <div className="flex items-center justify-between">
+          <h2
+            className="text-xs uppercase tracking-[0.18em] text-foreground-subtle"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {intl.formatMessage({ id: "draft.preview.title" })}
+          </h2>
+          <button
+            type="button"
+            onClick={() => setShowPreview((s) => !s)}
+            aria-expanded={showPreview}
+            className="text-xs text-foreground-muted underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {intl.formatMessage({ id: showPreview ? "value.collapse" : "value.expand" })}
+          </button>
+        </div>
+        {showPreview && (
+          <DraftPreview
+            draft={{
+              key,
+              jurisdiction,
+              domain,
+              valueType,
+              value,
+              effectiveFrom,
+              citation,
+              rationale,
+              language,
+              author: currentAuthor,
+            }}
+            prior={prior}
+          />
+        )}
+      </section>
     </form>
   );
 }

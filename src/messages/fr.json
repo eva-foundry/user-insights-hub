@@ -189,5 +189,10 @@
   "validators.rationale.too_long": "Justification trop longue (max 2000).",
   "validators.citation.required": "Citation requise pour les valeurs du domaine « rule ».",
   "validators.effective_from.required": "Date d'effet requise.",
-  "validators.language.required": "Langue requise pour les valeurs du domaine « ui »."
+  "validators.language.required": "Langue requise pour les valeurs du domaine « ui ».",
+  "draft.save_as_draft": "Enregistrer le brouillon (URL)",
+  "draft.saved": "Brouillon enregistré dans l'URL — ajoutez aux favoris pour reprendre",
+  "draft.preview.title": "Aperçu en direct de la chronologie",
+  "draft.preview.caption": "Voici comment la nouvelle version apparaîtra une fois soumise.",
+  "draft.preview.supersedes": "Remplacera la version en vigueur depuis le {date, date, medium}"
 }

@@ -189,5 +189,10 @@
   "validators.rationale.too_long": "Justificación demasiado larga (máx. 2000).",
   "validators.citation.required": "La cita es obligatoria para valores del dominio rule.",
   "validators.effective_from.required": "Fecha de vigencia requerida.",
-  "validators.language.required": "Idioma obligatorio para valores del dominio ui."
+  "validators.language.required": "Idioma obligatorio para valores del dominio ui.",
+  "draft.save_as_draft": "Guardar borrador (URL)",
+  "draft.saved": "Borrador guardado en la URL — agrégalo a marcadores para continuar",
+  "draft.preview.title": "Vista previa de la línea de tiempo",
+  "draft.preview.caption": "Así se verá la nueva versión cuando se envíe.",
+  "draft.preview.supersedes": "Reemplazará la versión vigente desde {date, date, medium}"
 }

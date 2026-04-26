@@ -189,5 +189,10 @@
   "validators.rationale.too_long": "Begründung zu lang (max. 2000).",
   "validators.citation.required": "Quellenangabe für rule-Werte erforderlich.",
   "validators.effective_from.required": "Datum erforderlich.",
-  "validators.language.required": "Sprache für ui-Werte erforderlich."
+  "validators.language.required": "Sprache für ui-Werte erforderlich.",
+  "draft.save_as_draft": "Als Entwurf speichern (URL)",
+  "draft.saved": "Entwurf in URL gespeichert — Lesezeichen zum Fortsetzen",
+  "draft.preview.title": "Live-Vorschau der Zeitleiste",
+  "draft.preview.caption": "So erscheint die neue Version nach dem Absenden.",
+  "draft.preview.supersedes": "Ersetzt die seit {date, date, medium} gültige Version"
 }
