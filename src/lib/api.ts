@@ -33,6 +33,7 @@ export async function fetchOrMock<T>(path: string, mock: T, init?: RequestInit):
 import type {
   ListConfigValuesParams,
   ListConfigValuesResponse,
+  ListVersionsResponse,
 } from "./types";
 
 export async function listConfigValues(
@@ -43,4 +44,21 @@ export async function listConfigValues(
   ) as [string, string][];
   const qs = new URLSearchParams(entries).toString();
   return fetcher<ListConfigValuesResponse>(`/api/config/values${qs ? `?${qs}` : ""}`);
+}
+
+/**
+ * Fetches the full version history for a single (key, jurisdiction_id) pair.
+ * `jurisdictionId === "global"` is treated as the null-jurisdiction (omitted).
+ */
+export async function listVersions(
+  key: string,
+  jurisdictionId: string | null,
+  language?: string,
+): Promise<ListVersionsResponse> {
+  const params = new URLSearchParams({ key });
+  if (jurisdictionId && jurisdictionId !== "global") {
+    params.set("jurisdiction_id", jurisdictionId);
+  }
+  if (language) params.set("language", language);
+  return fetcher<ListVersionsResponse>(`/api/config/versions?${params.toString()}`);
 }
