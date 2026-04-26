@@ -42,9 +42,8 @@ export const Route = createFileRoute(
 
 const AUTOSAVE_INTERVAL_MS = 5_000;
 
-function draftStorageKey(key: string, jurisdictionId: string) {
-  return `govops-prompt-draft-${key}-${jurisdictionId}`;
-}
+import { StorageKeys } from "@/lib/storageKeys";
+const draftStorageKey = StorageKeys.promptDraft;
 
 type Tab = "edit" | "preview" | "test";
 

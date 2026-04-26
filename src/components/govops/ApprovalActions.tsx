@@ -11,15 +11,16 @@ import {
 } from "@/lib/api";
 import { getCurrentUser } from "@/lib/currentUser";
 import type { ConfigValue } from "@/lib/types";
+import { StorageKeys } from "@/lib/storageKeys";
 import {
   ConfirmActionDialog,
   type ApprovalAction,
 } from "./ConfirmActionDialog";
 
 const COMMENT_MIN = 10;
-const COMMENT_KEY = (id: string) => `govops:approval-comment:${id}`;
-const EXPANDED_KEY = "govops:approval-panel-expanded";
-const HELP_KEY = "govops:approval-shortcuts-open";
+const COMMENT_KEY = StorageKeys.approvalComment;
+const EXPANDED_KEY = StorageKeys.approvalPanelExpanded;
+const HELP_KEY = StorageKeys.approvalShortcutsOpen;
 
 function isMac(): boolean {
   if (typeof navigator === "undefined") return false;

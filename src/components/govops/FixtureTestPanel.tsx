@@ -22,9 +22,8 @@ interface StoredRun extends FixtureRunResult {
   ran_at: string; // ISO
 }
 
-function historyKey(promptKey: string) {
-  return `govops:fixture-runs:${promptKey}`;
-}
+import { StorageKeys } from "@/lib/storageKeys";
+const historyKey = StorageKeys.fixtureRuns;
 
 function loadHistory(promptKey: string): StoredRun[] {
   if (typeof window === "undefined") return [];

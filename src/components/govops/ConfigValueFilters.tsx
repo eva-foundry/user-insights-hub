@@ -1,5 +1,14 @@
 import { useIntl } from "react-intl";
 import { DOMAINS, JURISDICTIONS, LANGUAGES } from "@/lib/types";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export type FiltersState = {
   key_prefix: string;
@@ -13,22 +22,19 @@ type Props = {
   onChange: (next: Partial<FiltersState>) => void;
 };
 
-const selectClass =
-  "h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground transition-colors hover:bg-surface-sunken";
+const labelClass =
+  "mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle";
+const labelStyle = { fontFamily: "var(--font-mono)" } as const;
 
 export function ConfigValueFilters({ value, onChange }: Props) {
   const intl = useIntl();
   return (
     <div className="flex flex-wrap items-end gap-3">
       <div className="min-w-[220px] flex-1">
-        <label
-          htmlFor="config-search"
-          className="mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle"
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
+        <Label htmlFor="config-search" className={labelClass} style={labelStyle}>
           {intl.formatMessage({ id: "config.search.label" })}
-        </label>
-        <input
+        </Label>
+        <Input
           id="config-search"
           type="search"
           value={value.key_prefix}
@@ -37,87 +43,84 @@ export function ConfigValueFilters({ value, onChange }: Props) {
             if (e.key === "Escape") onChange({ key_prefix: "" });
           }}
           placeholder={intl.formatMessage({ id: "config.search.placeholder" })}
-          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-foreground placeholder:text-foreground-subtle"
+          className="h-9 bg-surface"
           style={{ fontFamily: "var(--font-mono)" }}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="config-domain"
-          className="mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle"
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
+        <Label htmlFor="config-domain" className={labelClass} style={labelStyle}>
           {intl.formatMessage({ id: "config.filter.domain.label" })}
-        </label>
-        <select
-          id="config-domain"
+        </Label>
+        <Select
           value={value.domain}
-          onChange={(e) => onChange({ domain: e.target.value })}
-          className={selectClass}
+          onValueChange={(v) => onChange({ domain: v })}
         >
-          <option value="all">
-            {intl.formatMessage({ id: "config.filter.domain.all" })}
-          </option>
-          {DOMAINS.map((d) => (
-            <option key={d} value={d}>
-              {intl.formatMessage({ id: `config.filter.domain.${d}` })}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="config-domain" className="h-9 w-[160px] bg-surface">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              {intl.formatMessage({ id: "config.filter.domain.all" })}
+            </SelectItem>
+            {DOMAINS.map((d) => (
+              <SelectItem key={d} value={d}>
+                {intl.formatMessage({ id: `config.filter.domain.${d}` })}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
-        <label
-          htmlFor="config-jurisdiction"
-          className="mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle"
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
+        <Label htmlFor="config-jurisdiction" className={labelClass} style={labelStyle}>
           {intl.formatMessage({ id: "config.filter.jurisdiction.label" })}
-        </label>
-        <select
-          id="config-jurisdiction"
+        </Label>
+        <Select
           value={value.jurisdiction_id}
-          onChange={(e) => onChange({ jurisdiction_id: e.target.value })}
-          className={selectClass}
+          onValueChange={(v) => onChange({ jurisdiction_id: v })}
         >
-          <option value="all">
-            {intl.formatMessage({ id: "config.filter.jurisdiction.all" })}
-          </option>
-          <option value="global">
-            {intl.formatMessage({ id: "config.filter.jurisdiction.global" })}
-          </option>
-          {JURISDICTIONS.map((j) => (
-            <option key={j} value={j}>
-              {j}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="config-jurisdiction" className="h-9 w-[160px] bg-surface">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              {intl.formatMessage({ id: "config.filter.jurisdiction.all" })}
+            </SelectItem>
+            <SelectItem value="global">
+              {intl.formatMessage({ id: "config.filter.jurisdiction.global" })}
+            </SelectItem>
+            {JURISDICTIONS.map((j) => (
+              <SelectItem key={j} value={j}>
+                {j}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
-        <label
-          htmlFor="config-language"
-          className="mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle"
-          style={{ fontFamily: "var(--font-mono)" }}
-        >
+        <Label htmlFor="config-language" className={labelClass} style={labelStyle}>
           {intl.formatMessage({ id: "config.filter.language.label" })}
-        </label>
-        <select
-          id="config-language"
+        </Label>
+        <Select
           value={value.language}
-          onChange={(e) => onChange({ language: e.target.value })}
-          className={selectClass}
+          onValueChange={(v) => onChange({ language: v })}
         >
-          <option value="all">
-            {intl.formatMessage({ id: "config.filter.language.all" })}
-          </option>
-          {LANGUAGES.map((l) => (
-            <option key={l} value={l}>
-              {l}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger id="config-language" className="h-9 w-[140px] bg-surface">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              {intl.formatMessage({ id: "config.filter.language.all" })}
+            </SelectItem>
+            {LANGUAGES.map((l) => (
+              <SelectItem key={l} value={l}>
+                {l}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

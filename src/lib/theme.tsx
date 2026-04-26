@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { StorageKeys } from "./storageKeys";
 
 export type Theme = "light" | "dark";
-const STORAGE_KEY = "govops-theme";
+const STORAGE_KEY = StorageKeys.theme;
 
 type ThemeContext = { theme: Theme; setTheme: (t: Theme) => void; toggle: () => void };
 const ThemeCtx = createContext<ThemeContext | null>(null);

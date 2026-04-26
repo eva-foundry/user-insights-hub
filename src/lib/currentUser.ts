@@ -3,7 +3,8 @@
  * v1: reads from `localStorage["govops-user"]`, defaulting to "maintainer".
  * NOT a security boundary — the backend is the source of truth on every action.
  */
-const STORAGE_KEY = "govops-user";
+import { StorageKeys } from "./storageKeys";
+const STORAGE_KEY = StorageKeys.currentUser;
 const DEFAULT_USER = "maintainer";
 
 export function getCurrentUser(): string {

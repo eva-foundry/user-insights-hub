@@ -1,6 +1,13 @@
 import { useIntl } from "react-intl";
 import { Languages } from "lucide-react";
 import { useLocale, type Locale } from "@/lib/i18n";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const LOCALES: Locale[] = ["en", "fr", "es-MX", "pt-BR", "de", "uk"];
 
@@ -10,21 +17,24 @@ export function LanguageSwitcher() {
   const label = intl.formatMessage({ id: "lang.switcher.label" });
 
   return (
-    <label className="inline-flex items-center gap-2 text-sm text-foreground-muted">
+    <div className="inline-flex items-center gap-2 text-sm text-foreground-muted">
       <Languages className="size-4" aria-hidden />
-      <span className="sr-only">{label}</span>
-      <select
-        aria-label={label}
-        value={locale}
-        onChange={(e) => setLocale(e.target.value as Locale)}
-        className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground transition-colors hover:bg-surface-sunken"
-      >
-        {LOCALES.map((l) => (
-          <option key={l} value={l}>
-            {intl.formatMessage({ id: `lang.${l}` })}
-          </option>
-        ))}
-      </select>
-    </label>
+      <span className="sr-only" id="lang-switcher-label">{label}</span>
+      <Select value={locale} onValueChange={(v) => setLocale(v as Locale)}>
+        <SelectTrigger
+          aria-labelledby="lang-switcher-label"
+          className="h-9 w-[120px] bg-surface text-foreground"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {LOCALES.map((l) => (
+            <SelectItem key={l} value={l}>
+              {intl.formatMessage({ id: `lang.${l}` })}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

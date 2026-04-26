@@ -3,7 +3,8 @@
  * between in-progress drafts. Stored as a JSON array under a single key.
  * Best-effort: any read/write failure simply yields an empty list.
  */
-const STORAGE_KEY = "govops:recent-drafts";
+import { StorageEvents, StorageKeys } from "./storageKeys";
+const STORAGE_KEY = StorageKeys.recentDrafts;
 const MAX_DRAFTS = 8;
 
 export interface RecentDraft {
@@ -83,7 +84,7 @@ export function clearAllRecentDrafts(): void {
 }
 
 /** Subscribe to cross-tab + same-tab updates. Returns an unsubscribe fn. */
-export const DRAFTS_EVENT = "govops:recent-drafts:changed";
+export const DRAFTS_EVENT = StorageEvents.recentDraftsChanged;
 export function emitDraftsChanged() {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new Event(DRAFTS_EVENT));
