@@ -1,49 +1,13 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
-import { I18nProvider, type Locale } from "@/lib/i18n";
-import { StorageKeys } from "@/lib/storageKeys";
+import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider } from "@/lib/theme";
 import { Masthead } from "@/components/govops/Masthead";
 import { SkipToContent } from "@/components/govops/SkipToContent";
 import { Toaster } from "@/components/ui/sonner";
 import { RouteError } from "@/components/govops/RouteError";
-
-const SUPPORTED_LOCALES: Locale[] = ["en", "fr", "es-MX", "pt-BR", "de", "uk"];
-
-function pickLocale(input: string | undefined): Locale {
-  if (!input) return "en";
-  if ((SUPPORTED_LOCALES as string[]).includes(input)) return input as Locale;
-  const head = input.split(",")[0]?.trim() ?? "";
-  if ((SUPPORTED_LOCALES as string[]).includes(head)) return head as Locale;
-  const two = head.slice(0, 2).toLowerCase();
-  if (two === "es") return "es-MX";
-  if (two === "pt") return "pt-BR";
-  if (two === "fr") return "fr";
-  if (two === "de") return "de";
-  if (two === "uk") return "uk";
-  return "en";
-}
-
-/**
- * Server-only locale resolution: prefer the persisted cookie, then the
- * browser's Accept-Language. Wrapped in a try/catch so client navigations
- * (where the request APIs throw) silently fall back to "en".
- */
-async function resolveSsrLocale(): Promise<Locale> {
-  if (typeof window !== "undefined") return "en";
-  try {
-    const { getCookie, getRequestHeader } = await import(
-      "@tanstack/react-start/server"
-    );
-    const cookieLocale = getCookie(StorageKeys.locale);
-    if (cookieLocale) return pickLocale(cookieLocale);
-    const accept = getRequestHeader("accept-language");
-    return pickLocale(accept);
-  } catch {
-    return "en";
-  }
-}
+import { getSsrLocale } from "@/lib/ssrLocale";
 
 function NotFoundComponent() {
   return (
@@ -68,7 +32,7 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
-  loader: async () => ({ initialLocale: await resolveSsrLocale() }),
+  loader: async () => ({ initialLocale: await getSsrLocale() }),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
