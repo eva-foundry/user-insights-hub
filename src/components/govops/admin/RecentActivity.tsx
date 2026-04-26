@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+
 import { useIntl } from "react-intl";
 import type { ActivityEvent } from "@/lib/aggregations";
 
@@ -46,7 +46,7 @@ export function RecentActivity({ events }: { events: ActivityEvent[] }) {
                   className="ms-auto text-xs underline-offset-2 hover:underline"
                 >
                   {relative(intl, e.timestamp)}
-                </Link>
+                </a>
               </div>
               <p className="mt-1 text-foreground">{e.detail}</p>
             </li>
