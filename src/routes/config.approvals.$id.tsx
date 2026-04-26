@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { FormattedDate, useIntl } from "react-intl";
 
 import { ApprovalActions } from "@/components/govops/ApprovalActions";
@@ -8,6 +7,7 @@ import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { ValueDiff } from "@/components/govops/ValueDiff";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
 import { ValueTypeBadge } from "@/components/govops/ValueTypeBadge";
+import { RouteError } from "@/components/govops/RouteError";
 import { getApproval, resolveCurrentConfigValue } from "@/lib/api";
 import type { ConfigValue } from "@/lib/types";
 
@@ -15,56 +15,42 @@ export const Route = createFileRoute("/config/approvals/$id")({
   head: () => ({
     meta: [{ title: "Review draft — GovOps" }],
   }),
+  loader: async ({
+    params,
+  }): Promise<{ proposed: ConfigValue | null; current: ConfigValue | null }> => {
+    const proposed = await getApproval(params.id);
+    if (!proposed) return { proposed: null, current: null };
+    let current: ConfigValue | null = null;
+    try {
+      current = await resolveCurrentConfigValue(
+        proposed.key,
+        proposed.jurisdiction_id,
+        new Date().toISOString(),
+      );
+    } catch {
+      current = null;
+    }
+    return { proposed, current };
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: () => (
+    <div className="space-y-6" aria-busy="true">
+      <div className="h-24 animate-pulse rounded-md bg-surface-sunken" />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="h-72 animate-pulse rounded-md bg-surface-sunken" />
+        <div className="h-72 animate-pulse rounded-md bg-surface-sunken" />
+      </div>
+    </div>
+  ),
   component: ApprovalDetailPage,
 });
 
 function ApprovalDetailPage() {
   const intl = useIntl();
-  const { id } = Route.useParams();
+  const { proposed, current } = Route.useLoaderData();
   const nav = useNavigate();
-
-  const [proposed, setProposed] = useState<ConfigValue | null>(null);
-  const [current, setCurrent] = useState<ConfigValue | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    setNotFound(false);
-    getApproval(id)
-      .then(async (cv) => {
-        if (cancelled) return;
-        if (!cv) {
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
-        setProposed(cv);
-        try {
-          const resolved = await resolveCurrentConfigValue(
-            cv.key,
-            cv.jurisdiction_id,
-            new Date().toISOString(),
-          );
-          if (!cancelled) setCurrent(resolved);
-        } catch {
-          if (!cancelled) setCurrent(null);
-        } finally {
-          if (!cancelled) setLoading(false);
-        }
-      })
-      .catch((e: Error) => {
-        if (cancelled) return;
-        setError(e.message);
-        setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [id]);
 
   function onResolved() {
     // Approve → jump to canonical timeline; request/reject → back to queue.
@@ -72,19 +58,7 @@ function ApprovalDetailPage() {
     nav({ to: "/config/approvals" });
   }
 
-  if (loading) {
-    return (
-      <div className="space-y-6" aria-busy="true">
-        <div className="h-24 animate-pulse rounded-md bg-surface-sunken" />
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="h-72 animate-pulse rounded-md bg-surface-sunken" />
-          <div className="h-72 animate-pulse rounded-md bg-surface-sunken" />
-        </div>
-      </div>
-    );
-  }
-
-  if (notFound) {
+  if (!proposed) {
     return (
       <div className="space-y-4 rounded-md border border-border bg-surface p-6">
         <p className="text-base font-medium text-foreground">
@@ -96,22 +70,6 @@ function ApprovalDetailPage() {
         >
           {intl.formatMessage({ id: "approvals.back_to_queue" })}
         </Link>
-      </div>
-    );
-  }
-
-  if (error || !proposed) {
-    return (
-      <div
-        role="alert"
-        className="rounded-md border border-[color:var(--verdict-rejected)] bg-[color:var(--verdict-rejected)]/5 p-4"
-      >
-        <p className="text-sm font-medium text-[color:var(--verdict-rejected)]">
-          {intl.formatMessage({ id: "approvals.error.load" })}
-        </p>
-        {error && (
-          <p className="mt-1 text-xs text-foreground-muted">{error}</p>
-        )}
       </div>
     );
   }
