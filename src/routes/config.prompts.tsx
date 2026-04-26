@@ -3,11 +3,18 @@ import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { listConfigValues } from "@/lib/api";
-import { filterMockConfigValues } from "@/lib/mock-config-values";
 import type { ConfigValue, ListConfigValuesResponse } from "@/lib/types";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
 import { RouteError } from "@/components/govops/RouteError";
+import { RouteLoading } from "@/components/govops/RouteLoading";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/config/prompts")({
   head: () => ({
@@ -23,22 +30,15 @@ export const Route = createFileRoute("/config/prompts")({
     try {
       return await listConfigValues({ domain: "prompt" });
     } catch {
+      // mock fallback (lazy — keeps fixtures out of the route chunk)
+      const { filterMockConfigValues } = await import("@/lib/mock-config-values");
       return filterMockConfigValues({ domain: "prompt" });
     }
   },
   errorComponent: ({ error, reset }) => (
     <RouteError error={error as Error} reset={reset} />
   ),
-  pendingComponent: () => (
-    <ul role="list" aria-busy="true" className="space-y-2">
-      {[0, 1, 2].map((i) => (
-        <li
-          key={i}
-          className="h-[120px] animate-pulse rounded-md border border-border bg-surface-sunken"
-        />
-      ))}
-    </ul>
-  ),
+  pendingComponent: () => <RouteLoading rows={3} rowHeight={120} />,
   component: PromptsPage,
 });
 
