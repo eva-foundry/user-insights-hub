@@ -8,6 +8,7 @@
     "dev": "vite dev",
     "prebuild": "node scripts/clean-route-tree.mjs && node scripts/check-i18n-keys.mjs && node scripts/check-i18n-icu.mjs && node scripts/check-impact-i18n.mjs && node scripts/check-route-tree-duplicates.mjs",
     "build": "vite build",
+    "postbuild": "node scripts/check-route-tree-duplicates.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
