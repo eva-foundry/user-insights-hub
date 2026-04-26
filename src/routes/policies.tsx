@@ -126,7 +126,7 @@ function PoliciesPage() {
                     className="truncate text-base text-foreground"
                     style={{ fontFamily: "var(--font-serif)" }}
                   >
-                    {p.title[locale]}
+                    {p.title[locale] ?? p.title.en}
                   </p>
                 </div>
                 <div className="pe-4">

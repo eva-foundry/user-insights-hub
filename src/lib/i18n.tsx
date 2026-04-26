@@ -3,12 +3,22 @@ import { IntlProvider } from "react-intl";
 
 import en from "@/messages/en.json";
 import fr from "@/messages/fr.json";
-import ar from "@/messages/ar.json";
+import esMX from "@/messages/es-MX.json";
+import ptBR from "@/messages/pt-BR.json";
+import de from "@/messages/de.json";
+import uk from "@/messages/uk.json";
 
-export type Locale = "en" | "fr" | "ar";
+export type Locale = "en" | "fr" | "es-MX" | "pt-BR" | "de" | "uk";
 
-const messagesByLocale: Record<Locale, Record<string, string>> = { en, fr, ar };
-const RTL_LOCALES: Locale[] = ["ar"];
+const messagesByLocale: Record<Locale, Record<string, string>> = {
+  en,
+  fr,
+  "es-MX": esMX,
+  "pt-BR": ptBR,
+  de,
+  uk,
+};
+const RTL_LOCALES: Locale[] = []; // none of the supported locales are RTL
 const STORAGE_KEY = "govops-locale";
 
 type LocaleContext = {
@@ -23,8 +33,15 @@ function detectInitialLocale(): Locale {
   if (typeof window === "undefined") return "en";
   const stored = window.localStorage.getItem(STORAGE_KEY) as Locale | null;
   if (stored && stored in messagesByLocale) return stored;
-  const nav = window.navigator.language.slice(0, 2).toLowerCase();
-  if (nav === "fr" || nav === "ar") return nav;
+  const navFull = window.navigator.language; // e.g. "es-MX", "pt-BR", "de-DE"
+  const nav2 = navFull.slice(0, 2).toLowerCase();
+  // Exact match first (handles es-MX, pt-BR), then 2-letter fallback.
+  if (navFull in messagesByLocale) return navFull as Locale;
+  if (nav2 === "es") return "es-MX";
+  if (nav2 === "pt") return "pt-BR";
+  if (nav2 === "fr") return "fr";
+  if (nav2 === "de") return "de";
+  if (nav2 === "uk") return "uk";
   return "en";
 }
 
