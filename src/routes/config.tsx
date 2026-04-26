@@ -46,6 +46,42 @@ export const Route = createFileRoute("/config")({
         ? (search.sort as SortKey)
         : undefined,
   }),
+  loaderDeps: ({ search }) => ({
+    key_prefix: search.key_prefix,
+    domain: search.domain,
+    jurisdiction_id: search.jurisdiction_id,
+    language: search.language,
+  }),
+  loader: async ({ deps }): Promise<ListConfigValuesResponse> => {
+    const params = {
+      key_prefix: deps.key_prefix || undefined,
+      domain: deps.domain && deps.domain !== "all" ? deps.domain : undefined,
+      jurisdiction_id:
+        deps.jurisdiction_id && deps.jurisdiction_id !== "all"
+          ? deps.jurisdiction_id
+          : undefined,
+      language:
+        deps.language && deps.language !== "all" ? deps.language : undefined,
+    };
+    try {
+      return await listConfigValues(params);
+    } catch {
+      return filterMockConfigValues(params);
+    }
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: () => (
+    <ul role="list" className="space-y-2" aria-busy="true">
+      {[0, 1, 2].map((i) => (
+        <li
+          key={i}
+          className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
+        />
+      ))}
+    </ul>
+  ),
   component: ConfigPage,
 });
 
@@ -53,6 +89,7 @@ function ConfigPage() {
   const intl = useIntl();
   const navigate = useNavigate({ from: "/config" });
   const search = useSearch({ from: "/config" });
+  const data: ListConfigValuesResponse = Route.useLoaderData();
 
   const filters: FiltersState = {
     key_prefix: search.key_prefix ?? "",
@@ -93,53 +130,7 @@ function ConfigPage() {
     [navigate],
   );
 
-  // Debounce key_prefix at 200ms before requesting.
-  const [debouncedPrefix, setDebouncedPrefix] = useState(filters.key_prefix);
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedPrefix(filters.key_prefix), 200);
-    return () => clearTimeout(t);
-  }, [filters.key_prefix]);
-
-  const queryParams = useMemo(
-    () => ({
-      key_prefix: debouncedPrefix || undefined,
-      domain: filters.domain !== "all" ? filters.domain : undefined,
-      jurisdiction_id:
-        filters.jurisdiction_id !== "all" ? filters.jurisdiction_id : undefined,
-      language: filters.language !== "all" ? filters.language : undefined,
-    }),
-    [debouncedPrefix, filters.domain, filters.jurisdiction_id, filters.language],
-  );
-
-  const [data, setData] = useState<ListConfigValuesResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const reqId = useRef(0);
-
-  const load = useCallback(() => {
-    const id = ++reqId.current;
-    setLoading(true);
-    setError(null);
-    listConfigValues(queryParams)
-      .catch(() => filterMockConfigValues(queryParams))
-      .then((res) => {
-        if (id !== reqId.current) return;
-        setData(res);
-        setLoading(false);
-      })
-      .catch((e: Error) => {
-        if (id !== reqId.current) return;
-        setError(e.message);
-        setLoading(false);
-      });
-  }, [queryParams]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
   const sortedValues = useMemo<ConfigValue[]>(() => {
-    if (!data) return [];
     const arr = [...data.values];
     arr.sort((a, b) => {
       switch (sort) {
