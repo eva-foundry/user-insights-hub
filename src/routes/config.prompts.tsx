@@ -145,25 +145,32 @@ function PromptsPage() {
               values={{ shown: visibleRows.length, total: rows.length }}
             />
           </p>
-          <label
-            htmlFor="prompts-per-page"
+          <div
             className="flex items-center gap-2 text-xs text-foreground-muted"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            {intl.formatMessage({ id: "prompts.pagination.per_page" })}
-            <select
-              id="prompts-per-page"
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className="h-8 rounded-md border border-border bg-surface px-2 text-xs text-foreground"
+            <label htmlFor="prompts-per-page">
+              {intl.formatMessage({ id: "prompts.pagination.per_page" })}
+            </label>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => setPageSize(Number(v))}
             >
-              {[10, 20, 50].map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
-          </label>
+              <SelectTrigger
+                id="prompts-per-page"
+                className="h-8 w-[72px] bg-surface text-xs text-foreground"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 50].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       )}
 
