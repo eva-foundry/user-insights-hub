@@ -164,14 +164,11 @@ function ApprovalDetailPage() {
                 { id: "approvals.drafted_by" },
                 {
                   author: proposed.author,
-                  date: (
-                    <FormattedDate
-                      value={proposed.created_at}
-                      year="numeric"
-                      month="short"
-                      day="numeric"
-                    />
-                  ) as unknown as string,
+                  date: intl.formatDate(proposed.created_at, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }),
                 },
               )}
             </span>
