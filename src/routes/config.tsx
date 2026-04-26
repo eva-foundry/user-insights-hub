@@ -12,6 +12,13 @@ import {
 } from "@/components/govops/ConfigValueFilters";
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
 import { RouteError } from "@/components/govops/RouteError";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type SortKey = "key_asc" | "key_desc" | "effective_desc" | "effective_asc";
 const SORT_KEYS: SortKey[] = ["key_asc", "key_desc", "effective_desc", "effective_asc"];
@@ -186,18 +193,21 @@ function ConfigPage() {
           >
             {intl.formatMessage({ id: "config.sort.label" })}
           </label>
-          <select
-            id="config-sort"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground hover:bg-surface-sunken"
-          >
-            {SORT_KEYS.map((s) => (
-              <option key={s} value={s}>
-                {intl.formatMessage({ id: `config.sort.${s}` })}
-              </option>
-            ))}
-          </select>
+          <Select value={sort} onValueChange={(v) => setSort(v as SortKey)}>
+            <SelectTrigger
+              id="config-sort"
+              className="h-9 w-[200px] bg-surface text-foreground"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORT_KEYS.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {intl.formatMessage({ id: `config.sort.${s}` })}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
