@@ -13,6 +13,7 @@ import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
 import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
 import { Route as ConfigApprovalsRouteImport } from './routes/config.approvals'
@@ -38,6 +39,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigPromptsRoute = ConfigPromptsRouteImport.update({
+  id: '/prompts',
+  path: '/prompts',
+  getParentRoute: () => ConfigRoute,
 } as any)
 const ConfigDraftRoute = ConfigDraftRouteImport.update({
   id: '/draft',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
+  '/config/prompts': typeof ConfigPromptsRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
+  '/config/prompts': typeof ConfigPromptsRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
+  '/config/prompts': typeof ConfigPromptsRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
+    | '/config/prompts'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
+    | '/config/prompts'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
+    | '/config/prompts'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
   fileRoutesById: FileRoutesById
@@ -171,6 +183,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/config/prompts': {
+      id: '/config/prompts'
+      path: '/prompts'
+      fullPath: '/config/prompts'
+      preLoaderRoute: typeof ConfigPromptsRouteImport
+      parentRoute: typeof ConfigRoute
     }
     '/config/draft': {
       id: '/config/draft'
@@ -226,6 +245,7 @@ interface ConfigRouteChildren {
   ConfigApprovalsRoute: typeof ConfigApprovalsRouteWithChildren
   ConfigDiffRoute: typeof ConfigDiffRoute
   ConfigDraftRoute: typeof ConfigDraftRoute
+  ConfigPromptsRoute: typeof ConfigPromptsRoute
   ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
 }
 
@@ -233,6 +253,7 @@ const ConfigRouteChildren: ConfigRouteChildren = {
   ConfigApprovalsRoute: ConfigApprovalsRouteWithChildren,
   ConfigDiffRoute: ConfigDiffRoute,
   ConfigDraftRoute: ConfigDraftRoute,
+  ConfigPromptsRoute: ConfigPromptsRoute,
   ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
 }
 
@@ -248,3 +269,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
