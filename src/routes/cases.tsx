@@ -33,13 +33,17 @@ export const Route = createFileRoute("/cases")({
   },
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={5} />,
-  component: CasesListPage,
+  component: CasesRouteComponent,
 });
+
+function CasesRouteComponent() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <CasesListPage />;
+}
 
 function CasesListPage() {
   const intl = useIntl();
-  const childMatches = useChildMatches();
-  if (childMatches.length > 0) return <Outlet />;
   const { cases } = Route.useLoaderData() as { cases: CaseListItem[] };
   const [activeStatuses, setActiveStatuses] = useState<Set<CaseStatus>>(new Set());
   const [jurisdiction, setJurisdiction] = useState<string>("all");
