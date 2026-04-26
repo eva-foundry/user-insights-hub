@@ -590,5 +590,8 @@
   "screen.reset.title": "Descartar suas respostas?",
   "screen.reset.body": "Apagar todas as respostas deste formulário e recomeçar?",
   "screen.reset.keep": "Manter minhas respostas",
-  "screen.reset.discard": "Descartar respostas"
+  "screen.reset.discard": "Descartar respostas",
+  "screen.loader_error.title": "Não foi possível carregar este programa",
+  "screen.loader_error.body": "Algo deu errado ao buscar os detalhes do programa. Tente novamente ou escolha outra jurisdição.",
+  "screen.loader_error.retry": "Tentar de novo"
 }

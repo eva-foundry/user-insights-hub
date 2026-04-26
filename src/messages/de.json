@@ -590,5 +590,8 @@
   "screen.reset.title": "Antworten verwerfen?",
   "screen.reset.body": "Alle Antworten in diesem Formular löschen und neu beginnen?",
   "screen.reset.keep": "Antworten behalten",
-  "screen.reset.discard": "Antworten verwerfen"
+  "screen.reset.discard": "Antworten verwerfen",
+  "screen.loader_error.title": "Programm konnte nicht geladen werden",
+  "screen.loader_error.body": "Beim Abrufen der Programmdetails ist ein Fehler aufgetreten. Versuchen Sie es erneut oder wählen Sie eine andere Jurisdiktion.",
+  "screen.loader_error.retry": "Erneut versuchen"
 }
