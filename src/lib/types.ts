@@ -48,3 +48,18 @@ export const JURISDICTIONS = [
   "br-fed",
 ] as const;
 export const LANGUAGES = ["en", "fr", "pt", "es", "de", "uk"] as const;
+
+export interface CreateConfigValueRequest {
+  domain: string;
+  key: string;
+  jurisdiction_id: string | null;
+  value: unknown;
+  value_type: ValueType;
+  effective_from: string;
+  effective_to: string | null;
+  citation: string | null;
+  author: string;
+  rationale: string;
+  supersedes: string | null;
+  language: string | null;
+}

@@ -35,7 +35,8 @@ import type {
   ListConfigValuesResponse,
   ListVersionsResponse,
 } from "./types";
-import type { ConfigValue } from "./types";
+import type { ConfigValue, CreateConfigValueRequest } from "./types";
+import { mockCreateConfigValue } from "./api.mock";
 
 export async function listConfigValues(
   params: ListConfigValuesParams,
@@ -67,4 +68,25 @@ export async function listVersions(
 /** Fetches a single ConfigValue by id. Throws on 404 / non-2xx. */
 export async function getConfigValue(id: string): Promise<ConfigValue> {
   return fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}`);
+}
+
+/**
+ * Drafts a new ConfigValue. The backend POST endpoint is not yet implemented;
+ * when `VITE_USE_MOCK_API === "true"` (or the live request fails) we fall back
+ * to a synthetic mock so the form is exercisable end-to-end in preview.
+ */
+export async function createConfigValue(
+  body: CreateConfigValueRequest,
+): Promise<ConfigValue> {
+  if (import.meta.env.VITE_USE_MOCK_API === "true") {
+    return mockCreateConfigValue(body);
+  }
+  try {
+    return await fetcher<ConfigValue>("/api/config/values", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return mockCreateConfigValue(body);
+  }
 }
