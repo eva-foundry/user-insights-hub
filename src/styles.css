@@ -73,6 +73,13 @@
   --ring:                 var(--lavender-400);
   --ring-focus:           0 0 0 3px oklch(0.72 0.13 290 / 0.40);
 
+  /* diff-view tokens (govops-005) */
+  --diff-removed-bg: oklch(0.55 0.18 28 / 0.08);
+  --diff-removed-fg: var(--verdict-rejected);
+  --diff-added-bg:   oklch(0.62 0.115 155 / 0.10);
+  --diff-added-fg:   var(--verdict-enacted);
+  --diff-context-fg: var(--foreground-muted);
+
   /* shadcn aliases (kept for any pre-built ui/* components) */
   --card: var(--surface);
   --card-foreground: var(--foreground);

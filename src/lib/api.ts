@@ -35,6 +35,7 @@ import type {
   ListConfigValuesResponse,
   ListVersionsResponse,
 } from "./types";
+import type { ConfigValue } from "./types";
 
 export async function listConfigValues(
   params: ListConfigValuesParams,
@@ -61,4 +62,9 @@ export async function listVersions(
   }
   if (language) params.set("language", language);
   return fetcher<ListVersionsResponse>(`/api/config/versions?${params.toString()}`);
+}
+
+/** Fetches a single ConfigValue by id. Throws on 404 / non-2xx. */
+export async function getConfigValue(id: string): Promise<ConfigValue> {
+  return fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}`);
 }
