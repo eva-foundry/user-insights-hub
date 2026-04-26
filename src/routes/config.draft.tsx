@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { DraftConfigForm } from "@/components/govops/DraftConfigForm";
+import { RecentDrafts } from "@/components/govops/RecentDrafts";
 import { createConfigValue, getConfigValue } from "@/lib/api";
 import { MOCK_CONFIG_VALUES } from "@/lib/mock-config-values";
 import type { ConfigValue, CreateConfigValueRequest } from "@/lib/types";
@@ -89,12 +90,17 @@ function DraftPage() {
   }
 
   return (
-    <DraftConfigForm
-      initial={search}
-      prior={prior}
-      onSubmit={onSubmit}
-      onSaveDraft={onSaveDraft}
-      submitting={submitting}
-    />
+    <div className="space-y-6">
+      <RecentDrafts
+        activeSearch={new URLSearchParams(search as Record<string, string>).toString()}
+      />
+      <DraftConfigForm
+        initial={search}
+        prior={prior}
+        onSubmit={onSubmit}
+        onSaveDraft={onSaveDraft}
+        submitting={submitting}
+      />
+    </div>
   );
 }

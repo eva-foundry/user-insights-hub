@@ -194,5 +194,9 @@
   "draft.saved": "Rascunho salvo na URL — favorite para retomar",
   "draft.preview.title": "Pré-visualização da linha do tempo",
   "draft.preview.caption": "É assim que a nova versão aparecerá após o envio.",
-  "draft.preview.supersedes": "Substituirá a versão vigente desde {date, date, medium}"
+  "draft.preview.supersedes": "Substituirá a versão vigente desde {date, date, medium}",
+  "validators.effective_from.format": "Deve ser ISO-8601 UTC, ex.: 2026-01-15T00:00:00Z",
+  "validators.effective_from.invalid": "Data inválida.",
+  "draft.recent.title": "Rascunhos recentes",
+  "draft.recent.remove": "Remover rascunho {label}"
 }

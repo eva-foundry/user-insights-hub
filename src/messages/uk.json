@@ -194,5 +194,9 @@
   "draft.saved": "Чернетку збережено в URL — додайте в закладки, щоб продовжити",
   "draft.preview.title": "Попередній перегляд хронології",
   "draft.preview.caption": "Так нова версія виглядатиме після подання.",
-  "draft.preview.supersedes": "Замінить версію, чинну з {date, date, medium}"
+  "draft.preview.supersedes": "Замінить версію, чинну з {date, date, medium}",
+  "validators.effective_from.format": "Має бути ISO-8601 UTC, напр. 2026-01-15T00:00:00Z",
+  "validators.effective_from.invalid": "Дата не є дійсною.",
+  "draft.recent.title": "Останні чернетки",
+  "draft.recent.remove": "Видалити чернетку {label}"
 }

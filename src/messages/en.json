@@ -194,5 +194,9 @@
   "draft.saved": "Draft saved to URL — bookmark to resume",
   "draft.preview.title": "Live timeline preview",
   "draft.preview.caption": "This is how the new version will appear once submitted.",
-  "draft.preview.supersedes": "Will replace the current version effective {date, date, medium}"
+  "draft.preview.supersedes": "Will replace the current version effective {date, date, medium}",
+  "validators.effective_from.format": "Must be ISO-8601 UTC, e.g. 2026-01-15T00:00:00Z",
+  "validators.effective_from.invalid": "Date is not a valid calendar date.",
+  "draft.recent.title": "Recent drafts",
+  "draft.recent.remove": "Remove draft {label}"
 }
