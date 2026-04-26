@@ -654,6 +654,29 @@ export function DraftConfigForm({
           />
         )}
       </section>
+
+      <Dialog open={confirmCancelOpen} onOpenChange={setConfirmCancelOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{intl.formatMessage({ id: "draft.unsaved.title" })}</DialogTitle>
+            <DialogDescription>
+              {intl.formatMessage({ id: "draft.unsaved.body" })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setConfirmCancelOpen(false)}
+            >
+              {intl.formatMessage({ id: "draft.unsaved.dismiss" })}
+            </Button>
+            <Button type="button" variant="destructive" onClick={performCancel}>
+              {intl.formatMessage({ id: "draft.unsaved.confirm" })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
