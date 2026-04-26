@@ -7,6 +7,7 @@ import { filterMockConfigValues } from "@/lib/mock-config-values";
 import type { ConfigValue, ListConfigValuesResponse } from "@/lib/types";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
+import { RouteError } from "@/components/govops/RouteError";
 
 export const Route = createFileRoute("/config/prompts")({
   head: () => ({
@@ -18,6 +19,26 @@ export const Route = createFileRoute("/config/prompts")({
       },
     ],
   }),
+  loader: async (): Promise<ListConfigValuesResponse> => {
+    try {
+      return await listConfigValues({ domain: "prompt" });
+    } catch {
+      return filterMockConfigValues({ domain: "prompt" });
+    }
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: () => (
+    <ul role="list" aria-busy="true" className="space-y-2">
+      {[0, 1, 2].map((i) => (
+        <li
+          key={i}
+          className="h-[120px] animate-pulse rounded-md border border-border bg-surface-sunken"
+        />
+      ))}
+    </ul>
+  ),
   component: PromptsPage,
 });
 
@@ -61,20 +82,11 @@ function groupByKeyJurisdiction(values: ConfigValue[]): PromptRow[] {
 
 function PromptsPage() {
   const intl = useIntl();
-  const [data, setData] = useState<ListConfigValuesResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const data: ListConfigValuesResponse = Route.useLoaderData();
   const [pageSize, setPageSize] = useState<number>(10);
   const [visible, setVisible] = useState<number>(10);
 
-  useEffect(() => {
-    setLoading(true);
-    listConfigValues({ domain: "prompt" })
-      .catch(() => filterMockConfigValues({ domain: "prompt" }))
-      .then((res) => setData(res))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const rows = useMemo(() => (data ? groupByKeyJurisdiction(data.values) : []), [data]);
+  const rows = useMemo(() => groupByKeyJurisdiction(data.values), [data]);
 
   // Reset the visible window when the page-size selector changes or the
   // dataset changes (e.g. after a refetch). Avoids leaving a stale window
@@ -110,18 +122,7 @@ function PromptsPage() {
         </div>
       </header>
 
-      {loading && (
-        <ul role="list" aria-busy="true" className="space-y-2">
-          {[0, 1, 2].map((i) => (
-            <li
-              key={i}
-              className="h-[120px] animate-pulse rounded-md border border-border bg-surface-sunken"
-            />
-          ))}
-        </ul>
-      )}
-
-      {!loading && rows.length === 0 && (
+      {rows.length === 0 && (
         <div className="rounded-md border border-border bg-surface-sunken p-8 text-center">
           <p className="text-base font-medium text-foreground" style={{ fontFamily: "var(--font-serif)" }}>
             {intl.formatMessage({ id: "prompts.empty.title" })}
@@ -132,7 +133,7 @@ function PromptsPage() {
         </div>
       )}
 
-      {!loading && rows.length > 0 && (
+      {rows.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p
             aria-live="polite"
@@ -166,7 +167,7 @@ function PromptsPage() {
         </div>
       )}
 
-      {!loading && rows.length > 0 && (
+      {rows.length > 0 && (
         <ol role="list" className="space-y-3">
           {visibleRows.map(({ current, versionCount }) => {
             const jurisdictionParam = current.jurisdiction_id ?? "global";
@@ -231,7 +232,7 @@ function PromptsPage() {
         </ol>
       )}
 
-      {!loading && hasMore && (
+      {hasMore && (
         <div className="flex justify-center pt-2">
           <button
             type="button"

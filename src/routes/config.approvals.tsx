@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { ApprovalRow } from "@/components/govops/ApprovalRow";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
+import { RouteError } from "@/components/govops/RouteError";
 import { listApprovals } from "@/lib/api";
 import type { ConfigValue } from "@/lib/types";
 
@@ -43,6 +44,26 @@ export const Route = createFileRoute("/config/approvals")({
       page_size,
     };
   },
+  loader: async (): Promise<ConfigValue[]> => {
+    const res = await listApprovals();
+    // Newest first — maintainers want the freshest item on top.
+    return [...res.values].sort((a, b) =>
+      b.created_at.localeCompare(a.created_at),
+    );
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: () => (
+    <ul role="list" className="space-y-2" aria-busy="true">
+      {[0, 1, 2].map((i) => (
+        <li
+          key={i}
+          className="h-[88px] animate-pulse rounded-md border border-border bg-surface-sunken"
+        />
+      ))}
+    </ul>
+  ),
   component: ApprovalsPage,
 });
 
@@ -50,13 +71,11 @@ function ApprovalsPage() {
   const intl = useIntl();
   const nav = useNavigate({ from: "/config/approvals" });
   const search = Route.useSearch();
+  const values: ConfigValue[] = Route.useLoaderData();
   const q = search.q ?? "";
   const statusFilter: StatusFilter = search.status ?? "all";
   const pageSize: PageSize = search.page_size ?? 10;
 
-  const [values, setValues] = useState<ConfigValue[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState<number>(pageSize);
 
   function setSearch(next: Partial<ApprovalsSearch>) {
@@ -83,31 +102,6 @@ function ApprovalsPage() {
     });
   }
 
-  function load() {
-    setLoading(true);
-    setError(null);
-    listApprovals()
-      .then((res) => {
-        // Newest first — maintainers want the freshest item on top.
-        const sorted = [...res.values].sort((a, b) =>
-          b.created_at.localeCompare(a.created_at),
-        );
-        setValues(sorted);
-        setVisible(pageSize);
-        setLoading(false);
-      })
-      .catch((e: Error) => {
-        setError(e.message);
-        setLoading(false);
-      });
-  }
-
-  useEffect(() => {
-    load();
-    // Re-load only on mount; filters operate client-side over the cached set.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Reset the visible window whenever filters or page size change so that
   // changing the filter doesn't leave us paginated past the filtered total.
   useEffect(() => {
@@ -115,7 +109,6 @@ function ApprovalsPage() {
   }, [pageSize, q, statusFilter]);
 
   const filtered = useMemo<ConfigValue[]>(() => {
-    if (!values) return [];
     const needle = q.trim().toLowerCase();
     return values.filter((v) => {
       if (statusFilter !== "all" && v.status !== statusFilter) return false;
@@ -153,8 +146,7 @@ function ApprovalsPage() {
         </div>
       </header>
 
-      {!error && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
           <div>
             <label
               htmlFor="approvals-search"
@@ -223,39 +215,8 @@ function ApprovalsPage() {
             </select>
           </div>
         </div>
-      )}
 
-      {error && (
-        <div
-          role="alert"
-          className="rounded-md border border-[color:var(--verdict-rejected)] bg-[color:var(--verdict-rejected)]/5 p-4"
-        >
-          <p className="text-sm font-medium text-[color:var(--verdict-rejected)]">
-            {intl.formatMessage({ id: "approvals.error.load" })}
-          </p>
-          <p className="mt-1 text-xs text-foreground-muted">{error}</p>
-          <button
-            type="button"
-            onClick={load}
-            className="mt-3 inline-flex h-8 items-center rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface-sunken"
-          >
-            {intl.formatMessage({ id: "config.error.retry" })}
-          </button>
-        </div>
-      )}
-
-      {loading && !error && (
-        <ul role="list" className="space-y-2" aria-busy="true">
-          {[0, 1, 2].map((i) => (
-            <li
-              key={i}
-              className="h-[88px] animate-pulse rounded-md border border-border bg-surface-sunken"
-            />
-          ))}
-        </ul>
-      )}
-
-      {!loading && !error && values && values.length === 0 && (
+      {values.length === 0 && (
         <div
           role="status"
           aria-live="polite"
@@ -289,7 +250,7 @@ function ApprovalsPage() {
         </div>
       )}
 
-      {!loading && !error && values && values.length > 0 && filtered.length === 0 && (
+      {values.length > 0 && filtered.length === 0 && (
         <div
           role="status"
           aria-live="polite"
@@ -311,7 +272,7 @@ function ApprovalsPage() {
         </div>
       )}
 
-      {!loading && !error && values && values.length > 0 && filtered.length > 0 && (
+      {values.length > 0 && filtered.length > 0 && (
         <div className="space-y-4">
           <p
             aria-live="polite"

@@ -8,6 +8,7 @@ import { PromptPreview } from "@/components/govops/PromptPreview";
 import { FixtureTestPanel } from "@/components/govops/FixtureTestPanel";
 import { ValueDiff } from "@/components/govops/ValueDiff";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
+import { RouteError } from "@/components/govops/RouteError";
 import { resolveCurrentConfigValue, createConfigValue } from "@/lib/api";
 import { getCurrentUser } from "@/lib/currentUser";
 import {
@@ -24,6 +25,18 @@ export const Route = createFileRoute(
   head: ({ params }) => ({
     meta: [{ title: `Edit prompt — ${params.key} — GovOps` }],
   }),
+  loader: async ({ params }): Promise<ConfigValue | null> => {
+    const jurisdictionForApi =
+      params.jurisdictionId === "global" ? null : params.jurisdictionId;
+    return resolveCurrentConfigValue(
+      params.key,
+      jurisdictionForApi,
+      new Date().toISOString(),
+    );
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
   component: PromptEditPage,
 });
 
@@ -53,15 +66,9 @@ function PromptEditPage() {
   const [tab, setTab] = useState<Tab>("edit");
 
   // ── Current-effective version (drives "Reset" + diff overlay).
-  const [current, setCurrent] = useState<ConfigValue | null>(null);
-  const [currentLoading, setCurrentLoading] = useState(true);
-  useEffect(() => {
-    const today = new Date().toISOString();
-    setCurrentLoading(true);
-    resolveCurrentConfigValue(key, jurisdictionForApi, today)
-      .then((cv) => setCurrent(cv))
-      .finally(() => setCurrentLoading(false));
-  }, [key, jurisdictionForApi]);
+  // Loaded by the route loader so SSR/back-nav have it available immediately.
+  const current: ConfigValue | null = Route.useLoaderData();
+  const currentLoading = false;
 
   // ── Editor value: hydrate from localStorage, fall back to current text.
   const [value, setValue] = useState<string>("");

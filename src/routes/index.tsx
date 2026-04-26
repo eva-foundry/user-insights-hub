@@ -8,6 +8,17 @@ import { ValueTypeBadge } from "@/components/govops/ValueTypeBadge";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "GovOps — Law as code, with provenance you can read" },
+      {
+        name: "description",
+        content:
+          "Agentic, multilingual law-as-code: drafted by agents, ratified by humans, auditable by citizens.",
+      },
+      { property: "og:title", content: "GovOps — Law as code" },
+    ],
+  }),
   component: Index,
 });
 

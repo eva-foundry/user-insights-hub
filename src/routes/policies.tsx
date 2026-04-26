@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
 
 import { fetchOrMock } from "@/lib/api";
@@ -7,6 +6,7 @@ import { MOCK_POLICIES, type Policy } from "@/lib/mock-policies";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { VerdictBadge } from "@/components/govops/VerdictBadge";
 import { useLocale } from "@/lib/i18n";
+import { RouteError } from "@/components/govops/RouteError";
 
 export const Route = createFileRoute("/policies")({
   head: () => ({
@@ -24,31 +24,31 @@ export const Route = createFileRoute("/policies")({
       },
     ],
   }),
+  loader: () => fetchOrMock<Policy[]>("/v1/policies", MOCK_POLICIES),
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: PoliciesSkeleton,
   component: PoliciesPage,
 });
+
+function PoliciesSkeleton() {
+  return (
+    <ul role="list" className="space-y-2" aria-busy="true">
+      {[0, 1, 2].map((i) => (
+        <li
+          key={i}
+          className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
+        />
+      ))}
+    </ul>
+  );
+}
 
 function PoliciesPage() {
   const intl = useIntl();
   const { locale } = useLocale();
-
-  const [policies, setPolicies] = useState<Policy[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setPolicies(null);
-    setError(null);
-    fetchOrMock<Policy[]>("/v1/policies", MOCK_POLICIES)
-      .then((data) => {
-        if (!cancelled) setPolicies(data);
-      })
-      .catch(() => {
-        if (!cancelled) setError(intl.formatMessage({ id: "policies.error" }));
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [intl]);
+  const policies: Policy[] = Route.useLoaderData();
 
   const dateFmt = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
 
@@ -75,10 +75,7 @@ function PoliciesPage() {
         </div>
       </header>
 
-      <section
-        aria-busy={policies === null}
-        className="overflow-hidden rounded-lg border border-border bg-surface"
-      >
+      <section className="overflow-hidden rounded-lg border border-border bg-surface">
         <div
           className="grid grid-cols-[3px_1fr_auto_auto] items-center gap-4 border-b border-border bg-surface-sunken px-4 py-3 text-xs uppercase tracking-[0.14em] text-foreground-subtle"
           style={{ fontFamily: "var(--font-mono)" }}
@@ -91,23 +88,13 @@ function PoliciesPage() {
           </span>
         </div>
 
-        {error && (
-          <p className="px-4 py-6 text-sm text-[color:var(--verdict-rejected)]">{error}</p>
-        )}
-
-        {!error && policies === null && (
-          <p className="px-4 py-6 text-sm text-foreground-muted">
-            {intl.formatMessage({ id: "policies.loading" })}
-          </p>
-        )}
-
-        {!error && policies && policies.length === 0 && (
+        {policies.length === 0 && (
           <p className="px-4 py-6 text-sm text-foreground-muted">
             {intl.formatMessage({ id: "policies.empty" })}
           </p>
         )}
 
-        {!error && policies && policies.length > 0 && (
+        {policies.length > 0 && (
           <ul className="divide-y divide-border">
             {policies.map((p) => (
               <li

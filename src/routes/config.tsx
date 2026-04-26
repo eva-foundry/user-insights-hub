@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { listConfigValues } from "@/lib/api";
@@ -11,6 +11,7 @@ import {
   type FiltersState,
 } from "@/components/govops/ConfigValueFilters";
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
+import { RouteError } from "@/components/govops/RouteError";
 
 type SortKey = "key_asc" | "key_desc" | "effective_desc" | "effective_asc";
 const SORT_KEYS: SortKey[] = ["key_asc", "key_desc", "effective_desc", "effective_asc"];
@@ -45,6 +46,42 @@ export const Route = createFileRoute("/config")({
         ? (search.sort as SortKey)
         : undefined,
   }),
+  loaderDeps: ({ search }) => ({
+    key_prefix: search.key_prefix,
+    domain: search.domain,
+    jurisdiction_id: search.jurisdiction_id,
+    language: search.language,
+  }),
+  loader: async ({ deps }): Promise<ListConfigValuesResponse> => {
+    const params = {
+      key_prefix: deps.key_prefix || undefined,
+      domain: deps.domain && deps.domain !== "all" ? deps.domain : undefined,
+      jurisdiction_id:
+        deps.jurisdiction_id && deps.jurisdiction_id !== "all"
+          ? deps.jurisdiction_id
+          : undefined,
+      language:
+        deps.language && deps.language !== "all" ? deps.language : undefined,
+    };
+    try {
+      return await listConfigValues(params);
+    } catch {
+      return filterMockConfigValues(params);
+    }
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: () => (
+    <ul role="list" className="space-y-2" aria-busy="true">
+      {[0, 1, 2].map((i) => (
+        <li
+          key={i}
+          className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
+        />
+      ))}
+    </ul>
+  ),
   component: ConfigPage,
 });
 
@@ -52,6 +89,7 @@ function ConfigPage() {
   const intl = useIntl();
   const navigate = useNavigate({ from: "/config" });
   const search = useSearch({ from: "/config" });
+  const data: ListConfigValuesResponse = Route.useLoaderData();
 
   const filters: FiltersState = {
     key_prefix: search.key_prefix ?? "",
@@ -92,53 +130,7 @@ function ConfigPage() {
     [navigate],
   );
 
-  // Debounce key_prefix at 200ms before requesting.
-  const [debouncedPrefix, setDebouncedPrefix] = useState(filters.key_prefix);
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedPrefix(filters.key_prefix), 200);
-    return () => clearTimeout(t);
-  }, [filters.key_prefix]);
-
-  const queryParams = useMemo(
-    () => ({
-      key_prefix: debouncedPrefix || undefined,
-      domain: filters.domain !== "all" ? filters.domain : undefined,
-      jurisdiction_id:
-        filters.jurisdiction_id !== "all" ? filters.jurisdiction_id : undefined,
-      language: filters.language !== "all" ? filters.language : undefined,
-    }),
-    [debouncedPrefix, filters.domain, filters.jurisdiction_id, filters.language],
-  );
-
-  const [data, setData] = useState<ListConfigValuesResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const reqId = useRef(0);
-
-  const load = useCallback(() => {
-    const id = ++reqId.current;
-    setLoading(true);
-    setError(null);
-    listConfigValues(queryParams)
-      .catch(() => filterMockConfigValues(queryParams))
-      .then((res) => {
-        if (id !== reqId.current) return;
-        setData(res);
-        setLoading(false);
-      })
-      .catch((e: Error) => {
-        if (id !== reqId.current) return;
-        setError(e.message);
-        setLoading(false);
-      });
-  }, [queryParams]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
   const sortedValues = useMemo<ConfigValue[]>(() => {
-    if (!data) return [];
     const arr = [...data.values];
     arr.sort((a, b) => {
       switch (sort) {
@@ -184,9 +176,7 @@ function ConfigPage() {
 
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div aria-live="polite" aria-atomic="true" className="text-sm text-foreground-muted">
-          {data && !loading && !error && (
-            <FormattedMessage id="config.results.count" values={{ count: data.count }} />
-          )}
+          <FormattedMessage id="config.results.count" values={{ count: data.count }} />
         </div>
         <div className="flex items-center gap-2">
           <label
@@ -211,37 +201,7 @@ function ConfigPage() {
         </div>
       </div>
 
-      {error && (
-        <div
-          role="alert"
-          className="rounded-md border border-[color:var(--verdict-rejected)] bg-[color:var(--verdict-rejected)]/5 p-4"
-        >
-          <p className="text-sm font-medium text-[color:var(--verdict-rejected)]">
-            {intl.formatMessage({ id: "config.error.title" })}
-          </p>
-          <p className="mt-1 text-xs text-foreground-muted">{error}</p>
-          <button
-            type="button"
-            onClick={load}
-            className="mt-3 inline-flex h-8 items-center rounded-md border border-border bg-surface px-3 text-xs font-medium text-foreground hover:bg-surface-sunken"
-          >
-            {intl.formatMessage({ id: "config.error.retry" })}
-          </button>
-        </div>
-      )}
-
-      {loading && !error && (
-        <ul role="list" className="space-y-2" aria-busy="true">
-          {[0, 1, 2].map((i) => (
-            <li
-              key={i}
-              className="h-[68px] animate-pulse rounded-md border border-border bg-surface-sunken"
-            />
-          ))}
-        </ul>
-      )}
-
-      {!loading && !error && data && data.values.length === 0 && (
+      {data.values.length === 0 && (
         <div className="rounded-md bg-agentic-soft p-6 text-center">
           <p className="text-base font-medium text-agentic-foreground">
             {intl.formatMessage({ id: "config.empty.title" })}
@@ -252,7 +212,7 @@ function ConfigPage() {
         </div>
       )}
 
-      {!loading && !error && data && data.values.length > 0 && (
+      {data.values.length > 0 && (
         <div className="space-y-2">
           <div
             role="presentation"
