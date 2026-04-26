@@ -309,5 +309,6 @@
   "prompt.fixture.compare.removed": "{count, plural, one {# видалено} few {# видалено} many {# видалено} other {# видалено}}",
   "prompt.fixture.compare.unchanged": "{count, plural, one {# незмінна пропозиція} few {# незмінні пропозиції} many {# незмінних пропозицій} other {# незмінних пропозицій}}",
   "prompt.fixture.export": "Експортувати звіт (PDF)",
-  "prompt.fixture.export.done": "Звіт завантажено"
+  "prompt.fixture.export.done": "Звіт завантажено",
+  "nav.menu": "Меню"
 }
