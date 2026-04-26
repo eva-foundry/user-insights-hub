@@ -49,7 +49,6 @@
   "verdict.pending": "Очікує",
   "verdict.rejected": "Відхилено",
   "verdict.draft": "Чернетка",
-
   "config.title": "Конфігураційні значення",
   "config.lede": "Шукайте та фільтруйте кожен ConfigValue за юрисдикціями, доменами та мовами.",
   "config.search.placeholder": "Пошук за префіксом ключа…",
@@ -72,5 +71,22 @@
   "config.error.title": "Не вдалося завантажити записи ConfigValue.",
   "config.error.retry": "Повторити",
   "config.row.provenance.agent": "Складено агентом",
-  "config.row.provenance.human": "Складено людиною"
+  "config.row.provenance.human": "Складено людиною",
+  "config.column.key": "Ключ",
+  "config.column.value": "Значення",
+  "config.column.type": "Тип",
+  "config.column.jurisdiction": "Юрисдикція",
+  "config.column.effective_from": "Чинне з",
+  "config.sort.label": "Сортувати за",
+  "config.sort.key_asc": "Ключ (А→Я)",
+  "config.sort.key_desc": "Ключ (Я→А)",
+  "config.sort.effective_desc": "Спочатку нові",
+  "config.sort.effective_asc": "Спочатку старі",
+  "config.detail.current": "Поточна версія",
+  "config.detail.superseded": "Замінено",
+  "config.detail.author": "Автор",
+  "config.detail.approved_by": "Затверджено",
+  "config.detail.rationale": "Обґрунтування",
+  "config.detail.citation": "Посилання",
+  "config.detail.empty": "Історію для цього ключа не знайдено."
 }

@@ -49,7 +49,6 @@
   "verdict.pending": "Pending",
   "verdict.rejected": "Rejected",
   "verdict.draft": "Draft",
-
   "config.title": "Configuration values",
   "config.lede": "Search and filter every ConfigValue across jurisdictions, domains, and languages.",
   "config.search.placeholder": "Search by key prefix…",
@@ -72,5 +71,22 @@
   "config.error.title": "Could not load ConfigValue records.",
   "config.error.retry": "Retry",
   "config.row.provenance.agent": "Drafted by an agent",
-  "config.row.provenance.human": "Authored by a human"
+  "config.row.provenance.human": "Authored by a human",
+  "config.column.key": "Key",
+  "config.column.value": "Value",
+  "config.column.type": "Type",
+  "config.column.jurisdiction": "Jurisdiction",
+  "config.column.effective_from": "Effective from",
+  "config.sort.label": "Sort by",
+  "config.sort.key_asc": "Key (A→Z)",
+  "config.sort.key_desc": "Key (Z→A)",
+  "config.sort.effective_desc": "Newest first",
+  "config.sort.effective_asc": "Oldest first",
+  "config.detail.current": "Current version",
+  "config.detail.superseded": "Superseded",
+  "config.detail.author": "Author",
+  "config.detail.approved_by": "Approved by",
+  "config.detail.rationale": "Rationale",
+  "config.detail.citation": "Citation",
+  "config.detail.empty": "No history found for this key."
 }

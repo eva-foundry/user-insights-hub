@@ -49,7 +49,6 @@
   "verdict.pending": "Pendente",
   "verdict.rejected": "Rejeitada",
   "verdict.draft": "Rascunho",
-
   "config.title": "Valores de configuração",
   "config.lede": "Pesquise e filtre cada ConfigValue entre jurisdições, domínios e idiomas.",
   "config.search.placeholder": "Pesquisar por prefixo de chave…",
@@ -72,5 +71,22 @@
   "config.error.title": "Não foi possível carregar os registros ConfigValue.",
   "config.error.retry": "Tentar novamente",
   "config.row.provenance.agent": "Redigido por um agente",
-  "config.row.provenance.human": "Redigido por uma pessoa"
+  "config.row.provenance.human": "Redigido por uma pessoa",
+  "config.column.key": "Chave",
+  "config.column.value": "Valor",
+  "config.column.type": "Tipo",
+  "config.column.jurisdiction": "Jurisdição",
+  "config.column.effective_from": "Vigente desde",
+  "config.sort.label": "Ordenar por",
+  "config.sort.key_asc": "Chave (A→Z)",
+  "config.sort.key_desc": "Chave (Z→A)",
+  "config.sort.effective_desc": "Mais recentes",
+  "config.sort.effective_asc": "Mais antigos",
+  "config.detail.current": "Versão atual",
+  "config.detail.superseded": "Substituída",
+  "config.detail.author": "Autor",
+  "config.detail.approved_by": "Aprovado por",
+  "config.detail.rationale": "Justificativa",
+  "config.detail.citation": "Citação",
+  "config.detail.empty": "Nenhum histórico encontrado para esta chave."
 }

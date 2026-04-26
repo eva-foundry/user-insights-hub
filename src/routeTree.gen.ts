@@ -13,6 +13,7 @@ import { Route as PoliciesRouteImport } from './routes/policies'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
@@ -34,38 +35,57 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfigKeyJurisdictionIdRoute = ConfigKeyJurisdictionIdRouteImport.update({
+  id: '/$key/$jurisdictionId',
+  path: '/$key/$jurisdictionId',
+  getParentRoute: () => ConfigRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/config': typeof ConfigRoute
+  '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/config': typeof ConfigRoute
+  '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/config': typeof ConfigRoute
+  '/config': typeof ConfigRouteWithChildren
   '/policies': typeof PoliciesRoute
+  '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/config' | '/policies'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/config'
+    | '/policies'
+    | '/config/$key/$jurisdictionId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/config' | '/policies'
-  id: '__root__' | '/' | '/about' | '/config' | '/policies'
+  to: '/' | '/about' | '/config' | '/policies' | '/config/$key/$jurisdictionId'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/config'
+    | '/policies'
+    | '/config/$key/$jurisdictionId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  ConfigRoute: typeof ConfigRoute
+  ConfigRoute: typeof ConfigRouteWithChildren
   PoliciesRoute: typeof PoliciesRoute
 }
 
@@ -99,13 +119,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/config/$key/$jurisdictionId': {
+      id: '/config/$key/$jurisdictionId'
+      path: '/$key/$jurisdictionId'
+      fullPath: '/config/$key/$jurisdictionId'
+      preLoaderRoute: typeof ConfigKeyJurisdictionIdRouteImport
+      parentRoute: typeof ConfigRoute
+    }
   }
 }
+
+interface ConfigRouteChildren {
+  ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
+}
+
+const ConfigRouteChildren: ConfigRouteChildren = {
+  ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
+}
+
+const ConfigRouteWithChildren =
+  ConfigRoute._addFileChildren(ConfigRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  ConfigRoute: ConfigRoute,
+  ConfigRoute: ConfigRouteWithChildren,
   PoliciesRoute: PoliciesRoute,
 }
 export const routeTree = rootRouteImport

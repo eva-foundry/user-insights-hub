@@ -1,4 +1,5 @@
 import { FormattedDate } from "react-intl";
+import { Link } from "@tanstack/react-router";
 import { ProvenanceRibbon } from "./ProvenanceRibbon";
 import { ValueTypeBadge } from "./ValueTypeBadge";
 import { JurisdictionChip } from "./JurisdictionChip";
@@ -12,27 +13,24 @@ function previewValue(v: unknown): string {
 
 export function ConfigValueRow({ cv }: { cv: ConfigValue }) {
   const provenance = cv.author.startsWith("agent:") ? "agent" : "human";
-  const href = `/config/${encodeURIComponent(cv.key)}/${encodeURIComponent(
-    cv.jurisdiction_id ?? "global",
-  )}`;
-
   return (
     <li>
-      <a
-        href={href}
+      <Link
+        to="/config/$key/$jurisdictionId"
+        params={{
+          key: cv.key,
+          jurisdictionId: cv.jurisdiction_id ?? "global",
+        }}
         className="flex items-stretch rounded-md border border-border bg-surface outline-none transition-colors hover:bg-surface-sunken focus-visible:bg-surface-sunken"
       >
         <ProvenanceRibbon variant={provenance} />
-        <div className="grid flex-1 grid-cols-1 items-center gap-3 px-4 py-3 sm:grid-cols-[1fr_auto_auto] sm:gap-4">
+        <div className="grid flex-1 grid-cols-1 items-center gap-3 px-4 py-3 sm:grid-cols-[minmax(0,2fr)_minmax(0,1.5fr)_auto_auto_auto] sm:gap-4">
           <div className="min-w-0">
             <div
               className="truncate text-sm text-foreground"
               style={{ fontFamily: "var(--font-mono)" }}
             >
               {cv.key}
-            </div>
-            <div className="truncate text-sm text-foreground-muted">
-              {previewValue(cv.value)}
             </div>
             {cv.citation && (
               <div
@@ -43,10 +41,11 @@ export function ConfigValueRow({ cv }: { cv: ConfigValue }) {
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <ValueTypeBadge type={cv.value_type} />
-            <JurisdictionChip id={cv.jurisdiction_id} />
+          <div className="min-w-0 truncate text-sm text-foreground-muted">
+            {previewValue(cv.value)}
           </div>
+          <ValueTypeBadge type={cv.value_type} />
+          <JurisdictionChip id={cv.jurisdiction_id} />
           <div
             className="text-xs text-foreground-muted"
             style={{ fontFamily: "var(--font-mono)" }}
@@ -59,7 +58,7 @@ export function ConfigValueRow({ cv }: { cv: ConfigValue }) {
             />
           </div>
         </div>
-      </a>
+      </Link>
     </li>
   );
 }

@@ -49,7 +49,6 @@
   "verdict.pending": "Ausstehend",
   "verdict.rejected": "Abgelehnt",
   "verdict.draft": "Entwurf",
-
   "config.title": "Konfigurationswerte",
   "config.lede": "Suche und filtere jeden ConfigValue über Zuständigkeiten, Domänen und Sprachen hinweg.",
   "config.search.placeholder": "Nach Schlüsselpräfix suchen…",
@@ -72,5 +71,22 @@
   "config.error.title": "ConfigValue-Datensätze konnten nicht geladen werden.",
   "config.error.retry": "Erneut versuchen",
   "config.row.provenance.agent": "Von einem Agenten verfasst",
-  "config.row.provenance.human": "Von einem Menschen verfasst"
+  "config.row.provenance.human": "Von einem Menschen verfasst",
+  "config.column.key": "Schlüssel",
+  "config.column.value": "Wert",
+  "config.column.type": "Typ",
+  "config.column.jurisdiction": "Zuständigkeit",
+  "config.column.effective_from": "Gültig ab",
+  "config.sort.label": "Sortieren nach",
+  "config.sort.key_asc": "Schlüssel (A→Z)",
+  "config.sort.key_desc": "Schlüssel (Z→A)",
+  "config.sort.effective_desc": "Neueste zuerst",
+  "config.sort.effective_asc": "Älteste zuerst",
+  "config.detail.current": "Aktuelle Version",
+  "config.detail.superseded": "Abgelöst",
+  "config.detail.author": "Autor",
+  "config.detail.approved_by": "Genehmigt von",
+  "config.detail.rationale": "Begründung",
+  "config.detail.citation": "Quelle",
+  "config.detail.empty": "Kein Verlauf für diesen Schlüssel gefunden."
 }
