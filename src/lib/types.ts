@@ -275,3 +275,53 @@ export interface HealthResponse {
   program: string;
   available_jurisdictions: string[];
 }
+
+// ── Encoding pipeline (govops-011) ──────────────────────────────────────────
+
+export type ProposalStatus = "pending" | "approved" | "rejected" | "modified";
+export type EncodeMethod = "manual" | "llm:claude" | "manual:llm-fallback";
+
+export interface RuleProposal {
+  id: string;
+  rule_type: RuleType;
+  description: string;
+  formal_expression: string;
+  citation: string;
+  parameters: Record<string, unknown>;
+  status: ProposalStatus;
+  notes: string;
+  reviewer: string | null;
+  reviewed_at: string | null;
+  source_section_ref: string;
+}
+
+export interface EncodingAuditEntry {
+  timestamp: string;
+  event_type: string;
+  actor: string;
+  detail: string;
+  data: Record<string, unknown>;
+}
+
+export interface EncodingBatch {
+  id: string;
+  jurisdiction_id: string;
+  document_title: string;
+  document_citation: string;
+  source_url: string | null;
+  input_text: string;
+  method: EncodeMethod;
+  proposals: RuleProposal[];
+  audit: EncodingAuditEntry[];
+  created_at: string;
+}
+
+export interface EncodingBatchSummary {
+  id: string;
+  jurisdiction_id: string;
+  document_title: string;
+  document_citation: string;
+  method: EncodeMethod;
+  counts: Record<ProposalStatus, number>;
+  created_at: string;
+}
