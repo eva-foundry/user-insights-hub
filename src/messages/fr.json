@@ -198,5 +198,9 @@
   "validators.effective_from.format": "Doit être au format ISO-8601 UTC, p. ex. 2026-01-15T00:00:00Z",
   "validators.effective_from.invalid": "La date n'est pas valide.",
   "draft.recent.title": "Brouillons récents",
-  "draft.recent.remove": "Supprimer le brouillon {label}"
+  "draft.recent.remove": "Supprimer le brouillon {label}",
+  "draft.field.effective_from.format_help": "Format : YYYY-MM-DDTHH:mm[:ss[.sss]]Z",
+  "draft.saved.blocked": "Impossible d'enregistrer : effective_from invalide.",
+  "draft.recent.clear": "Tout effacer",
+  "draft.recent.clear_confirm": "Supprimer tous les brouillons enregistrés sur cet appareil ?"
 }

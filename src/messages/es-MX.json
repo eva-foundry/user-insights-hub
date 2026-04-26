@@ -198,5 +198,9 @@
   "validators.effective_from.format": "Debe ser ISO-8601 UTC, p. ej. 2026-01-15T00:00:00Z",
   "validators.effective_from.invalid": "La fecha no es válida.",
   "draft.recent.title": "Borradores recientes",
-  "draft.recent.remove": "Eliminar borrador {label}"
+  "draft.recent.remove": "Eliminar borrador {label}",
+  "draft.field.effective_from.format_help": "Formato: YYYY-MM-DDTHH:mm[:ss[.sss]]Z",
+  "draft.saved.blocked": "No se puede guardar: effective_from inválido.",
+  "draft.recent.clear": "Borrar todo",
+  "draft.recent.clear_confirm": "¿Eliminar todos los borradores guardados en este dispositivo?"
 }

@@ -198,5 +198,9 @@
   "validators.effective_from.format": "Must be ISO-8601 UTC, e.g. 2026-01-15T00:00:00Z",
   "validators.effective_from.invalid": "Date is not a valid calendar date.",
   "draft.recent.title": "Recent drafts",
-  "draft.recent.remove": "Remove draft {label}"
+  "draft.recent.remove": "Remove draft {label}",
+  "draft.field.effective_from.format_help": "Format: YYYY-MM-DDTHH:mm[:ss[.sss]]Z",
+  "draft.saved.blocked": "Cannot save draft: effective_from is invalid.",
+  "draft.recent.clear": "Clear all",
+  "draft.recent.clear_confirm": "Delete all saved draft URLs from this device?"
 }

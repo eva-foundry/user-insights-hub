@@ -198,5 +198,9 @@
   "validators.effective_from.format": "Має бути ISO-8601 UTC, напр. 2026-01-15T00:00:00Z",
   "validators.effective_from.invalid": "Дата не є дійсною.",
   "draft.recent.title": "Останні чернетки",
-  "draft.recent.remove": "Видалити чернетку {label}"
+  "draft.recent.remove": "Видалити чернетку {label}",
+  "draft.field.effective_from.format_help": "Формат: YYYY-MM-DDTHH:mm[:ss[.sss]]Z",
+  "draft.saved.blocked": "Не вдається зберегти: effective_from недійсний.",
+  "draft.recent.clear": "Очистити все",
+  "draft.recent.clear_confirm": "Видалити всі збережені чернетки з цього пристрою?"
 }
