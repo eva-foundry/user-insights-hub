@@ -10,12 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PoliciesRouteImport } from './routes/policies'
+import { Route as EncodeRouteImport } from './routes/encode'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AuthorityRouteImport } from './routes/authority'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EncodeNewRouteImport } from './routes/encode.new'
+import { Route as EncodeBatchIdRouteImport } from './routes/encode.$batchId'
 import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
 import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
@@ -28,6 +31,11 @@ import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EncodeRoute = EncodeRouteImport.update({
+  id: '/encode',
+  path: '/encode',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigRoute = ConfigRouteImport.update({
@@ -59,6 +67,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const EncodeNewRoute = EncodeNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => EncodeRoute,
+} as any)
+const EncodeBatchIdRoute = EncodeBatchIdRouteImport.update({
+  id: '/$batchId',
+  path: '/$batchId',
+  getParentRoute: () => EncodeRoute,
 } as any)
 const ConfigPromptsRoute = ConfigPromptsRouteImport.update({
   id: '/prompts',
@@ -109,12 +127,15 @@ export interface FileRoutesByFullPath {
   '/authority': typeof AuthorityRoute
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
+  '/encode': typeof EncodeRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
   '/config/prompts': typeof ConfigPromptsRouteWithChildren
+  '/encode/$batchId': typeof EncodeBatchIdRoute
+  '/encode/new': typeof EncodeNewRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
@@ -126,12 +147,15 @@ export interface FileRoutesByTo {
   '/authority': typeof AuthorityRoute
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
+  '/encode': typeof EncodeRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
   '/config/prompts': typeof ConfigPromptsRouteWithChildren
+  '/encode/$batchId': typeof EncodeBatchIdRoute
+  '/encode/new': typeof EncodeNewRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
@@ -144,12 +168,15 @@ export interface FileRoutesById {
   '/authority': typeof AuthorityRoute
   '/cases': typeof CasesRouteWithChildren
   '/config': typeof ConfigRouteWithChildren
+  '/encode': typeof EncodeRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
   '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
   '/config/prompts': typeof ConfigPromptsRouteWithChildren
+  '/encode/$batchId': typeof EncodeBatchIdRoute
+  '/encode/new': typeof EncodeNewRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
@@ -163,12 +190,15 @@ export interface FileRouteTypes {
     | '/authority'
     | '/cases'
     | '/config'
+    | '/encode'
     | '/policies'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
     | '/config/prompts'
+    | '/encode/$batchId'
+    | '/encode/new'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
@@ -180,12 +210,15 @@ export interface FileRouteTypes {
     | '/authority'
     | '/cases'
     | '/config'
+    | '/encode'
     | '/policies'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
     | '/config/prompts'
+    | '/encode/$batchId'
+    | '/encode/new'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
@@ -197,12 +230,15 @@ export interface FileRouteTypes {
     | '/authority'
     | '/cases'
     | '/config'
+    | '/encode'
     | '/policies'
     | '/cases/$caseId'
     | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
     | '/config/prompts'
+    | '/encode/$batchId'
+    | '/encode/new'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
     | '/config/prompts/$key/$jurisdictionId/edit'
@@ -215,6 +251,7 @@ export interface RootRouteChildren {
   AuthorityRoute: typeof AuthorityRoute
   CasesRoute: typeof CasesRouteWithChildren
   ConfigRoute: typeof ConfigRouteWithChildren
+  EncodeRoute: typeof EncodeRouteWithChildren
   PoliciesRoute: typeof PoliciesRoute
 }
 
@@ -225,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/policies'
       fullPath: '/policies'
       preLoaderRoute: typeof PoliciesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/encode': {
+      id: '/encode'
+      path: '/encode'
+      fullPath: '/encode'
+      preLoaderRoute: typeof EncodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/config': {
@@ -268,6 +312,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/encode/new': {
+      id: '/encode/new'
+      path: '/new'
+      fullPath: '/encode/new'
+      preLoaderRoute: typeof EncodeNewRouteImport
+      parentRoute: typeof EncodeRoute
+    }
+    '/encode/$batchId': {
+      id: '/encode/$batchId'
+      path: '/$batchId'
+      fullPath: '/encode/$batchId'
+      preLoaderRoute: typeof EncodeBatchIdRouteImport
+      parentRoute: typeof EncodeRoute
     }
     '/config/prompts': {
       id: '/config/prompts'
@@ -382,6 +440,19 @@ const ConfigRouteChildren: ConfigRouteChildren = {
 const ConfigRouteWithChildren =
   ConfigRoute._addFileChildren(ConfigRouteChildren)
 
+interface EncodeRouteChildren {
+  EncodeBatchIdRoute: typeof EncodeBatchIdRoute
+  EncodeNewRoute: typeof EncodeNewRoute
+}
+
+const EncodeRouteChildren: EncodeRouteChildren = {
+  EncodeBatchIdRoute: EncodeBatchIdRoute,
+  EncodeNewRoute: EncodeNewRoute,
+}
+
+const EncodeRouteWithChildren =
+  EncodeRoute._addFileChildren(EncodeRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -389,8 +460,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthorityRoute: AuthorityRoute,
   CasesRoute: CasesRouteWithChildren,
   ConfigRoute: ConfigRouteWithChildren,
+  EncodeRoute: EncodeRouteWithChildren,
   PoliciesRoute: PoliciesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
