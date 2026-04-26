@@ -1,8 +1,12 @@
 /**
- * Server-only locale resolver. Lives in a `.server.ts` file so the
- * TanStack Start import-protection plugin keeps the `@tanstack/react-start/server`
- * dependency out of the client bundle.
+ * Server-only locale resolver exposed as a TanStack Start server function.
+ * Lives in a `.server.ts` file so the import-protection plugin keeps the
+ * `@tanstack/react-start/server` request APIs out of the client bundle.
+ *
+ * The server fn is callable from the root route loader on both the SSR
+ * pass and on subsequent client navigations (the client sends an RPC).
  */
+import { createServerFn } from "@tanstack/react-start";
 import { getCookie, getRequestHeader } from "@tanstack/react-start/server";
 import type { Locale } from "@/lib/i18n";
 import { StorageKeys } from "@/lib/storageKeys";
@@ -23,13 +27,15 @@ function pickLocale(input: string | undefined): Locale {
   return "en";
 }
 
-export function resolveSsrLocale(): Locale {
-  try {
-    const cookieLocale = getCookie(StorageKeys.locale);
-    if (cookieLocale) return pickLocale(cookieLocale);
-    const accept = getRequestHeader("accept-language");
-    return pickLocale(accept);
-  } catch {
-    return "en";
-  }
-}
+export const getSsrLocale = createServerFn({ method: "GET" }).handler(
+  (): Locale => {
+    try {
+      const cookieLocale = getCookie(StorageKeys.locale);
+      if (cookieLocale) return pickLocale(cookieLocale);
+      const accept = getRequestHeader("accept-language");
+      return pickLocale(accept);
+    } catch {
+      return "en";
+    }
+  },
+);
