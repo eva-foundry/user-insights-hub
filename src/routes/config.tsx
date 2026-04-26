@@ -4,7 +4,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 
 import { listConfigValues } from "@/lib/api";
 import { filterMockConfigValues } from "@/lib/mock-config-values";
-import type { ListConfigValuesResponse } from "@/lib/types";
+import type { ConfigValue, ListConfigValuesResponse } from "@/lib/types";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import {
   ConfigValueFilters,
@@ -12,11 +12,15 @@ import {
 } from "@/components/govops/ConfigValueFilters";
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
 
+type SortKey = "key_asc" | "key_desc" | "effective_desc" | "effective_asc";
+const SORT_KEYS: SortKey[] = ["key_asc", "key_desc", "effective_desc", "effective_asc"];
+
 type ConfigSearch = {
   key_prefix?: string;
   domain?: string;
   jurisdiction_id?: string;
   language?: string;
+  sort?: SortKey;
 };
 
 export const Route = createFileRoute("/config")({
@@ -36,6 +40,10 @@ export const Route = createFileRoute("/config")({
     jurisdiction_id:
       typeof search.jurisdiction_id === "string" ? search.jurisdiction_id : undefined,
     language: typeof search.language === "string" ? search.language : undefined,
+    sort:
+      typeof search.sort === "string" && (SORT_KEYS as string[]).includes(search.sort)
+        ? (search.sort as SortKey)
+        : undefined,
   }),
   component: ConfigPage,
 });
@@ -51,6 +59,7 @@ function ConfigPage() {
     jurisdiction_id: search.jurisdiction_id ?? "all",
     language: search.language ?? "all",
   };
+  const sort: SortKey = search.sort ?? "key_asc";
 
   const updateFilters = useCallback(
     (next: Partial<FiltersState>) => {
@@ -62,11 +71,22 @@ function ConfigPage() {
           jurisdiction_id:
             merged.jurisdiction_id !== "all" ? merged.jurisdiction_id : undefined,
           language: merged.language !== "all" ? merged.language : undefined,
+          sort: sort !== "key_asc" ? sort : undefined,
         }),
         replace: true,
       });
     },
-    [filters, navigate],
+    [filters, navigate, sort],
+  );
+
+  const setSort = useCallback(
+    (next: SortKey) => {
+      navigate({
+        search: (prev) => ({ ...prev, sort: next !== "key_asc" ? next : undefined }),
+        replace: true,
+      });
+    },
+    [navigate],
   );
 
   // Debounce key_prefix at 200ms before requesting.
@@ -114,6 +134,25 @@ function ConfigPage() {
     load();
   }, [load]);
 
+  const sortedValues = useMemo<ConfigValue[]>(() => {
+    if (!data) return [];
+    const arr = [...data.values];
+    arr.sort((a, b) => {
+      switch (sort) {
+        case "key_desc":
+          return b.key.localeCompare(a.key);
+        case "effective_desc":
+          return b.effective_from.localeCompare(a.effective_from);
+        case "effective_asc":
+          return a.effective_from.localeCompare(b.effective_from);
+        case "key_asc":
+        default:
+          return a.key.localeCompare(b.key);
+      }
+    });
+    return arr;
+  }, [data, sort]);
+
   return (
     <section aria-labelledby="config-heading" className="space-y-8">
       <header className="flex items-stretch">
@@ -140,10 +179,33 @@ function ConfigPage() {
 
       <ConfigValueFilters value={filters} onChange={updateFilters} />
 
-      <div aria-live="polite" aria-atomic="true" className="text-sm text-foreground-muted">
-        {data && !loading && !error && (
-          <FormattedMessage id="config.results.count" values={{ count: data.count }} />
-        )}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div aria-live="polite" aria-atomic="true" className="text-sm text-foreground-muted">
+          {data && !loading && !error && (
+            <FormattedMessage id="config.results.count" values={{ count: data.count }} />
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="config-sort"
+            className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {intl.formatMessage({ id: "config.sort.label" })}
+          </label>
+          <select
+            id="config-sort"
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="h-9 rounded-md border border-border bg-surface px-2 text-sm text-foreground hover:bg-surface-sunken"
+          >
+            {SORT_KEYS.map((s) => (
+              <option key={s} value={s}>
+                {intl.formatMessage({ id: `config.sort.${s}` })}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {error && (
@@ -188,11 +250,25 @@ function ConfigPage() {
       )}
 
       {!loading && !error && data && data.values.length > 0 && (
-        <ol role="list" className="space-y-2">
-          {data.values.map((cv) => (
-            <ConfigValueRow key={cv.id} cv={cv} />
-          ))}
-        </ol>
+        <div className="space-y-2">
+          <div
+            role="presentation"
+            className="grid grid-cols-[3px_minmax(0,2fr)_minmax(0,1.5fr)_auto_auto_auto] items-center gap-4 border-b border-border px-4 pb-2 text-[10px] uppercase tracking-[0.14em] text-foreground-subtle"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            <span aria-hidden />
+            <span>{intl.formatMessage({ id: "config.column.key" })}</span>
+            <span>{intl.formatMessage({ id: "config.column.value" })}</span>
+            <span>{intl.formatMessage({ id: "config.column.type" })}</span>
+            <span>{intl.formatMessage({ id: "config.column.jurisdiction" })}</span>
+            <span>{intl.formatMessage({ id: "config.column.effective_from" })}</span>
+          </div>
+          <ol role="list" className="space-y-2">
+            {sortedValues.map((cv) => (
+              <ConfigValueRow key={cv.id} cv={cv} />
+            ))}
+          </ol>
+        </div>
       )}
     </section>
   );
