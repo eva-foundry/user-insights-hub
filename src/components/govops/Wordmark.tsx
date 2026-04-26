@@ -14,7 +14,7 @@ export function Wordmark({ className }: { className?: string }) {
       }}
       aria-label="GovOps"
     >
-      Gov<span style={{ color: "var(--agentic)" }}>0</span>ps
+      Gov<span style={{ color: "var(--agentic)" }}>O</span>ps
     </span>
   );
 }
