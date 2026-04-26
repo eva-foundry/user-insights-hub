@@ -586,5 +586,11 @@
   "screen.errors.residency.start_before_dob": "La date de début est antérieure à votre date de naissance.",
   "screen.errors.residency.end_future": "La date de fin ne peut pas être dans le futur.",
   "screen.errors.residency.end_before_start": "La date de fin doit être postérieure ou égale à la date de début.",
-  "screen.errors.residency.overlap": "Cette période chevauche une autre période de résidence."
+  "screen.errors.residency.overlap": "Cette période chevauche une autre période de résidence.",
+  "screen.errors.summary.heading": "{count, plural, one {# champ nécessite votre attention} other {# champs nécessitent votre attention}} avant de vérifier l'éligibilité.",
+  "screen.errors.summary.more": "et {count, plural, one {# autre} other {# autres}}…",
+  "screen.reset.title": "Supprimer votre brouillon ?",
+  "screen.reset.body": "Tous les champs de ce formulaire seront effacés. Votre brouillon n'est conservé que dans cet onglet — rien n'est envoyé.",
+  "screen.reset.keep": "Conserver mon brouillon",
+  "screen.reset.discard": "Supprimer le brouillon"
 }

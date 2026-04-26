@@ -586,5 +586,11 @@
   "screen.errors.residency.start_before_dob": "Дата початку передує даті народження.",
   "screen.errors.residency.end_future": "Дата завершення не може бути в майбутньому.",
   "screen.errors.residency.end_before_start": "Дата завершення має бути не раніше дати початку.",
-  "screen.errors.residency.overlap": "Цей період перетинається з іншим періодом проживання."
+  "screen.errors.residency.overlap": "Цей період перетинається з іншим періодом проживання.",
+  "screen.errors.summary.heading": "{count, plural, one {# поле потребує уваги} few {# поля потребують уваги} other {# полів потребують уваги}} перед перевіркою права на допомогу.",
+  "screen.errors.summary.more": "та ще {count, plural, one {#} other {#}}…",
+  "screen.reset.title": "Скасувати чернетку?",
+  "screen.reset.body": "Це очистить усі поля форми. Чернетка зберігається лише в цій вкладці — нічого не надсилається.",
+  "screen.reset.keep": "Залишити чернетку",
+  "screen.reset.discard": "Скасувати чернетку"
 }

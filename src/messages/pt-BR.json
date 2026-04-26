@@ -586,5 +586,11 @@
   "screen.errors.residency.start_before_dob": "A data de início é anterior à sua data de nascimento.",
   "screen.errors.residency.end_future": "A data de fim não pode estar no futuro.",
   "screen.errors.residency.end_before_start": "A data de fim deve ser igual ou posterior à data de início.",
-  "screen.errors.residency.overlap": "Este período se sobrepõe a outro período de residência."
+  "screen.errors.residency.overlap": "Este período se sobrepõe a outro período de residência.",
+  "screen.errors.summary.heading": "{count, plural, one {# campo precisa da sua atenção} other {# campos precisam da sua atenção}} antes de verificar a elegibilidade.",
+  "screen.errors.summary.more": "e mais {count, plural, one {#} other {#}}…",
+  "screen.reset.title": "Descartar seu rascunho?",
+  "screen.reset.body": "Isso limpará todos os campos do formulário. Seu rascunho fica apenas nesta aba — nada é enviado.",
+  "screen.reset.keep": "Manter meu rascunho",
+  "screen.reset.discard": "Descartar rascunho"
 }

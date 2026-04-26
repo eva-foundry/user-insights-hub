@@ -60,6 +60,7 @@ export function ResidencyPeriodRows({
                 {intl.formatMessage({ id: "screen.form.residency.country" })}
               </span>
               <select
+                id={`screen-residency-${i}-country`}
                 value={p.country}
                 onChange={(e) => update(i, { country: e.target.value })}
                 onKeyDown={(e) => {
@@ -90,6 +91,7 @@ export function ResidencyPeriodRows({
                 {intl.formatMessage({ id: "screen.form.residency.start" })}
               </span>
               <input
+                id={`screen-residency-${i}-start_date`}
                 type="date"
                 value={p.start_date}
                 onChange={(e) => update(i, { start_date: e.target.value })}
@@ -111,6 +113,7 @@ export function ResidencyPeriodRows({
               </span>
               <div className="flex items-center gap-2">
                 <input
+                  id={`screen-residency-${i}-end_date`}
                   type="date"
                   value={p.end_date ?? ""}
                   disabled={ongoing}
@@ -148,6 +151,7 @@ export function ResidencyPeriodRows({
         );
       })}
       <button
+        id="screen-residency-add"
         type="button"
         onClick={add}
         className="inline-flex items-center gap-1 text-sm text-foreground hover:text-foreground underline-offset-2 hover:underline"

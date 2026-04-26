@@ -20,3 +20,18 @@ if (existsSync(target)) {
 } else {
   console.log("[clean-route-tree] nothing to remove");
 }
+
+// Regenerate immediately so downstream tools (tsc, vitest, the dev server's
+// initial type-check) don't choke on a missing import.
+try {
+  const { Generator, getConfig } = await import(
+    "@tanstack/router-generator"
+  );
+  const config = await getConfig({ rootDirectory: resolve(here, "..") });
+  const g = new Generator({ config, root: resolve(here, "..") });
+  await g.run();
+  console.log("[clean-route-tree] regenerated routeTree.gen.ts");
+} catch (err) {
+  // Non-fatal — vite/router-plugin will regenerate it during build/dev.
+  console.log(`[clean-route-tree] regen skipped: ${err?.message ?? err}`);
+}

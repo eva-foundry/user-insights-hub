@@ -7,6 +7,15 @@ import type {
 } from "@/lib/types";
 import { ResidencyPeriodRows } from "./ResidencyPeriodRows";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
   validateScreenForm,
   isValid as isErrorFree,
   type ScreenFormErrors,
@@ -19,6 +28,21 @@ import {
 
 const MIN_DOB = "1900-01-01";
 const TODAY = () => new Date().toISOString().slice(0, 10);
+const SUMMARY_MAX = 5;
+
+/**
+ * Map an error key (e.g. "dob", "legal_status", "residency.2.start_date")
+ * to the DOM id of the input that should receive focus when the user
+ * clicks the validation-summary link.
+ */
+function errorKeyToFieldId(key: string): string {
+  if (key === "dob") return "screen-dob";
+  if (key === "legal_status") return "screen-legal-citizen"; // first radio
+  if (key === "residency") return "screen-residency-add";
+  const m = key.match(/^residency\.(\d+)\.(country|start_date|end_date)$/);
+  if (m) return `screen-residency-${m[1]}-${m[2]}`;
+  return "";
+}
 
 export interface ScreenFormState {
   date_of_birth: string;
@@ -54,6 +78,8 @@ export function ScreenForm({
   const [submitted, setSubmitted] = useState(false);
   const [restored, setRestored] = useState(false);
   const restoredRef = useRef(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const summaryRef = useRef<HTMLDivElement>(null);
 
   // ── Restore session draft on mount (per-jurisdiction) ─────────────────
   useEffect(() => {
@@ -101,10 +127,42 @@ export function ScreenForm({
     clearScreenDraft();
   };
 
+  /** Click handler for the Reset button — opens confirm dialog when there
+   * is anything worth losing; resets immediately on an empty form. */
+  const onResetClicked = () => {
+    const dirty =
+      state.date_of_birth !== "" ||
+      state.legal_status !== "" ||
+      state.country_of_birth !== "" ||
+      state.evidence_dob ||
+      state.evidence_residency ||
+      state.residency_periods.some(
+        (p) => p.country !== "" || p.start_date !== "" || p.end_date !== null,
+      );
+    if (dirty) setResetOpen(true);
+    else clearDraft();
+  };
+
+  const focusFieldById = (id: string) => {
+    if (!id) return;
+    const el = document.getElementById(id) as HTMLElement | null;
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Defer focus so the scroll animation doesn't fight tab focus rings.
+    requestAnimationFrame(() => el.focus({ preventScroll: true }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    if (!valid || loading) return;
+    if (!valid || loading) {
+      // Surface the summary at the top of the form.
+      requestAnimationFrame(() => {
+        summaryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        summaryRef.current?.focus();
+      });
+      return;
+    }
     onSubmit({
       jurisdiction_id: jurisdictionId,
       date_of_birth: state.date_of_birth,
@@ -118,8 +176,61 @@ export function ScreenForm({
     });
   };
 
+  const summaryEntries = useMemo(() => {
+    if (!submitted) return [];
+    return Object.entries(errors).slice(0, SUMMARY_MAX);
+  }, [submitted, errors]);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6 screen-form" noValidate>
+      {/* ── Validation summary (top of form) ──────────────────────────── */}
+      {submitted && !valid && summaryEntries.length > 0 && (
+        <div
+          ref={summaryRef}
+          tabIndex={-1}
+          role="alert"
+          aria-labelledby="screen-summary-heading"
+          className="rounded border border-destructive/60 bg-destructive/5 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-destructive"
+        >
+          <p
+            id="screen-summary-heading"
+            className="font-medium text-destructive"
+          >
+            {intl.formatMessage(
+              { id: "screen.errors.summary.heading" },
+              { count: Object.keys(errors).length },
+            )}
+          </p>
+          <ul className="mt-2 list-disc pl-5 space-y-1">
+            {summaryEntries.map(([key, msgId]) => {
+              const targetId = errorKeyToFieldId(key);
+              return (
+                <li key={key}>
+                  <a
+                    href={`#${targetId}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      focusFieldById(targetId);
+                    }}
+                    className="text-destructive underline underline-offset-2 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive rounded-sm"
+                  >
+                    {intl.formatMessage({ id: msgId })}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+          {Object.keys(errors).length > SUMMARY_MAX && (
+            <p className="mt-2 text-xs text-foreground-muted">
+              {intl.formatMessage(
+                { id: "screen.errors.summary.more" },
+                { count: Object.keys(errors).length - SUMMARY_MAX },
+              )}
+            </p>
+          )}
+        </div>
+      )}
+
       {restored && (
         <div
           role="status"
@@ -130,7 +241,7 @@ export function ScreenForm({
           </span>
           <button
             type="button"
-            onClick={clearDraft}
+            onClick={onResetClicked}
             className="underline underline-offset-2 text-foreground hover:opacity-80"
           >
             {intl.formatMessage({ id: "screen.draft.clear" })}
@@ -172,9 +283,10 @@ export function ScreenForm({
           <span aria-hidden className="text-destructive">*</span>
         </legend>
         <div className="mt-2 grid gap-2" aria-describedby={showError("legal_status") ? "err-screen-legal" : undefined}>
-          {(["citizen", "permanent_resident", "other"] as const).map((opt) => (
+          {(["citizen", "permanent_resident", "other"] as const).map((opt, i) => (
             <label key={opt} className="inline-flex items-center gap-2 text-sm">
               <input
+                id={i === 0 ? "screen-legal-citizen" : `screen-legal-${opt}`}
                 type="radio"
                 name="legal_status"
                 value={opt}
@@ -254,17 +366,40 @@ export function ScreenForm({
         </button>
         <button
           type="button"
-          onClick={clearDraft}
+          onClick={onResetClicked}
           className="text-sm text-foreground-muted hover:text-foreground underline underline-offset-2"
         >
           {intl.formatMessage({ id: "screen.form.reset" })}
         </button>
-        {submitted && !valid && (
-          <p role="alert" className="text-sm text-destructive">
-            {intl.formatMessage({ id: "screen.errors.summary" })}
-          </p>
-        )}
       </div>
+
+      {/* ── Reset confirmation ───────────────────────────────────────── */}
+      <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {intl.formatMessage({ id: "screen.reset.title" })}
+            </DialogTitle>
+            <DialogDescription>
+              {intl.formatMessage({ id: "screen.reset.body" })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetOpen(false)}>
+              {intl.formatMessage({ id: "screen.reset.keep" })}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                clearDraft();
+                setResetOpen(false);
+              }}
+            >
+              {intl.formatMessage({ id: "screen.reset.discard" })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 }
