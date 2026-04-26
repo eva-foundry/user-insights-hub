@@ -5,8 +5,7 @@ export type ProvenanceVariant = "agent" | "human" | "hybrid" | "system" | "citiz
 const variantClass: Record<Exclude<ProvenanceVariant, "none">, string> = {
   agent: "bg-agentic",
   human: "bg-authority",
-  hybrid:
-    "bg-[linear-gradient(to_bottom,var(--agentic)_50%,var(--authority)_50%)]",
+  hybrid: "bg-[linear-gradient(to_bottom,var(--agentic)_50%,var(--authority)_50%)]",
   system: "bg-foreground-muted",
   citizen: "bg-verdict-enacted",
 };

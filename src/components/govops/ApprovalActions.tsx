@@ -4,22 +4,12 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  approveConfigValue,
-  rejectConfigValue,
-  requestChangesConfigValue,
-} from "@/lib/api";
+import { approveConfigValue, rejectConfigValue, requestChangesConfigValue } from "@/lib/api";
 import { getCurrentUser } from "@/lib/currentUser";
 import type { ConfigValue } from "@/lib/types";
-import {
-  ConfirmActionDialog,
-  type ApprovalAction,
-} from "./ConfirmActionDialog";
+import { ConfirmActionDialog, type ApprovalAction } from "./ConfirmActionDialog";
 import { useApprovalDraft } from "./approval/useApprovalDraft";
-import {
-  isMac,
-  useApprovalShortcuts,
-} from "./approval/useApprovalShortcuts";
+import { isMac, useApprovalShortcuts } from "./approval/useApprovalShortcuts";
 import { ApprovalShortcutsHelp } from "./approval/ApprovalShortcutsHelp";
 
 const COMMENT_MIN = 10;
@@ -42,15 +32,8 @@ export function ApprovalActions({
   onResolved: (resolution: ApprovalAction) => void;
 }) {
   const intl = useIntl();
-  const {
-    comment,
-    setComment,
-    expanded,
-    setExpanded,
-    showHelp,
-    setShowHelp,
-    clearComment,
-  } = useApprovalDraft(cv.id);
+  const { comment, setComment, expanded, setExpanded, showHelp, setShowHelp, clearComment } =
+    useApprovalDraft(cv.id);
 
   const [pending, setPending] = useState<ApprovalAction | null>(null);
   const [busy, setBusy] = useState(false);
@@ -94,9 +77,7 @@ export function ApprovalActions({
         toast.success(intl.formatMessage({ id: "approvals.success.approved" }));
       } else if (pending === "request") {
         await requestChangesConfigValue(cv.id, { reviewer: user, comment });
-        toast.success(
-          intl.formatMessage({ id: "approvals.success.requested_changes" }),
-        );
+        toast.success(intl.formatMessage({ id: "approvals.success.requested_changes" }));
       } else {
         await rejectConfigValue(cv.id, { reviewer: user, comment });
         toast.success(intl.formatMessage({ id: "approvals.success.rejected" }));
@@ -153,10 +134,8 @@ export function ApprovalActions({
           aria-live="polite"
           className="rounded-md border p-3 text-sm"
           style={{
-            borderColor:
-              "color-mix(in oklch, var(--verdict-pending) 40%, transparent)",
-            backgroundColor:
-              "color-mix(in oklch, var(--verdict-pending) 10%, transparent)",
+            borderColor: "color-mix(in oklch, var(--verdict-pending) 40%, transparent)",
+            backgroundColor: "color-mix(in oklch, var(--verdict-pending) 10%, transparent)",
             color: "var(--foreground)",
           }}
         >
@@ -185,10 +164,7 @@ export function ApprovalActions({
             disabled={isSelfApproval || busy}
           />
           <p className="text-[11px] text-foreground-subtle">
-            {intl.formatMessage(
-              { id: "approvals.comment.help" },
-              { min: COMMENT_MIN },
-            )}
+            {intl.formatMessage({ id: "approvals.comment.help" }, { min: COMMENT_MIN })}
           </p>
         </div>
 

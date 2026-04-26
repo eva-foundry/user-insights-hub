@@ -87,13 +87,11 @@ function About() {
           {intl.formatMessage({ id: "about.principles.title" })}
         </h2>
         <ul className="mt-6 grid gap-4 md:grid-cols-3">
-          {(
-            [
-              { id: "about.principles.provenance", variant: "agent" as const },
-              { id: "about.principles.bilingual", variant: "citizen" as const },
-              { id: "about.principles.auditability", variant: "human" as const },
-            ]
-          ).map((p) => (
+          {[
+            { id: "about.principles.provenance", variant: "agent" as const },
+            { id: "about.principles.bilingual", variant: "citizen" as const },
+            { id: "about.principles.auditability", variant: "human" as const },
+          ].map((p) => (
             <li
               key={p.id}
               className="flex items-stretch rounded-lg border border-border bg-surface p-5"

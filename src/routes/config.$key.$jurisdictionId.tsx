@@ -21,17 +21,12 @@ export const Route = createFileRoute("/config/$key/$jurisdictionId")({
     const decodedKey = decodeURIComponent(params.key);
     const decodedJur = decodeURIComponent(params.jurisdictionId);
     try {
-      return await listVersions(
-        decodedKey,
-        decodedJur === "global" ? null : decodedJur,
-      );
+      return await listVersions(decodedKey, decodedJur === "global" ? null : decodedJur);
     } catch {
       return mockVersions(decodedKey, decodedJur);
     }
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={140} />,
   component: ConfigDetailPage,
 });
@@ -57,9 +52,7 @@ function ConfigDetailPage() {
 
   // Newest-first ordering, computed once per data update.
   const versions = useMemo<ConfigValue[]>(() => {
-    return [...data.versions].sort((a, b) =>
-      b.effective_from.localeCompare(a.effective_from),
-    );
+    return [...data.versions].sort((a, b) => b.effective_from.localeCompare(a.effective_from));
   }, [data]);
 
   const current = versions[0];
@@ -80,10 +73,7 @@ function ConfigDetailPage() {
   return (
     <section aria-labelledby="config-detail-heading" className="space-y-8">
       <nav aria-label="Breadcrumb" className="text-sm">
-        <Link
-          to="/config"
-          className="text-foreground-muted underline-offset-4 hover:underline"
-        >
+        <Link to="/config" className="text-foreground-muted underline-offset-4 hover:underline">
           ← {intl.formatMessage({ id: "nav.config" })}
         </Link>
       </nav>
@@ -110,9 +100,7 @@ function ConfigDetailPage() {
                 <CopyButton value={decodedKey} />
               </div>
               <div className="flex items-center gap-2">
-                <JurisdictionChip
-                  id={decodedJur === "global" ? null : decodedJur}
-                />
+                <JurisdictionChip id={decodedJur === "global" ? null : decodedJur} />
                 {current && <ValueTypeBadge type={current.value_type} />}
                 {current && (
                   <span
@@ -120,9 +108,7 @@ function ConfigDetailPage() {
                     className="size-2 rounded-full"
                     style={{
                       backgroundColor:
-                        provenance === "agent"
-                          ? "var(--agentic)"
-                          : "var(--authority)",
+                        provenance === "agent" ? "var(--agentic)" : "var(--authority)",
                     }}
                     title={intl.formatMessage({
                       id: `provenance.${provenance}`,
@@ -149,8 +135,7 @@ function ConfigDetailPage() {
               style={{
                 borderColor: "var(--authority)",
                 color: "var(--authority)",
-                backgroundColor:
-                  "color-mix(in oklch, var(--authority) 8%, transparent)",
+                backgroundColor: "color-mix(in oklch, var(--authority) 8%, transparent)",
               }}
             >
               {intl.formatMessage({ id: "timeline.draft_new" })}
@@ -196,11 +181,7 @@ function ConfigDetailPage() {
       )}
 
       {versions.length > 0 && (
-        <Timeline
-          versions={versions}
-          selectedIds={selectedIds}
-          onSelectToggle={toggleSelect}
-        />
+        <Timeline versions={versions} selectedIds={selectedIds} onSelectToggle={toggleSelect} />
       )}
     </section>
   );

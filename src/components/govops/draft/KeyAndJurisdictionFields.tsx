@@ -10,12 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DOMAINS, JURISDICTIONS, type ValueType } from "@/lib/types";
-import {
-  ERROR_BORDER_STYLE,
-  ErrorMessage,
-  HelpText,
-  RequiredMark,
-} from "./fieldPrimitives";
+import { ERROR_BORDER_STYLE, ErrorMessage, HelpText, RequiredMark } from "./fieldPrimitives";
 import type { DraftFormState } from "./useDraftFormState";
 import { VALUE_TYPES } from "./draftHelpers";
 
@@ -61,9 +56,7 @@ export function KeyAndJurisdictionFields({ state }: { state: DraftFormState }) {
           required
           aria-required="true"
           aria-invalid={!!errors.key}
-          aria-describedby={`${ids.key}-help ${
-            errors.key ? `${ids.key}-error` : ""
-          }`.trim()}
+          aria-describedby={`${ids.key}-help ${errors.key ? `${ids.key}-error` : ""}`.trim()}
           style={{
             fontFamily: "var(--font-mono)",
             ...(errors.key ? ERROR_BORDER_STYLE : {}),
@@ -72,9 +65,7 @@ export function KeyAndJurisdictionFields({ state }: { state: DraftFormState }) {
         <HelpText id={`${ids.key}-help`}>
           {intl.formatMessage({ id: "draft.field.key.help" })}
         </HelpText>
-        {errors.key && (
-          <ErrorMessage id={`${ids.key}-error`} messageId={errors.key} />
-        )}
+        {errors.key && <ErrorMessage id={`${ids.key}-error`} messageId={errors.key} />}
       </div>
 
       {/* Jurisdiction */}
@@ -82,11 +73,7 @@ export function KeyAndJurisdictionFields({ state }: { state: DraftFormState }) {
         <Label htmlFor={ids.jurisdiction}>
           {intl.formatMessage({ id: "draft.field.jurisdiction.label" })}
         </Label>
-        <Select
-          value={jurisdiction}
-          onValueChange={setJurisdiction}
-          disabled={lockedJurisdiction}
-        >
+        <Select value={jurisdiction} onValueChange={setJurisdiction} disabled={lockedJurisdiction}>
           <SelectTrigger id={ids.jurisdiction}>
             <SelectValue />
           </SelectTrigger>
@@ -103,9 +90,7 @@ export function KeyAndJurisdictionFields({ state }: { state: DraftFormState }) {
 
       {/* Domain */}
       <div className="space-y-1.5">
-        <Label htmlFor={ids.domain}>
-          {intl.formatMessage({ id: "draft.field.domain.label" })}
-        </Label>
+        <Label htmlFor={ids.domain}>{intl.formatMessage({ id: "draft.field.domain.label" })}</Label>
         <Select value={domain} onValueChange={setDomain} disabled={lockedDomain}>
           <SelectTrigger id={ids.domain}>
             <SelectValue />

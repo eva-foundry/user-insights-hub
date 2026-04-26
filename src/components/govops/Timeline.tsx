@@ -17,10 +17,7 @@ export function Timeline({
 }) {
   return (
     <ol role="list" className="relative space-y-4 ps-6">
-      <span
-        aria-hidden
-        className="absolute inset-y-3 start-2 w-px bg-border"
-      />
+      <span aria-hidden className="absolute inset-y-3 start-2 w-px bg-border" />
       {versions.map((v, idx) => {
         const provenance = v.author.startsWith("agent:") ? "agent" : "human";
         return (
@@ -29,8 +26,7 @@ export function Timeline({
               aria-hidden
               className="absolute -start-[18px] top-5 size-2.5 rounded-full"
               style={{
-                backgroundColor:
-                  provenance === "agent" ? "var(--agentic)" : "var(--authority)",
+                backgroundColor: provenance === "agent" ? "var(--agentic)" : "var(--authority)",
               }}
             />
             <TimelineCard

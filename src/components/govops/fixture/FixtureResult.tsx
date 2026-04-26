@@ -15,10 +15,7 @@ export function FixtureResult({ result }: { result: StoredRun }) {
       >
         {intl.formatMessage({ id: "prompt.fixture.result.heading" })}
       </h3>
-      <dl
-        className="grid grid-cols-2 gap-2 text-xs"
-        style={{ fontFamily: "var(--font-mono)" }}
-      >
+      <dl className="grid grid-cols-2 gap-2 text-xs" style={{ fontFamily: "var(--font-mono)" }}>
         <div>
           <dt className="text-foreground-subtle">proposals</dt>
           <dd className="text-foreground">
@@ -67,9 +64,7 @@ export function FixtureResult({ result }: { result: StoredRun }) {
       </ul>
 
       <details className="text-xs">
-        <summary className="cursor-pointer text-foreground-subtle">
-          raw response
-        </summary>
+        <summary className="cursor-pointer text-foreground-subtle">raw response</summary>
         <pre
           className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded bg-surface-sunken p-2"
           style={{ fontFamily: "var(--font-mono)" }}

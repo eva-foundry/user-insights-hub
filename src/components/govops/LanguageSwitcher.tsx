@@ -19,7 +19,9 @@ export function LanguageSwitcher() {
   return (
     <div className="inline-flex items-center gap-2 text-sm text-foreground-muted">
       <Languages className="size-4" aria-hidden />
-      <span className="sr-only" id="lang-switcher-label">{label}</span>
+      <span className="sr-only" id="lang-switcher-label">
+        {label}
+      </span>
       <Select value={locale} onValueChange={(v) => setLocale(v as Locale)}>
         <SelectTrigger
           aria-labelledby="lang-switcher-label"

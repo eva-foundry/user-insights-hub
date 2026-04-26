@@ -50,9 +50,7 @@ export const Route = createFileRoute("/config/draft")({
       return MOCK_CONFIG_VALUES.find((v) => v.id === id) ?? null;
     }
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   component: DraftPage,
 });
 
@@ -93,9 +91,7 @@ function DraftPage() {
 
   return (
     <div className="space-y-6">
-      <RecentDrafts
-        activeSearch={formKey === "blank" ? "" : formKey}
-      />
+      <RecentDrafts activeSearch={formKey === "blank" ? "" : formKey} />
       <DraftConfigForm
         key={formKey}
         initial={search}

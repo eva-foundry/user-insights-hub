@@ -7,8 +7,9 @@ import { MOCK_CONFIG_VALUES } from "./mock-config-values";
  */
 function mockUlid(): string {
   const ts = Date.now().toString(36).toUpperCase().padStart(10, "0");
-  const rnd = Array.from({ length: 16 }, () =>
-    "0123456789ABCDEFGHJKMNPQRSTVWXYZ"[Math.floor(Math.random() * 32)],
+  const rnd = Array.from(
+    { length: 16 },
+    () => "0123456789ABCDEFGHJKMNPQRSTVWXYZ"[Math.floor(Math.random() * 32)],
   ).join("");
   return (ts + rnd).slice(0, 26);
 }
@@ -18,9 +19,7 @@ function mockUlid(): string {
  * forward-looking, this mock returns a synthetic ConfigValue after a short
  * delay so the route can navigate to the (also-mocked) timeline.
  */
-export async function mockCreateConfigValue(
-  body: CreateConfigValueRequest,
-): Promise<ConfigValue> {
+export async function mockCreateConfigValue(body: CreateConfigValueRequest): Promise<ConfigValue> {
   await new Promise((r) => setTimeout(r, 300));
   const now = new Date().toISOString();
   return {
@@ -50,9 +49,7 @@ export async function mockCreateConfigValue(
  * the side-by-side current-vs-proposed UI.
  */
 function seedApprovals(): ConfigValue[] {
-  const seeded = MOCK_CONFIG_VALUES.filter(
-    (v) => v.status === "draft" || v.status === "pending",
-  );
+  const seeded = MOCK_CONFIG_VALUES.filter((v) => v.status === "draft" || v.status === "pending");
   const synthetic: ConfigValue[] = [
     {
       id: "01HRX0DRAFTOAS65MINAGEPROP",
@@ -120,18 +117,14 @@ export async function mockGetApproval(id: string): Promise<ConfigValue | null> {
   return getPool().find((v) => v.id === id) ?? null;
 }
 
-function applyAction(
-  id: string,
-  next: ConfigValue["status"],
-  approver?: string,
-): ConfigValue {
+function applyAction(id: string, next: ConfigValue["status"], approver?: string): ConfigValue {
   const pool = getPool();
   const idx = pool.findIndex((v) => v.id === id);
   if (idx === -1) throw new Error(`ConfigValue ${id} not found`);
   const updated: ConfigValue = {
     ...pool[idx],
     status: next,
-    approved_by: next === "approved" ? approver ?? pool[idx].approved_by : pool[idx].approved_by,
+    approved_by: next === "approved" ? (approver ?? pool[idx].approved_by) : pool[idx].approved_by,
   };
   // Removing the row from the approvals pool reflects backend behavior:
   // approve/reject move it out of the queue; request-changes flips to draft
@@ -216,7 +209,8 @@ export async function mockRunFixtureWithPrompt(
   const fxt = MOCK_FIXTURES.find((f) => f.id === fixtureId);
   if (!fxt) throw new Error(`Fixture ${fixtureId} not found`);
   const len = body.prompt_text.length;
-  const base = fxt.id === "fxt_oas_2025_amendments" ? 3 : fxt.id === "fxt_us_ssa_eligibility" ? 4 : 2;
+  const base =
+    fxt.id === "fxt_oas_2025_amendments" ? 3 : fxt.id === "fxt_us_ssa_eligibility" ? 4 : 2;
   const variance = (len % 3) - 1; // -1, 0, +1
   const count = Math.max(1, base + variance);
   const proposals = Array.from({ length: count }, (_, i) => ({

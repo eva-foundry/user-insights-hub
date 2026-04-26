@@ -46,16 +46,8 @@ export function ConfigValueRow({ cv }: { cv: ConfigValue }) {
           </div>
           <ValueTypeBadge type={cv.value_type} />
           <JurisdictionChip id={cv.jurisdiction_id} />
-          <div
-            className="text-xs text-foreground-muted"
-            style={{ fontFamily: "var(--font-mono)" }}
-          >
-            <FormattedDate
-              value={cv.effective_from}
-              year="numeric"
-              month="short"
-              day="numeric"
-            />
+          <div className="text-xs text-foreground-muted" style={{ fontFamily: "var(--font-mono)" }}>
+            <FormattedDate value={cv.effective_from} year="numeric" month="short" day="numeric" />
           </div>
         </div>
       </Link>

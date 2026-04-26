@@ -22,8 +22,7 @@ type Props = {
   onChange: (next: Partial<FiltersState>) => void;
 };
 
-const labelClass =
-  "mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle";
+const labelClass = "mb-1 block text-xs uppercase tracking-[0.14em] text-foreground-subtle";
 const labelStyle = { fontFamily: "var(--font-mono)" } as const;
 
 export function ConfigValueFilters({ value, onChange }: Props) {
@@ -52,10 +51,7 @@ export function ConfigValueFilters({ value, onChange }: Props) {
         <Label htmlFor="config-domain" className={labelClass} style={labelStyle}>
           {intl.formatMessage({ id: "config.filter.domain.label" })}
         </Label>
-        <Select
-          value={value.domain}
-          onValueChange={(v) => onChange({ domain: v })}
-        >
+        <Select value={value.domain} onValueChange={(v) => onChange({ domain: v })}>
           <SelectTrigger id="config-domain" className="h-9 w-[160px] bg-surface">
             <SelectValue />
           </SelectTrigger>
@@ -103,10 +99,7 @@ export function ConfigValueFilters({ value, onChange }: Props) {
         <Label htmlFor="config-language" className={labelClass} style={labelStyle}>
           {intl.formatMessage({ id: "config.filter.language.label" })}
         </Label>
-        <Select
-          value={value.language}
-          onValueChange={(v) => onChange({ language: v })}
-        >
+        <Select value={value.language} onValueChange={(v) => onChange({ language: v })}>
           <SelectTrigger id="config-language" className="h-9 w-[140px] bg-surface">
             <SelectValue />
           </SelectTrigger>

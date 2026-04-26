@@ -39,12 +39,7 @@ export function DiffPane({
             className="text-2xl tracking-tight text-foreground"
             style={{ fontFamily: "var(--font-serif)", fontWeight: 600 }}
           >
-            <FormattedDate
-              value={cv.effective_from}
-              year="numeric"
-              month="short"
-              day="numeric"
-            />
+            <FormattedDate value={cv.effective_from} year="numeric" month="short" day="numeric" />
           </p>
         </header>
 
@@ -56,10 +51,7 @@ export function DiffPane({
               <dt className="text-[10px] uppercase tracking-[0.14em] text-foreground-subtle">
                 {intl.formatMessage({ id: "config.detail.citation" })}
               </dt>
-              <dd
-                className="text-foreground"
-                style={{ fontFamily: "var(--font-mono)" }}
-              >
+              <dd className="text-foreground" style={{ fontFamily: "var(--font-mono)" }}>
                 {cv.citation}
               </dd>
             </div>
@@ -76,10 +68,7 @@ export function DiffPane({
             <dt className="text-[10px] uppercase tracking-[0.14em] text-foreground-subtle">
               {intl.formatMessage({ id: "config.detail.author" })}
             </dt>
-            <dd
-              className="text-foreground"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
+            <dd className="text-foreground" style={{ fontFamily: "var(--font-mono)" }}>
               {cv.author}
               {cv.approved_by &&
                 ` · ${intl.formatMessage({ id: "config.detail.approved_by" })}: ${cv.approved_by}`}

@@ -123,9 +123,7 @@ export async function getConfigValue(id: string): Promise<ConfigValue> {
   return fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}`);
 }
 
-export async function createConfigValue(
-  body: CreateConfigValueRequest,
-): Promise<ConfigValue> {
+export async function createConfigValue(body: CreateConfigValueRequest): Promise<ConfigValue> {
   if (useMock()) return (await loadMocks()).mockCreateConfigValue(body);
   try {
     return await fetcher<ConfigValue>("/api/config/values", {
@@ -168,10 +166,10 @@ export async function approveConfigValue(
 ): Promise<ConfigValue> {
   if (useMock()) return (await loadMocks()).mockApproveConfigValue(id, body);
   try {
-    return await fetcher<ConfigValue>(
-      `/api/config/values/${encodeURIComponent(id)}/approve`,
-      { method: "POST", body: JSON.stringify(body) },
-    );
+    return await fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}/approve`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
   } catch {
     return (await loadMocks()).mockApproveConfigValue(id, body);
   }
@@ -198,10 +196,10 @@ export async function rejectConfigValue(
 ): Promise<ConfigValue> {
   if (useMock()) return (await loadMocks()).mockRejectConfigValue(id, body);
   try {
-    return await fetcher<ConfigValue>(
-      `/api/config/values/${encodeURIComponent(id)}/reject`,
-      { method: "POST", body: JSON.stringify(body) },
-    );
+    return await fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}/reject`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
   } catch {
     return (await loadMocks()).mockRejectConfigValue(id, body);
   }
@@ -215,9 +213,7 @@ export async function resolveCurrentConfigValue(
   const params = new URLSearchParams({ key, evaluation_date: evaluationDate });
   if (jurisdictionId) params.set("jurisdiction_id", jurisdictionId);
   try {
-    return await fetcher<ConfigValue>(
-      `/api/config/resolve?${params.toString()}`,
-    );
+    return await fetcher<ConfigValue>(`/api/config/resolve?${params.toString()}`);
   } catch {
     const evalTs = new Date(evaluationDate).getTime();
     const candidates = MOCK_CONFIG_VALUES.filter((v) => {

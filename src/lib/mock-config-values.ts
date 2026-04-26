@@ -205,16 +205,14 @@ export const MOCK_CONFIG_VALUES: ConfigValue[] = [
     domain: "prompt",
     key: "global.prompt.eligibility.check",
     jurisdiction_id: null,
-    value:
-      "Decide eligibility from the inputs. Reference applicable rules.",
+    value: "Decide eligibility from the inputs. Reference applicable rules.",
     value_type: "prompt",
     effective_from: "2025-06-01T00:00:00Z",
     effective_to: "2026-01-07T23:59:59Z",
     citation: "Internal: prompt-library/v2",
     author: "agent:prompt-curator",
     approved_by: "human:lead.ai",
-    rationale:
-      "Earlier eligibility-check prompt; superseded by the citation-aware v3.",
+    rationale: "Earlier eligibility-check prompt; superseded by the citation-aware v3.",
     supersedes: null,
     status: "approved",
     language: "en",
@@ -222,9 +220,7 @@ export const MOCK_CONFIG_VALUES: ConfigValue[] = [
   },
 ];
 
-export function filterMockConfigValues(
-  params: ListConfigValuesParams,
-): ListConfigValuesResponse {
+export function filterMockConfigValues(params: ListConfigValuesParams): ListConfigValuesResponse {
   const { domain, key_prefix, jurisdiction_id, language } = params;
   const values = MOCK_CONFIG_VALUES.filter((v) => {
     if (domain && domain !== "all" && v.domain !== domain) return false;

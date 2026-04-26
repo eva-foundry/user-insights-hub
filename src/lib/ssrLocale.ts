@@ -27,15 +27,13 @@ function pickLocale(input: string | undefined): Locale {
   return "en";
 }
 
-export const getSsrLocale = createServerFn({ method: "GET" }).handler(
-  (): Locale => {
-    try {
-      const cookieLocale = getCookie(StorageKeys.locale);
-      if (cookieLocale) return pickLocale(cookieLocale);
-      const accept = getRequestHeader("accept-language");
-      return pickLocale(accept);
-    } catch {
-      return "en";
-    }
-  },
-);
+export const getSsrLocale = createServerFn({ method: "GET" }).handler((): Locale => {
+  try {
+    const cookieLocale = getCookie(StorageKeys.locale);
+    if (cookieLocale) return pickLocale(cookieLocale);
+    const accept = getRequestHeader("accept-language");
+    return pickLocale(accept);
+  } catch {
+    return "en";
+  }
+});

@@ -26,8 +26,7 @@ export function ValueDiff({ from, to }: { from: ConfigValue; to: ConfigValue }) 
         style={{
           borderColor: "var(--verdict-rejected)",
           color: "var(--verdict-rejected)",
-          backgroundColor:
-            "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
+          backgroundColor: "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
         }}
       >
         Type mismatch: {from.value_type} → {to.value_type}. Cannot diff values directly.

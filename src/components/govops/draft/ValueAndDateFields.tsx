@@ -3,11 +3,7 @@ import { useIntl } from "react-intl";
 import { Label } from "@/components/ui/label";
 import { DateTimeInput } from "../inputs/DateTimeInput";
 import { ValueInput } from "../inputs/ValueInput";
-import {
-  ErrorMessage,
-  HelpText,
-  RequiredMark,
-} from "./fieldPrimitives";
+import { ErrorMessage, HelpText, RequiredMark } from "./fieldPrimitives";
 import type { DraftFormState } from "./useDraftFormState";
 
 /**
@@ -16,16 +12,8 @@ import type { DraftFormState } from "./useDraftFormState";
  */
 export function ValueAndDateFields({ state }: { state: DraftFormState }) {
   const intl = useIntl();
-  const {
-    ids,
-    valueType,
-    value,
-    setValue,
-    effectiveFrom,
-    setEffectiveFrom,
-    errors,
-    markTouched,
-  } = state;
+  const { ids, valueType, value, setValue, effectiveFrom, setEffectiveFrom, errors, markTouched } =
+    state;
 
   return (
     <>
@@ -53,10 +41,7 @@ export function ValueAndDateFields({ state }: { state: DraftFormState }) {
         </HelpText>
         {errors.effective_from && (
           <>
-            <ErrorMessage
-              id={`${ids.effectiveFrom}-error`}
-              messageId={errors.effective_from}
-            />
+            <ErrorMessage id={`${ids.effectiveFrom}-error`} messageId={errors.effective_from} />
             {(errors.effective_from === "validators.effective_from.format" ||
               errors.effective_from === "validators.effective_from.invalid") && (
               <p
@@ -89,9 +74,7 @@ export function ValueAndDateFields({ state }: { state: DraftFormState }) {
           ariaDescribedBy={errors.value ? `${ids.value}-error` : undefined}
           ariaInvalid={!!errors.value}
         />
-        {errors.value && (
-          <ErrorMessage id={`${ids.value}-error`} messageId={errors.value} />
-        )}
+        {errors.value && <ErrorMessage id={`${ids.value}-error`} messageId={errors.value} />}
       </div>
     </>
   );

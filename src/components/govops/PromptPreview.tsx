@@ -18,7 +18,9 @@ export function PromptPreview({ value, ariaLabel }: { value: string; ariaLabel: 
         fontFamily: "var(--font-serif)",
         color: "var(--foreground)",
       }}
-      dangerouslySetInnerHTML={{ __html: html || "<p style=\"opacity:.6\"><em>Nothing to preview yet.</em></p>" }}
+      dangerouslySetInnerHTML={{
+        __html: html || '<p style="opacity:.6"><em>Nothing to preview yet.</em></p>',
+      }}
     />
   );
 }

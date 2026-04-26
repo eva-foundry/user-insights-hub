@@ -7,10 +7,7 @@ import { DraftFormActions } from "./draft/DraftFormActions";
 import { KeyAndJurisdictionFields } from "./draft/KeyAndJurisdictionFields";
 import { ProvenanceFields } from "./draft/ProvenanceFields";
 import { ValueAndDateFields } from "./draft/ValueAndDateFields";
-import {
-  useDraftFormState,
-  type DraftInitial,
-} from "./draft/useDraftFormState";
+import { useDraftFormState, type DraftInitial } from "./draft/useDraftFormState";
 import type { ConfigValue, CreateConfigValueRequest } from "@/lib/types";
 
 /**
@@ -49,10 +46,7 @@ export function DraftConfigForm({
 
   const isAgent = currentAuthor.startsWith("agent:");
   const headingMsg = prior
-    ? intl.formatMessage(
-        { id: "draft.heading.supersede" },
-        { key: prior.key },
-      )
+    ? intl.formatMessage({ id: "draft.heading.supersede" }, { key: prior.key })
     : intl.formatMessage({ id: "draft.heading" });
 
   const errorCount = Object.keys(state.errors).length;
@@ -84,9 +78,7 @@ export function DraftConfigForm({
 
       {/* Screen-reader announcement for validation summary. */}
       <div role="status" aria-live="polite" className="sr-only">
-        {errorCount > 0
-          ? `${errorCount} validation error${errorCount === 1 ? "" : "s"}`
-          : ""}
+        {errorCount > 0 ? `${errorCount} validation error${errorCount === 1 ? "" : "s"}` : ""}
       </div>
 
       <div className="grid grid-cols-1 gap-5 rounded-md border border-border bg-surface-raised p-5 sm:grid-cols-2">
@@ -102,8 +94,7 @@ export function DraftConfigForm({
           className="rounded-md border p-3 text-sm"
           style={{
             borderColor: "var(--verdict-rejected)",
-            backgroundColor:
-              "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
+            backgroundColor: "color-mix(in oklch, var(--verdict-rejected) 6%, transparent)",
             color: "var(--verdict-rejected)",
           }}
         >

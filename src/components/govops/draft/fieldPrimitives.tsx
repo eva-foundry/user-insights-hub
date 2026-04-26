@@ -47,13 +47,7 @@ export function ErrorMessage({
   );
 }
 
-export function HelpText({
-  id,
-  children,
-}: {
-  id: string;
-  children: ReactNode;
-}) {
+export function HelpText({ id, children }: { id: string; children: ReactNode }) {
   return (
     <p id={id} className="text-xs text-foreground-muted">
       {children}

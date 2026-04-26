@@ -23,7 +23,10 @@ export function hydrateValue(raw: string, type: ValueType): unknown {
     } catch {
       /* fallthrough */
     }
-    return raw.split(",").map((s) => s.trim()).filter(Boolean);
+    return raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
   }
   return raw;
 }

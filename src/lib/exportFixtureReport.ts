@@ -11,10 +11,7 @@ import type { FixtureRunResult } from "./api";
  * loaded when the maintainer actually clicks "Export". This trims the
  * prompt-editor route chunk by ~1.7 MB.
  */
-export async function exportFixtureReport(opts: {
-  promptKey: string;
-  runs: FixtureRunResult[];
-}) {
+export async function exportFixtureReport(opts: { promptKey: string; runs: FixtureRunResult[] }) {
   const { promptKey, runs } = opts;
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "pt", format: "letter" });

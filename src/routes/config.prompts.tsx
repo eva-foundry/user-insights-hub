@@ -34,9 +34,7 @@ export const Route = createFileRoute("/config/prompts")({
       return filterMockConfigValues({ domain: "prompt" });
     }
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={120} />,
   component: PromptsPage,
 });
@@ -49,9 +47,7 @@ export const Route = createFileRoute("/config/prompts")({
 function humanizeTitle(key: string): string {
   const parts = key.split(".");
   const tail = parts.slice(-2).join(" ");
-  return tail
-    .replace(/[-_]/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return tail.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 interface PromptRow {
@@ -123,7 +119,10 @@ function PromptsPage() {
 
       {rows.length === 0 && (
         <div className="rounded-md border border-border bg-surface-sunken p-8 text-center">
-          <p className="text-base font-medium text-foreground" style={{ fontFamily: "var(--font-serif)" }}>
+          <p
+            className="text-base font-medium text-foreground"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
             {intl.formatMessage({ id: "prompts.empty.title" })}
           </p>
           <p className="mt-1 text-sm text-foreground-muted">
@@ -151,10 +150,7 @@ function PromptsPage() {
             <label htmlFor="prompts-per-page">
               {intl.formatMessage({ id: "prompts.pagination.per_page" })}
             </label>
-            <Select
-              value={String(pageSize)}
-              onValueChange={(v) => setPageSize(Number(v))}
-            >
+            <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
               <SelectTrigger
                 id="prompts-per-page"
                 className="h-8 w-[72px] bg-surface text-xs text-foreground"
@@ -197,7 +193,10 @@ function PromptsPage() {
                       className="text-[10px] uppercase tracking-[0.14em] text-foreground-subtle"
                       style={{ fontFamily: "var(--font-mono)" }}
                     >
-                      <FormattedMessage id="prompts.row.versions" values={{ count: versionCount }} />
+                      <FormattedMessage
+                        id="prompts.row.versions"
+                        values={{ count: versionCount }}
+                      />
                     </span>
                   </div>
                   <code

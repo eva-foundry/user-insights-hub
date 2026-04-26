@@ -20,13 +20,7 @@ function valueOf(cv: ConfigValue, field: Field): string {
  * 4-column metadata diff strip. Unchanged fields show once in muted tone;
  * changed fields show `from ⇒ to` with the diff color tokens.
  */
-export function DiffMetadataStrip({
-  from,
-  to,
-}: {
-  from: ConfigValue;
-  to: ConfigValue;
-}) {
+export function DiffMetadataStrip({ from, to }: { from: ConfigValue; to: ConfigValue }) {
   const intl = useIntl();
   const fields: Field[] = ["effective_from", "citation", "author", "status"];
 
@@ -53,12 +47,7 @@ export function DiffMetadataStrip({
                   title={intl.formatMessage({ id: "diff.metadata.unchanged" })}
                 >
                   {field === "effective_from" ? (
-                    <FormattedDate
-                      value={fromVal}
-                      year="numeric"
-                      month="short"
-                      day="numeric"
-                    />
+                    <FormattedDate value={fromVal} year="numeric" month="short" day="numeric" />
                   ) : field === "status" ? (
                     intl.formatMessage({ id: `status.${from.status}` })
                   ) : (
@@ -66,10 +55,7 @@ export function DiffMetadataStrip({
                   )}
                 </span>
               ) : (
-                <div
-                  className="space-y-1"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
+                <div className="space-y-1" style={{ fontFamily: "var(--font-mono)" }}>
                   <span
                     aria-label={intl.formatMessage({ id: "diff.aria.removed" })}
                     className="block rounded px-1.5 py-0.5 line-through"
@@ -79,12 +65,7 @@ export function DiffMetadataStrip({
                     }}
                   >
                     {field === "effective_from" ? (
-                      <FormattedDate
-                        value={fromVal}
-                        year="numeric"
-                        month="short"
-                        day="numeric"
-                      />
+                      <FormattedDate value={fromVal} year="numeric" month="short" day="numeric" />
                     ) : field === "status" ? (
                       intl.formatMessage({ id: `status.${from.status}` })
                     ) : (
@@ -100,12 +81,7 @@ export function DiffMetadataStrip({
                     }}
                   >
                     {field === "effective_from" ? (
-                      <FormattedDate
-                        value={toVal}
-                        year="numeric"
-                        month="short"
-                        day="numeric"
-                      />
+                      <FormattedDate value={toVal} year="numeric" month="short" day="numeric" />
                     ) : field === "status" ? (
                       intl.formatMessage({ id: `status.${to.status}` })
                     ) : (

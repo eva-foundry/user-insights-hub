@@ -32,8 +32,7 @@ export const Route = createFileRoute("/config/approvals")({
       { title: "Pending approvals — GovOps" },
       {
         name: "description",
-        content:
-          "Drafts and pending ConfigValue records awaiting human ratification.",
+        content: "Drafts and pending ConfigValue records awaiting human ratification.",
       },
     ],
   }),
@@ -43,9 +42,7 @@ export const Route = createFileRoute("/config/approvals")({
         ? (s.status as StatusFilter)
         : undefined;
     const ps = Number(s.page_size);
-    const page_size = (PAGE_SIZES as readonly number[]).includes(ps)
-      ? (ps as PageSize)
-      : undefined;
+    const page_size = (PAGE_SIZES as readonly number[]).includes(ps) ? (ps as PageSize) : undefined;
     return {
       q: typeof s.q === "string" && s.q.length ? s.q : undefined,
       status,
@@ -55,13 +52,9 @@ export const Route = createFileRoute("/config/approvals")({
   loader: async (): Promise<ConfigValue[]> => {
     const res = await listApprovals();
     // Newest first — maintainers want the freshest item on top.
-    return [...res.values].sort((a, b) =>
-      b.created_at.localeCompare(a.created_at),
-    );
+    return [...res.values].sort((a, b) => b.created_at.localeCompare(a.created_at));
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={88} />,
   component: ApprovalsPage,
 });
@@ -83,7 +76,7 @@ function ApprovalsPage() {
         ...prev,
         ...next,
         // Drop default-equivalent values to keep URLs clean.
-        q: next.q !== undefined ? (next.q || undefined) : prev.q,
+        q: next.q !== undefined ? next.q || undefined : prev.q,
         status:
           next.status !== undefined
             ? next.status === "all"
@@ -146,84 +139,77 @@ function ApprovalsPage() {
       </header>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]">
-          <div>
-            <label
-              htmlFor="approvals-search"
-              className="sr-only"
-            >
-              {intl.formatMessage({ id: "approvals.search.label" })}
-            </label>
-            <input
-              id="approvals-search"
-              type="search"
-              value={q}
-              onChange={(e) => setSearch({ q: e.target.value })}
-              placeholder={intl.formatMessage({ id: "approvals.search.placeholder" })}
-              className="h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-foreground placeholder:text-foreground-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              style={{ fontFamily: "var(--font-mono)" }}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <label
-              htmlFor="approvals-status"
-              className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {intl.formatMessage({ id: "approvals.filter.status.label" })}
-            </label>
-            <Select
-              value={statusFilter}
-              onValueChange={(v) => setSearch({ status: v as StatusFilter })}
-            >
-              <SelectTrigger
-                id="approvals-status"
-                className="h-9 w-[140px] bg-surface text-sm text-foreground"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  {intl.formatMessage({ id: "approvals.filter.status.all" })}
-                </SelectItem>
-                <SelectItem value="pending">
-                  {intl.formatMessage({ id: "status.pending" })}
-                </SelectItem>
-                <SelectItem value="draft">
-                  {intl.formatMessage({ id: "status.draft" })}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <label
-              htmlFor="approvals-pagesize"
-              className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              {intl.formatMessage({ id: "approvals.pagination.per_page" })}
-            </label>
-            <Select
-              value={String(pageSize)}
-              onValueChange={(v) =>
-                setSearch({ page_size: Number(v) as PageSize })
-              }
-            >
-              <SelectTrigger
-                id="approvals-pagesize"
-                className="h-9 w-[80px] bg-surface text-sm text-foreground"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PAGE_SIZES.map((n) => (
-                  <SelectItem key={n} value={String(n)}>
-                    {n}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div>
+          <label htmlFor="approvals-search" className="sr-only">
+            {intl.formatMessage({ id: "approvals.search.label" })}
+          </label>
+          <input
+            id="approvals-search"
+            type="search"
+            value={q}
+            onChange={(e) => setSearch({ q: e.target.value })}
+            placeholder={intl.formatMessage({ id: "approvals.search.placeholder" })}
+            className="h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-foreground placeholder:text-foreground-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            style={{ fontFamily: "var(--font-mono)" }}
+          />
         </div>
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="approvals-status"
+            className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {intl.formatMessage({ id: "approvals.filter.status.label" })}
+          </label>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => setSearch({ status: v as StatusFilter })}
+          >
+            <SelectTrigger
+              id="approvals-status"
+              className="h-9 w-[140px] bg-surface text-sm text-foreground"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                {intl.formatMessage({ id: "approvals.filter.status.all" })}
+              </SelectItem>
+              <SelectItem value="pending">
+                {intl.formatMessage({ id: "status.pending" })}
+              </SelectItem>
+              <SelectItem value="draft">{intl.formatMessage({ id: "status.draft" })}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="approvals-pagesize"
+            className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
+            style={{ fontFamily: "var(--font-mono)" }}
+          >
+            {intl.formatMessage({ id: "approvals.pagination.per_page" })}
+          </label>
+          <Select
+            value={String(pageSize)}
+            onValueChange={(v) => setSearch({ page_size: Number(v) as PageSize })}
+          >
+            <SelectTrigger
+              id="approvals-pagesize"
+              className="h-9 w-[80px] bg-surface text-sm text-foreground"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAGE_SIZES.map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {values.length === 0 && (
         <div
@@ -238,7 +224,10 @@ function ApprovalsPage() {
           >
             ✓
           </span>
-          <p className="text-lg font-semibold text-agentic-foreground" style={{ fontFamily: "var(--font-serif)" }}>
+          <p
+            className="text-lg font-semibold text-agentic-foreground"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
             {intl.formatMessage({ id: "approvals.empty.title" })}
           </p>
           <p className="max-w-md text-sm text-agentic-foreground/80">
@@ -268,9 +257,7 @@ function ApprovalsPage() {
           <p className="font-medium text-foreground">
             {intl.formatMessage({ id: "approvals.filter.empty.title" })}
           </p>
-          <p className="mt-1">
-            {intl.formatMessage({ id: "approvals.filter.empty.body" })}
-          </p>
+          <p className="mt-1">{intl.formatMessage({ id: "approvals.filter.empty.body" })}</p>
           <button
             type="button"
             onClick={() => setSearch({ q: "", status: "all" })}

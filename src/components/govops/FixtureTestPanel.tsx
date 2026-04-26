@@ -5,10 +5,7 @@ import type { FixtureBatchSummary } from "@/lib/api";
 import { toast } from "sonner";
 import { RunCompareDiff } from "./RunCompareDiff";
 import { exportFixtureReport } from "@/lib/exportFixtureReport";
-import {
-  useFixtureHistory,
-  runLabel,
-} from "./fixture/useFixtureHistory";
+import { useFixtureHistory, runLabel } from "./fixture/useFixtureHistory";
 import { FixtureResult } from "./fixture/FixtureResult";
 import {
   Select,
@@ -42,14 +39,8 @@ export function FixtureTestPanel({
   const [selectedFixture, setSelectedFixture] = useState("");
   const [running, setRunning] = useState(false);
 
-  const {
-    history,
-    viewIndex,
-    setViewIndex,
-    compareIndex,
-    setCompareIndex,
-    append,
-  } = useFixtureHistory(promptKey);
+  const { history, viewIndex, setViewIndex, compareIndex, setCompareIndex, append } =
+    useFixtureHistory(promptKey);
 
   useEffect(() => {
     listFixtures()
@@ -61,7 +52,7 @@ export function FixtureTestPanel({
   }, []);
 
   const result = history[viewIndex] ?? null;
-  const compare = compareIndex != null ? history[compareIndex] ?? null : null;
+  const compare = compareIndex != null ? (history[compareIndex] ?? null) : null;
 
   const onRun = async () => {
     if (!selectedFixture || disabled) return;
@@ -218,9 +209,7 @@ export function FixtureTestPanel({
             </label>
             <Select
               value={compareIndex == null ? "__none__" : String(compareIndex)}
-              onValueChange={(v) =>
-                setCompareIndex(v === "__none__" ? null : Number(v))
-              }
+              onValueChange={(v) => setCompareIndex(v === "__none__" ? null : Number(v))}
             >
               <SelectTrigger
                 id="fixture-compare-select"

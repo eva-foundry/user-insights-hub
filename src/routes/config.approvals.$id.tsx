@@ -33,9 +33,7 @@ export const Route = createFileRoute("/config/approvals/$id")({
     }
     return { proposed, current };
   },
-  errorComponent: ({ error, reset }) => (
-    <RouteError error={error as Error} reset={reset} />
-  ),
+  errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading variant="panel" />,
   component: ApprovalDetailPage,
 });
@@ -85,10 +83,7 @@ function ApprovalDetailPage() {
             className="text-xs uppercase tracking-[0.18em] text-foreground-subtle"
             style={{ fontFamily: "var(--font-mono)" }}
           >
-            {intl.formatMessage(
-              { id: "approvals.review.heading" },
-              { key: proposed.key },
-            )}
+            {intl.formatMessage({ id: "approvals.review.heading" }, { key: proposed.key })}
           </p>
           <h1
             className="break-all text-2xl tracking-tight text-foreground sm:text-3xl"
@@ -102,8 +97,7 @@ function ApprovalDetailPage() {
             <span
               className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
               style={{
-                backgroundColor:
-                  "color-mix(in oklch, var(--verdict-pending) 14%, transparent)",
+                backgroundColor: "color-mix(in oklch, var(--verdict-pending) 14%, transparent)",
                 color: "var(--verdict-pending)",
                 fontFamily: "var(--font-mono)",
               }}
@@ -170,10 +164,7 @@ function ApprovalDetailPage() {
                 <dt className="text-[10px] uppercase tracking-[0.14em] text-foreground-subtle">
                   {intl.formatMessage({ id: "diff.metadata.effective_from" })}
                 </dt>
-                <dd
-                  className="text-foreground"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
+                <dd className="text-foreground" style={{ fontFamily: "var(--font-mono)" }}>
                   <FormattedDate
                     value={proposed.effective_from}
                     year="numeric"
@@ -187,10 +178,7 @@ function ApprovalDetailPage() {
                   <dt className="text-[10px] uppercase tracking-[0.14em] text-foreground-subtle">
                     {intl.formatMessage({ id: "config.detail.citation" })}
                   </dt>
-                  <dd
-                    className="text-foreground"
-                    style={{ fontFamily: "var(--font-mono)" }}
-                  >
+                  <dd className="text-foreground" style={{ fontFamily: "var(--font-mono)" }}>
                     {proposed.citation}
                   </dd>
                 </div>
