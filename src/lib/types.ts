@@ -86,6 +86,18 @@ export interface Jurisdiction {
   language_regime: string;
 }
 
+/**
+ * Shape returned by `GET /api/jurisdiction/{code}` for the citizen-facing
+ * /screen route. Distinct from the richer admin `Jurisdiction` interface
+ * above — only the fields the public surface needs.
+ */
+export interface JurisdictionResponse {
+  id: string;
+  jurisdiction_label: string;
+  program_name: string;
+  default_language: string;
+}
+
 export interface AuthorityReference {
   id: string;
   jurisdiction_id: string;
