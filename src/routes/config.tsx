@@ -92,12 +92,21 @@ function ConfigPage() {
   const search = useSearch({ from: "/config" });
   const data: ListConfigValuesResponse = Route.useLoaderData();
 
-  const filters: FiltersState = {
-    key_prefix: search.key_prefix ?? "",
-    domain: search.domain ?? "all",
-    jurisdiction_id: search.jurisdiction_id ?? "all",
-    language: search.language ?? "all",
-  };
+  // Memoized so useCallback deps below are stable across renders.
+  const filters: FiltersState = useMemo(
+    () => ({
+      key_prefix: search.key_prefix ?? "",
+      domain: search.domain ?? "all",
+      jurisdiction_id: search.jurisdiction_id ?? "all",
+      language: search.language ?? "all",
+    }),
+    [
+      search.key_prefix,
+      search.domain,
+      search.jurisdiction_id,
+      search.language,
+    ],
+  );
   const sort: SortKey = search.sort ?? "key_asc";
 
   const updateFilters = useCallback(
