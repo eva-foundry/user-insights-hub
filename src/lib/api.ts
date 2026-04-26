@@ -36,6 +36,10 @@ import type {
   Recommendation,
   ReviewActionType,
   DecisionOutcome,
+  EncodingBatch,
+  EncodingBatchSummary,
+  ProposalStatus,
+  RuleProposal,
 } from "./types";
 import { MOCK_CONFIG_VALUES } from "./mock-config-values";
 import {
@@ -371,5 +375,102 @@ export async function switchJurisdiction(
     return await fetcher(`/api/jurisdiction/${encodeURIComponent(code)}`, { method: "POST" });
   } catch {
     return { jurisdiction: code, name: code, program: "Old Age Security" };
+  }
+}
+
+// ---- Encoding pipeline (govops-011) ---------------------------------------
+
+const loadEncodeMocks = () => import("./mock-encode");
+
+export interface CreateBatchRequest {
+  document_title: string;
+  document_citation: string;
+  source_url?: string;
+  input_text: string;
+  method: "manual" | "llm";
+  api_key?: string;
+}
+
+export interface ReviewProposalBody {
+  status: ProposalStatus;
+  notes?: string;
+  overrides?: Partial<
+    Pick<RuleProposal, "description" | "formal_expression" | "citation" | "parameters">
+  >;
+}
+
+export async function listEncodingBatches(): Promise<EncodingBatchSummary[]> {
+  if (isMockMode()) return (await loadEncodeMocks()).mockListEncodingBatches();
+  try {
+    return await fetcher<EncodingBatchSummary[]>("/api/encode/batches");
+  } catch {
+    return (await loadEncodeMocks()).mockListEncodingBatches();
+  }
+}
+
+export async function getEncodingBatch(id: string): Promise<EncodingBatch> {
+  if (isMockMode()) return (await loadEncodeMocks()).mockGetEncodingBatch(id);
+  try {
+    return await fetcher<EncodingBatch>(`/api/encode/batches/${encodeURIComponent(id)}`);
+  } catch {
+    return (await loadEncodeMocks()).mockGetEncodingBatch(id);
+  }
+}
+
+export async function createEncodingBatch(body: CreateBatchRequest): Promise<EncodingBatch> {
+  if (isMockMode()) return (await loadEncodeMocks()).mockCreateEncodingBatch(body);
+  try {
+    return await fetcher<EncodingBatch>("/api/encode/batches", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  } catch {
+    // LLM failures auto-fall back to manual encoding via the mock.
+    const fallback = body.method === "llm" ? { ...body, method: "manual" as const } : body;
+    return (await loadEncodeMocks()).mockCreateEncodingBatch(fallback);
+  }
+}
+
+export async function reviewProposal(
+  batchId: string,
+  proposalId: string,
+  body: ReviewProposalBody,
+): Promise<RuleProposal> {
+  if (isMockMode())
+    return (await loadEncodeMocks()).mockReviewProposal(batchId, proposalId, body);
+  try {
+    return await fetcher<RuleProposal>(
+      `/api/encode/batches/${encodeURIComponent(batchId)}/proposals/${encodeURIComponent(proposalId)}/review`,
+      { method: "POST", body: JSON.stringify(body) },
+    );
+  } catch {
+    return (await loadEncodeMocks()).mockReviewProposal(batchId, proposalId, body);
+  }
+}
+
+export async function bulkReviewProposals(
+  batchId: string,
+  body: { proposal_ids: string[]; status: ProposalStatus; notes?: string },
+): Promise<{ updated: RuleProposal[] }> {
+  if (isMockMode()) return (await loadEncodeMocks()).mockBulkReviewProposals(batchId, body);
+  try {
+    return await fetcher(
+      `/api/encode/batches/${encodeURIComponent(batchId)}/bulk-review`,
+      { method: "POST", body: JSON.stringify(body) },
+    );
+  } catch {
+    return (await loadEncodeMocks()).mockBulkReviewProposals(batchId, body);
+  }
+}
+
+export async function commitBatch(batchId: string): Promise<{ committed_rule_ids: string[] }> {
+  if (isMockMode()) return (await loadEncodeMocks()).mockCommitBatch(batchId);
+  try {
+    return await fetcher(
+      `/api/encode/batches/${encodeURIComponent(batchId)}/commit`,
+      { method: "POST" },
+    );
+  } catch {
+    return (await loadEncodeMocks()).mockCommitBatch(batchId);
   }
 }
