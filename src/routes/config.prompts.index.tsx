@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/config/prompts")({
+export const Route = createFileRoute("/config/prompts/")({
   head: () => ({
     meta: [
       { title: "Prompts — GovOps" },

@@ -16,7 +16,7 @@ const STATUSES: CaseStatus[] = [
   "escalated",
 ];
 
-export const Route = createFileRoute("/cases")({
+export const Route = createFileRoute("/cases/")({
   head: () => ({
     meta: [
       { title: "Cases — GovOps" },

@@ -29,7 +29,7 @@ type ConfigSearch = {
   sort?: SortKey;
 };
 
-export const Route = createFileRoute("/config")({
+export const Route = createFileRoute("/config/")({
   head: () => ({
     meta: [
       { title: "Configuration — GovOps" },

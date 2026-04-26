@@ -10,20 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PoliciesRouteImport } from './routes/policies'
-import { Route as EncodeRouteImport } from './routes/encode'
-import { Route as ConfigRouteImport } from './routes/config'
-import { Route as CasesRouteImport } from './routes/cases'
 import { Route as AuthorityRouteImport } from './routes/authority'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EncodeIndexRouteImport } from './routes/encode.index'
+import { Route as ConfigIndexRouteImport } from './routes/config.index'
+import { Route as CasesIndexRouteImport } from './routes/cases.index'
 import { Route as EncodeNewRouteImport } from './routes/encode.new'
 import { Route as EncodeBatchIdRouteImport } from './routes/encode.$batchId'
-import { Route as ConfigPromptsRouteImport } from './routes/config.prompts'
 import { Route as ConfigDraftRouteImport } from './routes/config.draft'
 import { Route as ConfigDiffRouteImport } from './routes/config.diff'
-import { Route as ConfigApprovalsRouteImport } from './routes/config.approvals'
 import { Route as CasesCaseIdRouteImport } from './routes/cases.$caseId'
+import { Route as ConfigPromptsIndexRouteImport } from './routes/config.prompts.index'
+import { Route as ConfigApprovalsIndexRouteImport } from './routes/config.approvals.index'
 import { Route as ConfigApprovalsIdRouteImport } from './routes/config.approvals.$id'
 import { Route as ConfigKeyJurisdictionIdRouteImport } from './routes/config.$key.$jurisdictionId'
 import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes/config.prompts.$key.$jurisdictionId.edit'
@@ -31,21 +31,6 @@ import { Route as ConfigPromptsKeyJurisdictionIdEditRouteImport } from './routes
 const PoliciesRoute = PoliciesRouteImport.update({
   id: '/policies',
   path: '/policies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EncodeRoute = EncodeRouteImport.update({
-  id: '/encode',
-  path: '/encode',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfigRoute = ConfigRouteImport.update({
-  id: '/config',
-  path: '/config',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CasesRoute = CasesRouteImport.update({
-  id: '/cases',
-  path: '/cases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthorityRoute = AuthorityRouteImport.update({
@@ -68,56 +53,71 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EncodeIndexRoute = EncodeIndexRouteImport.update({
+  id: '/encode/',
+  path: '/encode/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigIndexRoute = ConfigIndexRouteImport.update({
+  id: '/config/',
+  path: '/config/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesIndexRoute = CasesIndexRouteImport.update({
+  id: '/cases/',
+  path: '/cases/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EncodeNewRoute = EncodeNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => EncodeRoute,
+  id: '/encode/new',
+  path: '/encode/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EncodeBatchIdRoute = EncodeBatchIdRouteImport.update({
-  id: '/$batchId',
-  path: '/$batchId',
-  getParentRoute: () => EncodeRoute,
-} as any)
-const ConfigPromptsRoute = ConfigPromptsRouteImport.update({
-  id: '/prompts',
-  path: '/prompts',
-  getParentRoute: () => ConfigRoute,
+  id: '/encode/$batchId',
+  path: '/encode/$batchId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigDraftRoute = ConfigDraftRouteImport.update({
-  id: '/draft',
-  path: '/draft',
-  getParentRoute: () => ConfigRoute,
+  id: '/config/draft',
+  path: '/config/draft',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigDiffRoute = ConfigDiffRouteImport.update({
-  id: '/diff',
-  path: '/diff',
-  getParentRoute: () => ConfigRoute,
-} as any)
-const ConfigApprovalsRoute = ConfigApprovalsRouteImport.update({
-  id: '/approvals',
-  path: '/approvals',
-  getParentRoute: () => ConfigRoute,
+  id: '/config/diff',
+  path: '/config/diff',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CasesCaseIdRoute = CasesCaseIdRouteImport.update({
-  id: '/$caseId',
-  path: '/$caseId',
-  getParentRoute: () => CasesRoute,
+  id: '/cases/$caseId',
+  path: '/cases/$caseId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigPromptsIndexRoute = ConfigPromptsIndexRouteImport.update({
+  id: '/config/prompts/',
+  path: '/config/prompts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfigApprovalsIndexRoute = ConfigApprovalsIndexRouteImport.update({
+  id: '/config/approvals/',
+  path: '/config/approvals/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigApprovalsIdRoute = ConfigApprovalsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ConfigApprovalsRoute,
+  id: '/config/approvals/$id',
+  path: '/config/approvals/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigKeyJurisdictionIdRoute = ConfigKeyJurisdictionIdRouteImport.update({
-  id: '/$key/$jurisdictionId',
-  path: '/$key/$jurisdictionId',
-  getParentRoute: () => ConfigRoute,
+  id: '/config/$key/$jurisdictionId',
+  path: '/config/$key/$jurisdictionId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfigPromptsKeyJurisdictionIdEditRoute =
   ConfigPromptsKeyJurisdictionIdEditRouteImport.update({
-    id: '/$key/$jurisdictionId/edit',
-    path: '/$key/$jurisdictionId/edit',
-    getParentRoute: () => ConfigPromptsRoute,
+    id: '/config/prompts/$key/$jurisdictionId/edit',
+    path: '/config/prompts/$key/$jurisdictionId/edit',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -125,19 +125,19 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/authority': typeof AuthorityRoute
-  '/cases': typeof CasesRouteWithChildren
-  '/config': typeof ConfigRouteWithChildren
-  '/encode': typeof EncodeRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
-  '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
-  '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/encode/$batchId': typeof EncodeBatchIdRoute
   '/encode/new': typeof EncodeNewRoute
+  '/cases/': typeof CasesIndexRoute
+  '/config/': typeof ConfigIndexRoute
+  '/encode/': typeof EncodeIndexRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
+  '/config/approvals/': typeof ConfigApprovalsIndexRoute
+  '/config/prompts/': typeof ConfigPromptsIndexRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -145,19 +145,19 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/authority': typeof AuthorityRoute
-  '/cases': typeof CasesRouteWithChildren
-  '/config': typeof ConfigRouteWithChildren
-  '/encode': typeof EncodeRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
-  '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
-  '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/encode/$batchId': typeof EncodeBatchIdRoute
   '/encode/new': typeof EncodeNewRoute
+  '/cases': typeof CasesIndexRoute
+  '/config': typeof ConfigIndexRoute
+  '/encode': typeof EncodeIndexRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
+  '/config/approvals': typeof ConfigApprovalsIndexRoute
+  '/config/prompts': typeof ConfigPromptsIndexRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 export interface FileRoutesById {
@@ -166,19 +166,19 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/authority': typeof AuthorityRoute
-  '/cases': typeof CasesRouteWithChildren
-  '/config': typeof ConfigRouteWithChildren
-  '/encode': typeof EncodeRouteWithChildren
   '/policies': typeof PoliciesRoute
   '/cases/$caseId': typeof CasesCaseIdRoute
-  '/config/approvals': typeof ConfigApprovalsRouteWithChildren
   '/config/diff': typeof ConfigDiffRoute
   '/config/draft': typeof ConfigDraftRoute
-  '/config/prompts': typeof ConfigPromptsRouteWithChildren
   '/encode/$batchId': typeof EncodeBatchIdRoute
   '/encode/new': typeof EncodeNewRoute
+  '/cases/': typeof CasesIndexRoute
+  '/config/': typeof ConfigIndexRoute
+  '/encode/': typeof EncodeIndexRoute
   '/config/$key/$jurisdictionId': typeof ConfigKeyJurisdictionIdRoute
   '/config/approvals/$id': typeof ConfigApprovalsIdRoute
+  '/config/approvals/': typeof ConfigApprovalsIndexRoute
+  '/config/prompts/': typeof ConfigPromptsIndexRoute
   '/config/prompts/$key/$jurisdictionId/edit': typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 export interface FileRouteTypes {
@@ -188,19 +188,19 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/authority'
-    | '/cases'
-    | '/config'
-    | '/encode'
     | '/policies'
     | '/cases/$caseId'
-    | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
-    | '/config/prompts'
     | '/encode/$batchId'
     | '/encode/new'
+    | '/cases/'
+    | '/config/'
+    | '/encode/'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
+    | '/config/approvals/'
+    | '/config/prompts/'
     | '/config/prompts/$key/$jurisdictionId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -208,19 +208,19 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/authority'
+    | '/policies'
+    | '/cases/$caseId'
+    | '/config/diff'
+    | '/config/draft'
+    | '/encode/$batchId'
+    | '/encode/new'
     | '/cases'
     | '/config'
     | '/encode'
-    | '/policies'
-    | '/cases/$caseId'
-    | '/config/approvals'
-    | '/config/diff'
-    | '/config/draft'
-    | '/config/prompts'
-    | '/encode/$batchId'
-    | '/encode/new'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
+    | '/config/approvals'
+    | '/config/prompts'
     | '/config/prompts/$key/$jurisdictionId/edit'
   id:
     | '__root__'
@@ -228,19 +228,19 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/authority'
-    | '/cases'
-    | '/config'
-    | '/encode'
     | '/policies'
     | '/cases/$caseId'
-    | '/config/approvals'
     | '/config/diff'
     | '/config/draft'
-    | '/config/prompts'
     | '/encode/$batchId'
     | '/encode/new'
+    | '/cases/'
+    | '/config/'
+    | '/encode/'
     | '/config/$key/$jurisdictionId'
     | '/config/approvals/$id'
+    | '/config/approvals/'
+    | '/config/prompts/'
     | '/config/prompts/$key/$jurisdictionId/edit'
   fileRoutesById: FileRoutesById
 }
@@ -249,10 +249,20 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AuthorityRoute: typeof AuthorityRoute
-  CasesRoute: typeof CasesRouteWithChildren
-  ConfigRoute: typeof ConfigRouteWithChildren
-  EncodeRoute: typeof EncodeRouteWithChildren
   PoliciesRoute: typeof PoliciesRoute
+  CasesCaseIdRoute: typeof CasesCaseIdRoute
+  ConfigDiffRoute: typeof ConfigDiffRoute
+  ConfigDraftRoute: typeof ConfigDraftRoute
+  EncodeBatchIdRoute: typeof EncodeBatchIdRoute
+  EncodeNewRoute: typeof EncodeNewRoute
+  CasesIndexRoute: typeof CasesIndexRoute
+  ConfigIndexRoute: typeof ConfigIndexRoute
+  EncodeIndexRoute: typeof EncodeIndexRoute
+  ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
+  ConfigApprovalsIdRoute: typeof ConfigApprovalsIdRoute
+  ConfigApprovalsIndexRoute: typeof ConfigApprovalsIndexRoute
+  ConfigPromptsIndexRoute: typeof ConfigPromptsIndexRoute
+  ConfigPromptsKeyJurisdictionIdEditRoute: typeof ConfigPromptsKeyJurisdictionIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -262,27 +272,6 @@ declare module '@tanstack/react-router' {
       path: '/policies'
       fullPath: '/policies'
       preLoaderRoute: typeof PoliciesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/encode': {
-      id: '/encode'
-      path: '/encode'
-      fullPath: '/encode'
-      preLoaderRoute: typeof EncodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/config': {
-      id: '/config'
-      path: '/config'
-      fullPath: '/config'
-      preLoaderRoute: typeof ConfigRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cases': {
-      id: '/cases'
-      path: '/cases'
-      fullPath: '/cases'
-      preLoaderRoute: typeof CasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/authority': {
@@ -313,155 +302,120 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/encode/': {
+      id: '/encode/'
+      path: '/encode'
+      fullPath: '/encode/'
+      preLoaderRoute: typeof EncodeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/config/': {
+      id: '/config/'
+      path: '/config'
+      fullPath: '/config/'
+      preLoaderRoute: typeof ConfigIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases/': {
+      id: '/cases/'
+      path: '/cases'
+      fullPath: '/cases/'
+      preLoaderRoute: typeof CasesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/encode/new': {
       id: '/encode/new'
-      path: '/new'
+      path: '/encode/new'
       fullPath: '/encode/new'
       preLoaderRoute: typeof EncodeNewRouteImport
-      parentRoute: typeof EncodeRoute
+      parentRoute: typeof rootRouteImport
     }
     '/encode/$batchId': {
       id: '/encode/$batchId'
-      path: '/$batchId'
+      path: '/encode/$batchId'
       fullPath: '/encode/$batchId'
       preLoaderRoute: typeof EncodeBatchIdRouteImport
-      parentRoute: typeof EncodeRoute
-    }
-    '/config/prompts': {
-      id: '/config/prompts'
-      path: '/prompts'
-      fullPath: '/config/prompts'
-      preLoaderRoute: typeof ConfigPromptsRouteImport
-      parentRoute: typeof ConfigRoute
+      parentRoute: typeof rootRouteImport
     }
     '/config/draft': {
       id: '/config/draft'
-      path: '/draft'
+      path: '/config/draft'
       fullPath: '/config/draft'
       preLoaderRoute: typeof ConfigDraftRouteImport
-      parentRoute: typeof ConfigRoute
+      parentRoute: typeof rootRouteImport
     }
     '/config/diff': {
       id: '/config/diff'
-      path: '/diff'
+      path: '/config/diff'
       fullPath: '/config/diff'
       preLoaderRoute: typeof ConfigDiffRouteImport
-      parentRoute: typeof ConfigRoute
-    }
-    '/config/approvals': {
-      id: '/config/approvals'
-      path: '/approvals'
-      fullPath: '/config/approvals'
-      preLoaderRoute: typeof ConfigApprovalsRouteImport
-      parentRoute: typeof ConfigRoute
+      parentRoute: typeof rootRouteImport
     }
     '/cases/$caseId': {
       id: '/cases/$caseId'
-      path: '/$caseId'
+      path: '/cases/$caseId'
       fullPath: '/cases/$caseId'
       preLoaderRoute: typeof CasesCaseIdRouteImport
-      parentRoute: typeof CasesRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/config/prompts/': {
+      id: '/config/prompts/'
+      path: '/config/prompts'
+      fullPath: '/config/prompts/'
+      preLoaderRoute: typeof ConfigPromptsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/config/approvals/': {
+      id: '/config/approvals/'
+      path: '/config/approvals'
+      fullPath: '/config/approvals/'
+      preLoaderRoute: typeof ConfigApprovalsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/config/approvals/$id': {
       id: '/config/approvals/$id'
-      path: '/$id'
+      path: '/config/approvals/$id'
       fullPath: '/config/approvals/$id'
       preLoaderRoute: typeof ConfigApprovalsIdRouteImport
-      parentRoute: typeof ConfigApprovalsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/config/$key/$jurisdictionId': {
       id: '/config/$key/$jurisdictionId'
-      path: '/$key/$jurisdictionId'
+      path: '/config/$key/$jurisdictionId'
       fullPath: '/config/$key/$jurisdictionId'
       preLoaderRoute: typeof ConfigKeyJurisdictionIdRouteImport
-      parentRoute: typeof ConfigRoute
+      parentRoute: typeof rootRouteImport
     }
     '/config/prompts/$key/$jurisdictionId/edit': {
       id: '/config/prompts/$key/$jurisdictionId/edit'
-      path: '/$key/$jurisdictionId/edit'
+      path: '/config/prompts/$key/$jurisdictionId/edit'
       fullPath: '/config/prompts/$key/$jurisdictionId/edit'
       preLoaderRoute: typeof ConfigPromptsKeyJurisdictionIdEditRouteImport
-      parentRoute: typeof ConfigPromptsRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface CasesRouteChildren {
-  CasesCaseIdRoute: typeof CasesCaseIdRoute
-}
-
-const CasesRouteChildren: CasesRouteChildren = {
-  CasesCaseIdRoute: CasesCaseIdRoute,
-}
-
-const CasesRouteWithChildren = CasesRoute._addFileChildren(CasesRouteChildren)
-
-interface ConfigApprovalsRouteChildren {
-  ConfigApprovalsIdRoute: typeof ConfigApprovalsIdRoute
-}
-
-const ConfigApprovalsRouteChildren: ConfigApprovalsRouteChildren = {
-  ConfigApprovalsIdRoute: ConfigApprovalsIdRoute,
-}
-
-const ConfigApprovalsRouteWithChildren = ConfigApprovalsRoute._addFileChildren(
-  ConfigApprovalsRouteChildren,
-)
-
-interface ConfigPromptsRouteChildren {
-  ConfigPromptsKeyJurisdictionIdEditRoute: typeof ConfigPromptsKeyJurisdictionIdEditRoute
-}
-
-const ConfigPromptsRouteChildren: ConfigPromptsRouteChildren = {
-  ConfigPromptsKeyJurisdictionIdEditRoute:
-    ConfigPromptsKeyJurisdictionIdEditRoute,
-}
-
-const ConfigPromptsRouteWithChildren = ConfigPromptsRoute._addFileChildren(
-  ConfigPromptsRouteChildren,
-)
-
-interface ConfigRouteChildren {
-  ConfigApprovalsRoute: typeof ConfigApprovalsRouteWithChildren
-  ConfigDiffRoute: typeof ConfigDiffRoute
-  ConfigDraftRoute: typeof ConfigDraftRoute
-  ConfigPromptsRoute: typeof ConfigPromptsRouteWithChildren
-  ConfigKeyJurisdictionIdRoute: typeof ConfigKeyJurisdictionIdRoute
-}
-
-const ConfigRouteChildren: ConfigRouteChildren = {
-  ConfigApprovalsRoute: ConfigApprovalsRouteWithChildren,
-  ConfigDiffRoute: ConfigDiffRoute,
-  ConfigDraftRoute: ConfigDraftRoute,
-  ConfigPromptsRoute: ConfigPromptsRouteWithChildren,
-  ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
-}
-
-const ConfigRouteWithChildren =
-  ConfigRoute._addFileChildren(ConfigRouteChildren)
-
-interface EncodeRouteChildren {
-  EncodeBatchIdRoute: typeof EncodeBatchIdRoute
-  EncodeNewRoute: typeof EncodeNewRoute
-}
-
-const EncodeRouteChildren: EncodeRouteChildren = {
-  EncodeBatchIdRoute: EncodeBatchIdRoute,
-  EncodeNewRoute: EncodeNewRoute,
-}
-
-const EncodeRouteWithChildren =
-  EncodeRoute._addFileChildren(EncodeRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthorityRoute: AuthorityRoute,
-  CasesRoute: CasesRouteWithChildren,
-  ConfigRoute: ConfigRouteWithChildren,
-  EncodeRoute: EncodeRouteWithChildren,
   PoliciesRoute: PoliciesRoute,
+  CasesCaseIdRoute: CasesCaseIdRoute,
+  ConfigDiffRoute: ConfigDiffRoute,
+  ConfigDraftRoute: ConfigDraftRoute,
+  EncodeBatchIdRoute: EncodeBatchIdRoute,
+  EncodeNewRoute: EncodeNewRoute,
+  CasesIndexRoute: CasesIndexRoute,
+  ConfigIndexRoute: ConfigIndexRoute,
+  EncodeIndexRoute: EncodeIndexRoute,
+  ConfigKeyJurisdictionIdRoute: ConfigKeyJurisdictionIdRoute,
+  ConfigApprovalsIdRoute: ConfigApprovalsIdRoute,
+  ConfigApprovalsIndexRoute: ConfigApprovalsIndexRoute,
+  ConfigPromptsIndexRoute: ConfigPromptsIndexRoute,
+  ConfigPromptsKeyJurisdictionIdEditRoute:
+    ConfigPromptsKeyJurisdictionIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
