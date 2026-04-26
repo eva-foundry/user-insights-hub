@@ -10,9 +10,15 @@ const COUNTRIES = [
 export function ResidencyPeriodRows({
   periods,
   onChange,
+  errors,
+  fieldsetError,
 }: {
   periods: ScreenResidencyPeriod[];
   onChange: (next: ScreenResidencyPeriod[]) => void;
+  /** Map of `residency.{i}.{field}` → message id. */
+  errors?: Record<string, string>;
+  /** Fieldset-level error message id (e.g. "must add at least one"). */
+  fieldsetError?: string;
 }) {
   const intl = useIntl();
 
@@ -34,8 +40,16 @@ export function ResidencyPeriodRows({
       <legend className="text-sm font-medium mb-1">
         {intl.formatMessage({ id: "screen.form.residency.heading" })}
       </legend>
+      {fieldsetError && (
+        <p role="alert" className="text-sm text-destructive">
+          {intl.formatMessage({ id: fieldsetError })}
+        </p>
+      )}
       {periods.map((p, i) => {
         const ongoing = p.end_date === null;
+        const eCountry = errors?.[`residency.${i}.country`];
+        const eStart = errors?.[`residency.${i}.start_date`];
+        const eEnd = errors?.[`residency.${i}.end_date`];
         return (
           <div
             key={i}
@@ -55,14 +69,21 @@ export function ResidencyPeriodRows({
                     remove(i);
                   }
                 }}
-                className="w-full h-9 px-2 rounded border border-border bg-surface text-foreground"
+                className={`w-full h-9 px-2 rounded border bg-surface text-foreground ${eCountry ? "border-destructive" : "border-border"}`}
                 aria-required="true"
+                aria-invalid={eCountry ? true : undefined}
+                aria-describedby={eCountry ? `err-residency-${i}-country` : undefined}
               >
                 <option value="">—</option>
                 {COUNTRIES.map((c) => (
                   <option key={c} value={c}>{c.toUpperCase()}</option>
                 ))}
               </select>
+              {eCountry && (
+                <p id={`err-residency-${i}-country`} role="alert" className="mt-1 text-xs text-destructive">
+                  {intl.formatMessage({ id: eCountry })}
+                </p>
+              )}
             </label>
             <label className="text-sm">
               <span className="block text-foreground-muted mb-1">
@@ -73,9 +94,16 @@ export function ResidencyPeriodRows({
                 value={p.start_date}
                 onChange={(e) => update(i, { start_date: e.target.value })}
                 max={new Date().toISOString().slice(0, 10)}
-                className="w-full h-9 px-2 rounded border border-border bg-surface text-foreground"
+                className={`w-full h-9 px-2 rounded border bg-surface text-foreground ${eStart ? "border-destructive" : "border-border"}`}
                 aria-required="true"
+                aria-invalid={eStart ? true : undefined}
+                aria-describedby={eStart ? `err-residency-${i}-start` : undefined}
               />
+              {eStart && (
+                <p id={`err-residency-${i}-start`} role="alert" className="mt-1 text-xs text-destructive">
+                  {intl.formatMessage({ id: eStart })}
+                </p>
+              )}
             </label>
             <label className="text-sm">
               <span className="block text-foreground-muted mb-1">
@@ -88,7 +116,9 @@ export function ResidencyPeriodRows({
                   disabled={ongoing}
                   onChange={(e) => update(i, { end_date: e.target.value || null })}
                   max={new Date().toISOString().slice(0, 10)}
-                  className="flex-1 h-9 px-2 rounded border border-border bg-surface text-foreground disabled:opacity-50"
+                  className={`flex-1 h-9 px-2 rounded border bg-surface text-foreground disabled:opacity-50 ${eEnd ? "border-destructive" : "border-border"}`}
+                  aria-invalid={eEnd ? true : undefined}
+                  aria-describedby={eEnd ? `err-residency-${i}-end` : undefined}
                 />
                 <label className="inline-flex items-center gap-1 text-xs text-foreground-muted">
                   <input
@@ -99,6 +129,11 @@ export function ResidencyPeriodRows({
                   {intl.formatMessage({ id: "screen.form.residency.ongoing" })}
                 </label>
               </div>
+              {eEnd && (
+                <p id={`err-residency-${i}-end`} role="alert" className="mt-1 text-xs text-destructive">
+                  {intl.formatMessage({ id: eEnd })}
+                </p>
+              )}
             </label>
             <button
               type="button"

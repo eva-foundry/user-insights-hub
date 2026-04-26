@@ -569,5 +569,22 @@
   "screen.howto.heading": "Comment postuler",
   "screen.howto.body": "Déposez une demande auprès de {program} pour obtenir une décision officielle.",
   "screen.preview_mode": "Mode aperçu — données fictives",
-  "screen.rerun": "Relancer"
+  "screen.rerun": "Relancer",
+  "screen.form.reset": "Réinitialiser le formulaire",
+  "screen.draft.restored": "Vos réponses en cours ont été restaurées pour cette session.",
+  "screen.draft.clear": "Effacer le brouillon",
+  "screen.errors.summary": "Veuillez corriger les champs en surbrillance avant de vérifier l'éligibilité.",
+  "screen.errors.dob.required": "Veuillez saisir votre date de naissance.",
+  "screen.errors.dob.too_old": "Date trop éloignée dans le passé.",
+  "screen.errors.dob.future": "La date de naissance ne peut pas être dans le futur.",
+  "screen.errors.legal_status.required": "Veuillez sélectionner votre statut légal.",
+  "screen.errors.residency.required": "Ajoutez au moins une période de résidence.",
+  "screen.errors.residency.country_required": "Choisissez un pays.",
+  "screen.errors.residency.start_required": "La date de début est requise.",
+  "screen.errors.residency.start_too_old": "Date de début trop éloignée dans le passé.",
+  "screen.errors.residency.start_future": "La date de début ne peut pas être dans le futur.",
+  "screen.errors.residency.start_before_dob": "La date de début est antérieure à votre date de naissance.",
+  "screen.errors.residency.end_future": "La date de fin ne peut pas être dans le futur.",
+  "screen.errors.residency.end_before_start": "La date de fin doit être postérieure ou égale à la date de début.",
+  "screen.errors.residency.overlap": "Cette période chevauche une autre période de résidence."
 }

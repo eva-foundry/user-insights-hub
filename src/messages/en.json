@@ -569,5 +569,22 @@
   "screen.howto.heading": "How to apply",
   "screen.howto.body": "Apply through {program} to get an official decision.",
   "screen.preview_mode": "Preview mode — running on mock data",
-  "screen.rerun": "Rerun"
+  "screen.rerun": "Rerun",
+  "screen.form.reset": "Reset form",
+  "screen.draft.restored": "We restored your in-progress answers from this session.",
+  "screen.draft.clear": "Clear draft",
+  "screen.errors.summary": "Please fix the highlighted fields before checking eligibility.",
+  "screen.errors.dob.required": "Please enter your date of birth.",
+  "screen.errors.dob.too_old": "Date is unrealistically far in the past.",
+  "screen.errors.dob.future": "Date of birth cannot be in the future.",
+  "screen.errors.legal_status.required": "Please select your legal status.",
+  "screen.errors.residency.required": "Add at least one residency period.",
+  "screen.errors.residency.country_required": "Choose a country.",
+  "screen.errors.residency.start_required": "Start date is required.",
+  "screen.errors.residency.start_too_old": "Start date is unrealistically far in the past.",
+  "screen.errors.residency.start_future": "Start date cannot be in the future.",
+  "screen.errors.residency.start_before_dob": "Start date is before your date of birth.",
+  "screen.errors.residency.end_future": "End date cannot be in the future.",
+  "screen.errors.residency.end_before_start": "End date must be on or after the start date.",
+  "screen.errors.residency.overlap": "This period overlaps another residency period."
 }

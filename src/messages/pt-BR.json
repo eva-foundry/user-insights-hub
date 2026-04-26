@@ -569,5 +569,22 @@
   "screen.howto.heading": "Como solicitar",
   "screen.howto.body": "Solicite via {program} para obter uma decisão oficial.",
   "screen.preview_mode": "Modo de visualização — dados simulados",
-  "screen.rerun": "Executar novamente"
+  "screen.rerun": "Executar novamente",
+  "screen.form.reset": "Redefinir formulário",
+  "screen.draft.restored": "Restauramos suas respostas em andamento desta sessão.",
+  "screen.draft.clear": "Limpar rascunho",
+  "screen.errors.summary": "Corrija os campos destacados antes de verificar a elegibilidade.",
+  "screen.errors.dob.required": "Informe sua data de nascimento.",
+  "screen.errors.dob.too_old": "A data está muito distante no passado.",
+  "screen.errors.dob.future": "A data de nascimento não pode estar no futuro.",
+  "screen.errors.legal_status.required": "Selecione seu status legal.",
+  "screen.errors.residency.required": "Adicione ao menos um período de residência.",
+  "screen.errors.residency.country_required": "Escolha um país.",
+  "screen.errors.residency.start_required": "A data de início é obrigatória.",
+  "screen.errors.residency.start_too_old": "Data de início muito distante no passado.",
+  "screen.errors.residency.start_future": "A data de início não pode estar no futuro.",
+  "screen.errors.residency.start_before_dob": "A data de início é anterior à sua data de nascimento.",
+  "screen.errors.residency.end_future": "A data de fim não pode estar no futuro.",
+  "screen.errors.residency.end_before_start": "A data de fim deve ser igual ou posterior à data de início.",
+  "screen.errors.residency.overlap": "Este período se sobrepõe a outro período de residência."
 }

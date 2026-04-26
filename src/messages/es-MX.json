@@ -569,5 +569,22 @@
   "screen.howto.heading": "Cómo solicitar",
   "screen.howto.body": "Solicita a través de {program} para obtener una decisión oficial.",
   "screen.preview_mode": "Modo previsualización — datos simulados",
-  "screen.rerun": "Volver a ejecutar"
+  "screen.rerun": "Volver a ejecutar",
+  "screen.form.reset": "Restablecer formulario",
+  "screen.draft.restored": "Restauramos tus respuestas en curso de esta sesión.",
+  "screen.draft.clear": "Borrar borrador",
+  "screen.errors.summary": "Corrige los campos resaltados antes de verificar la elegibilidad.",
+  "screen.errors.dob.required": "Ingresa tu fecha de nacimiento.",
+  "screen.errors.dob.too_old": "La fecha está demasiado lejos en el pasado.",
+  "screen.errors.dob.future": "La fecha de nacimiento no puede ser futura.",
+  "screen.errors.legal_status.required": "Selecciona tu estatus legal.",
+  "screen.errors.residency.required": "Agrega al menos un periodo de residencia.",
+  "screen.errors.residency.country_required": "Elige un país.",
+  "screen.errors.residency.start_required": "La fecha de inicio es obligatoria.",
+  "screen.errors.residency.start_too_old": "La fecha de inicio es demasiado antigua.",
+  "screen.errors.residency.start_future": "La fecha de inicio no puede ser futura.",
+  "screen.errors.residency.start_before_dob": "La fecha de inicio es anterior a tu fecha de nacimiento.",
+  "screen.errors.residency.end_future": "La fecha de fin no puede ser futura.",
+  "screen.errors.residency.end_before_start": "La fecha de fin debe ser igual o posterior a la fecha de inicio.",
+  "screen.errors.residency.overlap": "Este periodo se traslapa con otro periodo de residencia."
 }
