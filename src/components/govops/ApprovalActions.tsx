@@ -11,33 +11,28 @@ import {
 } from "@/lib/api";
 import { getCurrentUser } from "@/lib/currentUser";
 import type { ConfigValue } from "@/lib/types";
-import { StorageKeys } from "@/lib/storageKeys";
 import {
   ConfirmActionDialog,
   type ApprovalAction,
 } from "./ConfirmActionDialog";
+import { useApprovalDraft } from "./approval/useApprovalDraft";
+import {
+  isMac,
+  useApprovalShortcuts,
+} from "./approval/useApprovalShortcuts";
+import { ApprovalShortcutsHelp } from "./approval/ApprovalShortcutsHelp";
 
 const COMMENT_MIN = 10;
-const COMMENT_KEY = StorageKeys.approvalComment;
-const EXPANDED_KEY = StorageKeys.approvalPanelExpanded;
-const HELP_KEY = StorageKeys.approvalShortcutsOpen;
-
-function isMac(): boolean {
-  if (typeof navigator === "undefined") return false;
-  return /Mac|iPhone|iPad|iPod/.test(navigator.platform);
-}
-
-function modKey(e: KeyboardEvent): boolean {
-  return isMac() ? e.metaKey : e.ctrlKey;
-}
 
 /**
  * Sticky action panel for the approval review page. Three CTAs:
  * - Approve (authority gold): the canonical human ratification act.
  * - Request changes (secondary): bounces the draft back to the author.
  * - Reject (destructive): closes the proposal.
- * The author cannot self-approve. The non-approve actions require a
- * comment (≥10 chars) so the audit trail captures *why*.
+ *
+ * The author cannot self-approve. Non-approve actions require a comment
+ * (≥10 chars) so the audit trail captures *why*. Persistence + keyboard
+ * shortcuts live in dedicated hooks under ./approval/.
  */
 export function ApprovalActions({
   cv,
@@ -47,17 +42,16 @@ export function ApprovalActions({
   onResolved: (resolution: ApprovalAction) => void;
 }) {
   const intl = useIntl();
-  // Per-approval comment draft, persisted so refresh / accidental nav don't
-  // wipe carefully-worded review notes. Cleared on successful action below.
-  // SSR-safe: start empty, hydrate from storage in an effect.
-  const [comment, setComment] = useState<string>("");
-  // Whether the comment + actions panel body is expanded. Persisted across
-  // sessions; defaults to expanded so the primary surface is visible.
-  const [expanded, setExpanded] = useState<boolean>(true);
-  // Per-session preference: persisted in sessionStorage so the legend's
-  // visibility survives a refresh but doesn't leak across browser sessions.
-  const [showHelp, setShowHelp] = useState<boolean>(false);
-  const [hydrated, setHydrated] = useState(false);
+  const {
+    comment,
+    setComment,
+    expanded,
+    setExpanded,
+    showHelp,
+    setShowHelp,
+    clearComment,
+  } = useApprovalDraft(cv.id);
+
   const [pending, setPending] = useState<ApprovalAction | null>(null);
   const [busy, setBusy] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -65,73 +59,31 @@ export function ApprovalActions({
   const user = getCurrentUser();
   const isSelfApproval = user === cv.author;
   const commentOk = comment.trim().length >= COMMENT_MIN;
+  const mod = isMac() ? "⌘" : "Ctrl";
 
-  // Hydrate persisted UI state from storage after mount (avoids SSR mismatch).
-  useEffect(() => {
-    try {
-      const c = window.localStorage.getItem(COMMENT_KEY(cv.id));
-      if (c) setComment(c);
-      const e = window.localStorage.getItem(EXPANDED_KEY);
-      if (e !== null) setExpanded(e === "1");
-      const h = window.sessionStorage.getItem(HELP_KEY);
-      if (h !== null) setShowHelp(h === "1");
-    } catch {
-      /* ignore */
-    }
-    setHydrated(true);
-  }, [cv.id]);
-
-  // Persist the in-progress comment per approval.
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      if (comment) window.localStorage.setItem(COMMENT_KEY(cv.id), comment);
-      else window.localStorage.removeItem(COMMENT_KEY(cv.id));
-    } catch {
-      /* ignore */
-    }
-  }, [comment, cv.id, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.localStorage.setItem(EXPANDED_KEY, expanded ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }, [expanded, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      window.sessionStorage.setItem(HELP_KEY, showHelp ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
-  }, [showHelp, hydrated]);
-
-  // Auto-focus the comment textarea whenever the panel is (or becomes)
-  // expanded so reviewers can start typing immediately. Skipped when the
-  // textarea would be disabled (self-approval, busy) to avoid yanking
-  // focus from elsewhere on the page.
+  // Auto-focus the textarea whenever the panel becomes interactive.
   useEffect(() => {
     if (!expanded || isSelfApproval || busy) return;
-    // Defer to the next frame so the [hidden] attribute has been removed
-    // and the element is focusable.
     const id = window.requestAnimationFrame(() => {
       const el = textareaRef.current;
       if (!el) return;
       el.focus({ preventScroll: true });
-      // Move caret to end if there's already a persisted draft.
       const len = el.value.length;
       try {
         el.setSelectionRange(len, len);
       } catch {
-        /* some browsers throw on certain input types */
+        /* some inputs throw */
       }
     });
     return () => window.cancelAnimationFrame(id);
   }, [expanded, isSelfApproval, busy, cv.id]);
+
+  useApprovalShortcuts({
+    enabled: expanded && !isSelfApproval && !busy,
+    commentOk,
+    setPending,
+    toggleHelp: () => setShowHelp(!showHelp),
+  });
 
   async function run() {
     if (!pending) return;
@@ -149,12 +101,7 @@ export function ApprovalActions({
         await rejectConfigValue(cv.id, { reviewer: user, comment });
         toast.success(intl.formatMessage({ id: "approvals.success.rejected" }));
       }
-      // Action persisted on the server → drop the local draft for this id.
-      try {
-        window.localStorage.removeItem(COMMENT_KEY(cv.id));
-      } catch {
-        /* ignore */
-      }
+      clearComment();
       onResolved(pending);
     } catch (err) {
       toast.error(
@@ -166,39 +113,6 @@ export function ApprovalActions({
       setPending(null);
     }
   }
-
-  // Keyboard shortcuts (review page-scoped). We only act when the panel is
-  // expanded so collapsed users aren't surprised by hidden behaviour.
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (busy || isSelfApproval || !expanded) return;
-      // "?" toggles the help legend, even from inputs.
-      if (e.key === "?" && !modKey(e) && !e.altKey) {
-        const tag = (e.target as HTMLElement | null)?.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
-        e.preventDefault();
-        setShowHelp((s) => !s);
-        return;
-      }
-      if (!modKey(e)) return;
-      if (e.key === "Enter" && !e.shiftKey && !e.altKey) {
-        e.preventDefault();
-        setPending("approve");
-      } else if (e.key.toLowerCase() === "r" && e.shiftKey) {
-        if (!commentOk) return;
-        e.preventDefault();
-        setPending("reject");
-      } else if (e.key.toLowerCase() === "c" && e.shiftKey) {
-        if (!commentOk) return;
-        e.preventDefault();
-        setPending("request");
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [busy, commentOk, expanded, isSelfApproval]);
-
-  const mod = isMac() ? "⌘" : "Ctrl";
 
   return (
     <section
@@ -217,7 +131,7 @@ export function ApprovalActions({
           type="button"
           aria-expanded={expanded}
           aria-controls="approval-actions-body"
-          onClick={() => setExpanded((v) => !v)}
+          onClick={() => setExpanded(!expanded)}
           className="rounded-md border border-border bg-surface px-2 py-1 text-[11px] font-medium text-foreground-muted hover:bg-surface-sunken"
           style={{ fontFamily: "var(--font-mono)" }}
         >
@@ -230,10 +144,7 @@ export function ApprovalActions({
         className="text-xs uppercase tracking-[0.14em] text-foreground-subtle"
         style={{ fontFamily: "var(--font-mono)" }}
       >
-        {intl.formatMessage(
-          { id: "approvals.actions.user" },
-          { user },
-        )}
+        {intl.formatMessage({ id: "approvals.actions.user" }, { user })}
       </p>
 
       {expanded && isSelfApproval && (
@@ -282,58 +193,58 @@ export function ApprovalActions({
         </div>
 
         <div className="flex flex-col gap-2">
-        <Button
-          variant="authority"
-          disabled={isSelfApproval || busy}
-          onClick={() => setPending("approve")}
-          title={`${mod} + Enter`}
-        >
-          {intl.formatMessage({ id: "approvals.action.approve" })}
-          <span
-            aria-hidden
-            className="ms-2 rounded border border-current/30 px-1 text-[10px] opacity-70"
-            style={{ fontFamily: "var(--font-mono)" }}
+          <Button
+            variant="authority"
+            disabled={isSelfApproval || busy}
+            onClick={() => setPending("approve")}
+            title={`${mod} + Enter`}
           >
-            {mod}↵
-          </span>
-        </Button>
-        <Button
-          variant="secondary"
-          disabled={isSelfApproval || busy || !commentOk}
-          onClick={() => setPending("request")}
-          title={`${mod} + Shift + C`}
-        >
-          {intl.formatMessage({ id: "approvals.action.request_changes" })}
-          <span
-            aria-hidden
-            className="ms-2 rounded border border-current/30 px-1 text-[10px] opacity-70"
-            style={{ fontFamily: "var(--font-mono)" }}
+            {intl.formatMessage({ id: "approvals.action.approve" })}
+            <span
+              aria-hidden
+              className="ms-2 rounded border border-current/30 px-1 text-[10px] opacity-70"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {mod}↵
+            </span>
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={isSelfApproval || busy || !commentOk}
+            onClick={() => setPending("request")}
+            title={`${mod} + Shift + C`}
           >
-            {mod}⇧C
-          </span>
-        </Button>
-        <Button
-          variant="destructive"
-          disabled={isSelfApproval || busy || !commentOk}
-          onClick={() => setPending("reject")}
-          title={`${mod} + Shift + R`}
-        >
-          {intl.formatMessage({ id: "approvals.action.reject" })}
-          <span
-            aria-hidden
-            className="ms-2 rounded border border-current/30 px-1 text-[10px] opacity-70"
-            style={{ fontFamily: "var(--font-mono)" }}
+            {intl.formatMessage({ id: "approvals.action.request_changes" })}
+            <span
+              aria-hidden
+              className="ms-2 rounded border border-current/30 px-1 text-[10px] opacity-70"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {mod}⇧C
+            </span>
+          </Button>
+          <Button
+            variant="destructive"
+            disabled={isSelfApproval || busy || !commentOk}
+            onClick={() => setPending("reject")}
+            title={`${mod} + Shift + R`}
           >
-            {mod}⇧R
-          </span>
-        </Button>
+            {intl.formatMessage({ id: "approvals.action.reject" })}
+            <span
+              aria-hidden
+              className="ms-2 rounded border border-current/30 px-1 text-[10px] opacity-70"
+              style={{ fontFamily: "var(--font-mono)" }}
+            >
+              {mod}⇧R
+            </span>
+          </Button>
         </div>
 
         <div className="border-t border-border pt-3">
           <button
             type="button"
             aria-expanded={showHelp}
-            onClick={() => setShowHelp((s) => !s)}
+            onClick={() => setShowHelp(!showHelp)}
             className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle hover:text-foreground"
             style={{ fontFamily: "var(--font-mono)" }}
           >
@@ -341,29 +252,7 @@ export function ApprovalActions({
               id: showHelp ? "approvals.shortcuts.hide" : "approvals.shortcuts.show",
             })}
           </button>
-          {showHelp && (
-            <dl
-              className="mt-2 space-y-1 text-[11px] text-foreground-muted"
-              style={{ fontFamily: "var(--font-mono)" }}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <dt>{intl.formatMessage({ id: "approvals.action.approve" })}</dt>
-                <dd className="rounded border border-border px-1.5 py-0.5">{mod} + Enter</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt>{intl.formatMessage({ id: "approvals.action.request_changes" })}</dt>
-                <dd className="rounded border border-border px-1.5 py-0.5">{mod} + Shift + C</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt>{intl.formatMessage({ id: "approvals.action.reject" })}</dt>
-                <dd className="rounded border border-border px-1.5 py-0.5">{mod} + Shift + R</dd>
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <dt>{intl.formatMessage({ id: "approvals.shortcuts.toggle_help" })}</dt>
-                <dd className="rounded border border-border px-1.5 py-0.5">?</dd>
-              </div>
-            </dl>
-          )}
+          {showHelp && <ApprovalShortcutsHelp mod={mod} />}
         </div>
       </div>
 
