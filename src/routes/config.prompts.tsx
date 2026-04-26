@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import { listConfigValues } from "@/lib/api";
+import { filterMockConfigValues } from "@/lib/mock-config-values";
 import type { ConfigValue, ListConfigValuesResponse } from "@/lib/types";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
@@ -30,8 +31,6 @@ export const Route = createFileRoute("/config/prompts")({
     try {
       return await listConfigValues({ domain: "prompt" });
     } catch {
-      // mock fallback (lazy — keeps fixtures out of the route chunk)
-      const { filterMockConfigValues } = await import("@/lib/mock-config-values");
       return filterMockConfigValues({ domain: "prompt" });
     }
   },

@@ -22,6 +22,7 @@ import type {
   ListVersionsResponse,
 } from "./types";
 import type { ConfigValue, CreateConfigValueRequest } from "./types";
+import { MOCK_CONFIG_VALUES } from "./mock-config-values";
 
 /**
  * Lazy mock loader — dynamic import so production bundles tree-shake the
@@ -218,7 +219,6 @@ export async function resolveCurrentConfigValue(
       `/api/config/resolve?${params.toString()}`,
     );
   } catch {
-    const { MOCK_CONFIG_VALUES } = await import("./mock-config-values");
     const evalTs = new Date(evaluationDate).getTime();
     const candidates = MOCK_CONFIG_VALUES.filter((v) => {
       if (v.key !== key) return false;
