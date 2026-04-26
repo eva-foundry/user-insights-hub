@@ -89,6 +89,25 @@ function ExternalAnchor({
   );
 }
 
+function InRepoAnchor({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-sm text-authority hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+    >
+      {children}
+    </a>
+  );
+}
+
 function About() {
   const intl = useIntl();
   const t = (id: string) => intl.formatMessage({ id });
@@ -330,9 +349,9 @@ function About() {
                 { key: "about.deeper.aligned", path: "docs/aligned-initiatives.md" },
               ].map((l) => (
                 <li key={l.key}>
-                  <ExternalAnchor href={`${REPO_BASE}/${l.path}`}>
+                  <InRepoAnchor href={`${REPO_BASE}/${l.path}`}>
                     {t(l.key)}
-                  </ExternalAnchor>
+                  </InRepoAnchor>
                 </li>
               ))}
             </ul>
