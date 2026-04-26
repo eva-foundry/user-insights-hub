@@ -2,9 +2,8 @@ import {
   createFileRoute,
   Link,
   useNavigate,
-  useSearch,
 } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 
 import { getConfigValue } from "@/lib/api";
@@ -14,6 +13,7 @@ import { DiffPane } from "@/components/govops/DiffPane";
 import { DiffMetadataStrip } from "@/components/govops/DiffMetadataStrip";
 import { ValueDiff } from "@/components/govops/ValueDiff";
 import { JurisdictionChip } from "@/components/govops/JurisdictionChip";
+import { RouteError } from "@/components/govops/RouteError";
 
 type DiffSearch = { from?: string; to?: string };
 
@@ -25,6 +25,16 @@ export const Route = createFileRoute("/config/diff")({
     from: typeof search.from === "string" ? search.from : undefined,
     to: typeof search.to === "string" ? search.to : undefined,
   }),
+  loaderDeps: ({ search }) => ({ from: search.from, to: search.to }),
+  loader: async ({ deps }) => {
+    if (!deps.from || !deps.to) return null;
+    const [from, to] = await Promise.all([loadOne(deps.from), loadOne(deps.to)]);
+    return { from, to };
+  },
+  errorComponent: ({ error, reset }) => (
+    <RouteError error={error as Error} reset={reset} />
+  ),
+  pendingComponent: DiffSkeleton,
   component: DiffPage,
 });
 
@@ -47,31 +57,28 @@ async function loadOne(id: string): Promise<LoadResult> {
   }
 }
 
+function DiffSkeleton() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2" aria-busy="true">
+      {[0, 1].map((i) => (
+        <div
+          key={i}
+          className="space-y-2 rounded-md border border-border bg-surface p-4"
+        >
+          <div className="h-3 w-24 animate-pulse rounded bg-surface-sunken" />
+          <div className="h-3 w-full animate-pulse rounded bg-surface-sunken" />
+          <div className="h-3 w-3/4 animate-pulse rounded bg-surface-sunken" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function DiffPage() {
   const intl = useIntl();
   const navigate = useNavigate({ from: "/config/diff" });
-  const { from: fromId, to: toId } = useSearch({ from: "/config/diff" });
-
-  const [pair, setPair] = useState<{ from: LoadResult; to: LoadResult } | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const reqId = useRef(0);
-
-  useEffect(() => {
-    const id = ++reqId.current;
-    if (!fromId || !toId) {
-      setPair(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    Promise.all([loadOne(fromId), loadOne(toId)]).then(([a, b]) => {
-      if (id !== reqId.current) return;
-      setPair({ from: a, to: b });
-      setLoading(false);
-    });
-  }, [fromId, toId]);
+  const { from: fromId, to: toId } = Route.useSearch();
+  const pair = Route.useLoaderData() as { from: LoadResult; to: LoadResult } | null;
 
   const swap = useCallback(() => {
     navigate({
@@ -199,25 +206,8 @@ function DiffPage() {
         </button>
       </header>
 
-      {/* Loading skeletons */}
-      {loading && (
-        <div className="grid gap-4 md:grid-cols-2" aria-busy="true">
-          {[0, 1].map((i) => (
-            <div
-              key={i}
-              className="space-y-2 rounded-md border border-border bg-surface p-4"
-            >
-              <div className="h-3 w-24 animate-pulse rounded bg-surface-sunken" />
-              <div className="h-3 w-full animate-pulse rounded bg-surface-sunken" />
-              <div className="h-3 w-3/4 animate-pulse rounded bg-surface-sunken" />
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Error state — at least one id failed */}
-      {!loading &&
-        pair &&
+      {pair &&
         (pair.from.kind === "error" || pair.to.kind === "error") && (
           <div
             role="alert"
@@ -254,8 +244,7 @@ function DiffPage() {
         )}
 
       {/* Success */}
-      {!loading &&
-        pair &&
+      {pair &&
         pair.from.kind === "ok" &&
         pair.to.kind === "ok" && (
           <>
