@@ -571,8 +571,6 @@
   "screen.preview_mode": "Vorschaumodus — Beispiel­daten",
   "screen.rerun": "Erneut prüfen",
   "screen.form.reset": "Formular zurücksetzen",
-  "screen.draft.restored": "Wir haben Ihre laufenden Antworten dieser Sitzung wiederhergestellt.",
-  "screen.draft.clear": "Entwurf löschen",
   "screen.errors.summary": "Bitte korrigieren Sie die markierten Felder, bevor Sie die Berechtigung prüfen.",
   "screen.errors.dob.required": "Bitte geben Sie Ihr Geburtsdatum ein.",
   "screen.errors.dob.too_old": "Datum liegt unrealistisch weit in der Vergangenheit.",
@@ -589,8 +587,8 @@
   "screen.errors.residency.overlap": "Dieser Zeitraum überschneidet sich mit einem anderen Aufenthaltszeitraum.",
   "screen.errors.summary.heading": "{count, plural, one {# Feld benötigt Ihre Aufmerksamkeit} other {# Felder benötigen Ihre Aufmerksamkeit}}, bevor wir die Berechtigung prüfen können.",
   "screen.errors.summary.more": "und {count, plural, one {# weiteres} other {# weitere}}…",
-  "screen.reset.title": "Entwurf verwerfen?",
-  "screen.reset.body": "Dadurch werden alle Felder gelöscht. Ihr Entwurf wird nur in diesem Tab gespeichert — nichts wird gesendet.",
-  "screen.reset.keep": "Entwurf behalten",
-  "screen.reset.discard": "Entwurf verwerfen"
+  "screen.reset.title": "Antworten verwerfen?",
+  "screen.reset.body": "Alle Antworten in diesem Formular löschen und neu beginnen?",
+  "screen.reset.keep": "Antworten behalten",
+  "screen.reset.discard": "Antworten verwerfen"
 }
