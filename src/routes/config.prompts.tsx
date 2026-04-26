@@ -139,7 +139,7 @@ function PromptsPage() {
                     >
                       {humanizeTitle(current.key)}
                     </h2>
-                    <JurisdictionChip jurisdictionId={current.jurisdiction_id} />
+                    <JurisdictionChip id={current.jurisdiction_id} />
                     <span
                       className="text-[10px] uppercase tracking-[0.14em] text-foreground-subtle"
                       style={{ fontFamily: "var(--font-mono)" }}
