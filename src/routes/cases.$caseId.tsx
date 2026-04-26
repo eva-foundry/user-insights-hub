@@ -6,7 +6,6 @@ import { evaluateCase, getCase, reviewCase } from "@/lib/api";
 import type {
   CaseDetail,
   DecisionOutcome,
-  Recommendation,
   ReviewActionType,
 } from "@/lib/types";
 import { ApplicantPane } from "@/components/govops/cases/ApplicantPane";
@@ -63,8 +62,6 @@ function CaseDetailPage() {
     setAnnouncement(intl.formatMessage({ id: "cases.review.success" }));
   };
 
-  // Local fabrication for evaluate-from-empty path
-  void Recommendation;
 
   return (
     <div className="space-y-6">

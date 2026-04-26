@@ -1,5 +1,5 @@
 import { useIntl } from "react-intl";
-import { VerdictBadge, type Verdict } from "../VerdictBadge";
+import type { Verdict } from "../VerdictBadge";
 import type { CaseStatus } from "@/lib/types";
 
 const STATUS_TO_VERDICT: Record<CaseStatus, Verdict> = {
@@ -33,6 +33,4 @@ export function StatusPill({ status }: { status: CaseStatus }) {
       {intl.formatMessage({ id: `status.${status}` })}
     </span>
   );
-  // VerdictBadge unused but kept for type discipline
-  void VerdictBadge;
 }
