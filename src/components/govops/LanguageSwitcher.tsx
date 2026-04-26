@@ -2,7 +2,7 @@ import { useIntl } from "react-intl";
 import { Languages } from "lucide-react";
 import { useLocale, type Locale } from "@/lib/i18n";
 
-const LOCALES: Locale[] = ["en", "fr", "ar"];
+const LOCALES: Locale[] = ["en", "fr", "es-MX", "pt-BR", "de", "uk"];
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useLocale();
