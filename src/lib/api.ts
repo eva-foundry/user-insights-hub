@@ -16,6 +16,22 @@ export async function fetcher<T = unknown>(path: string, init?: RequestInit): Pr
   return res.json() as Promise<T>;
 }
 
+import type {
+  ListConfigValuesParams,
+  ListConfigValuesResponse,
+  ListVersionsResponse,
+} from "./types";
+import type { ConfigValue, CreateConfigValueRequest } from "./types";
+
+/**
+ * Lazy mock loader — dynamic import so production bundles tree-shake the
+ * mock module (and its sample data) when not exercised. In preview/dev
+ * builds the import resolves on first failure.
+ */
+const loadMocks = () => import("./api.mock");
+
+const useMock = () => import.meta.env.VITE_USE_MOCK_API === "true";
+
 /**
  * fetchOrMock: try the configured backend; on failure, return the supplied
  * mock payload. Lets feature pages render in preview without a live API.
@@ -24,27 +40,10 @@ export async function fetchOrMock<T>(path: string, mock: T, init?: RequestInit):
   try {
     return await fetcher<T>(path, init);
   } catch {
-    // Simulate latency so loading states are visible during development.
     await new Promise((r) => setTimeout(r, 200));
     return mock;
   }
 }
-
-import type {
-  ListConfigValuesParams,
-  ListConfigValuesResponse,
-  ListVersionsResponse,
-} from "./types";
-import type { ConfigValue, CreateConfigValueRequest } from "./types";
-import {
-  mockApproveConfigValue,
-  mockCreateConfigValue,
-  mockGetApproval,
-  mockListApprovals,
-  mockRejectConfigValue,
-  mockRequestChangesConfigValue,
-} from "./api.mock";
-import { mockListFixtures, mockRunFixtureWithPrompt } from "./api.mock";
 
 // ---- Fixture batches (govops-008) ------------------------------------------
 
@@ -72,38 +71,27 @@ export interface FixtureRunResult {
   token_count: number | null;
 }
 
-/**
- * List the saved fixture batches a maintainer can dry-run a prompt against.
- * Phase 1 backend does not implement /api/encode/fixtures; falls back to mock.
- */
 export async function listFixtures(): Promise<FixtureBatchSummary[]> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") return mockListFixtures();
+  if (useMock()) return (await loadMocks()).mockListFixtures();
   try {
     return await fetcher<FixtureBatchSummary[]>("/api/encode/fixtures");
   } catch {
-    return mockListFixtures();
+    return (await loadMocks()).mockListFixtures();
   }
 }
 
-/**
- * Execute the encoder against a saved fixture using the supplied prompt body.
- * Returns proposals + raw LLM response WITHOUT committing rules. Mocked when
- * the backend is unavailable so the prompt-admin UI is exercisable in preview.
- */
 export async function runFixtureWithPrompt(
   fixtureId: string,
   body: { prompt_text: string; prompt_key: string },
 ): Promise<FixtureRunResult> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockRunFixtureWithPrompt(fixtureId, body);
-  }
+  if (useMock()) return (await loadMocks()).mockRunFixtureWithPrompt(fixtureId, body);
   try {
     return await fetcher<FixtureRunResult>(
       `/api/encode/fixtures/${encodeURIComponent(fixtureId)}/run-with-prompt`,
       { method: "POST", body: JSON.stringify(body) },
     );
   } catch {
-    return mockRunFixtureWithPrompt(fixtureId, body);
+    return (await loadMocks()).mockRunFixtureWithPrompt(fixtureId, body);
   }
 }
 
@@ -117,10 +105,6 @@ export async function listConfigValues(
   return fetcher<ListConfigValuesResponse>(`/api/config/values${qs ? `?${qs}` : ""}`);
 }
 
-/**
- * Fetches the full version history for a single (key, jurisdiction_id) pair.
- * `jurisdictionId === "global"` is treated as the null-jurisdiction (omitted).
- */
 export async function listVersions(
   key: string,
   jurisdictionId: string | null,
@@ -134,41 +118,26 @@ export async function listVersions(
   return fetcher<ListVersionsResponse>(`/api/config/versions?${params.toString()}`);
 }
 
-/** Fetches a single ConfigValue by id. Throws on 404 / non-2xx. */
 export async function getConfigValue(id: string): Promise<ConfigValue> {
   return fetcher<ConfigValue>(`/api/config/values/${encodeURIComponent(id)}`);
 }
 
-/**
- * Drafts a new ConfigValue. The backend POST endpoint is not yet implemented;
- * when `VITE_USE_MOCK_API === "true"` (or the live request fails) we fall back
- * to a synthetic mock so the form is exercisable end-to-end in preview.
- */
 export async function createConfigValue(
   body: CreateConfigValueRequest,
 ): Promise<ConfigValue> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockCreateConfigValue(body);
-  }
+  if (useMock()) return (await loadMocks()).mockCreateConfigValue(body);
   try {
     return await fetcher<ConfigValue>("/api/config/values", {
       method: "POST",
       body: JSON.stringify(body),
     });
   } catch {
-    return mockCreateConfigValue(body);
+    return (await loadMocks()).mockCreateConfigValue(body);
   }
 }
 
-/**
- * Approvals queue: every record in `draft` or `pending` status. The Phase 1
- * backend is read-only, so we attempt the live `?status=` filter and fall
- * back to the in-memory mock pool on any failure.
- */
 export async function listApprovals(): Promise<ListConfigValuesResponse> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockListApprovals();
-  }
+  if (useMock()) return (await loadMocks()).mockListApprovals();
   try {
     const [draft, pending] = await Promise.all([
       fetcher<ListConfigValuesResponse>("/api/config/values?status=draft"),
@@ -179,22 +148,16 @@ export async function listApprovals(): Promise<ListConfigValuesResponse> {
       count: draft.count + pending.count,
     };
   } catch {
-    return mockListApprovals();
+    return (await loadMocks()).mockListApprovals();
   }
 }
 
-/**
- * Live → mock fallback for a single approvals item. Used by the review page
- * so deep-links keep working even when the backend POST endpoints aren't up.
- */
 export async function getApproval(id: string): Promise<ConfigValue | null> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockGetApproval(id);
-  }
+  if (useMock()) return (await loadMocks()).mockGetApproval(id);
   try {
     return await getConfigValue(id);
   } catch {
-    return mockGetApproval(id);
+    return (await loadMocks()).mockGetApproval(id);
   }
 }
 
@@ -202,16 +165,14 @@ export async function approveConfigValue(
   id: string,
   body: { approved_by: string; comment: string },
 ): Promise<ConfigValue> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockApproveConfigValue(id, body);
-  }
+  if (useMock()) return (await loadMocks()).mockApproveConfigValue(id, body);
   try {
     return await fetcher<ConfigValue>(
       `/api/config/values/${encodeURIComponent(id)}/approve`,
       { method: "POST", body: JSON.stringify(body) },
     );
   } catch {
-    return mockApproveConfigValue(id, body);
+    return (await loadMocks()).mockApproveConfigValue(id, body);
   }
 }
 
@@ -219,16 +180,14 @@ export async function requestChangesConfigValue(
   id: string,
   body: { reviewer: string; comment: string },
 ): Promise<ConfigValue> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockRequestChangesConfigValue(id, body);
-  }
+  if (useMock()) return (await loadMocks()).mockRequestChangesConfigValue(id, body);
   try {
     return await fetcher<ConfigValue>(
       `/api/config/values/${encodeURIComponent(id)}/request-changes`,
       { method: "POST", body: JSON.stringify(body) },
     );
   } catch {
-    return mockRequestChangesConfigValue(id, body);
+    return (await loadMocks()).mockRequestChangesConfigValue(id, body);
   }
 }
 
@@ -236,24 +195,17 @@ export async function rejectConfigValue(
   id: string,
   body: { reviewer: string; comment: string },
 ): Promise<ConfigValue> {
-  if (import.meta.env.VITE_USE_MOCK_API === "true") {
-    return mockRejectConfigValue(id, body);
-  }
+  if (useMock()) return (await loadMocks()).mockRejectConfigValue(id, body);
   try {
     return await fetcher<ConfigValue>(
       `/api/config/values/${encodeURIComponent(id)}/reject`,
       { method: "POST", body: JSON.stringify(body) },
     );
   } catch {
-    return mockRejectConfigValue(id, body);
+    return (await loadMocks()).mockRejectConfigValue(id, body);
   }
 }
 
-/**
- * Resolves the currently-effective ConfigValue for a (key, jurisdiction)
- * at `evaluation_date`. Returns null when no prior version exists. Falls
- * back to scanning MOCK_CONFIG_VALUES when the backend is unreachable.
- */
 export async function resolveCurrentConfigValue(
   key: string,
   jurisdictionId: string | null,
