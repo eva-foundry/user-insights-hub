@@ -247,7 +247,11 @@ function PromptEditPage() {
               <FormattedMessage
                 id="prompt.editor.autosave_status"
                 values={{
-                  time: Math.round((autosavedAt - Date.now()) / 1000),
+                  time: intl.formatRelativeTime(
+                    Math.round((autosavedAt - Date.now()) / 1000),
+                    "second",
+                    { numeric: "auto" },
+                  ),
                 }}
               />
             </>
