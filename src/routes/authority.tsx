@@ -9,7 +9,7 @@ import { LegalDocumentList } from "@/components/govops/authority/LegalDocumentLi
 import { LegalRuleList } from "@/components/govops/authority/LegalRuleList";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
-import { t } from "@/lib/head-i18n";
+import { t, localeFromMatches } from "@/lib/head-i18n";
 import type {
   AuthorityReference,
   DocumentType,
@@ -26,12 +26,6 @@ interface LoaderData {
 }
 
 export const Route = createFileRoute("/authority")({
-  head: () => ({
-    meta: [
-      { title: t("nav.authority") },
-      { name: "description", content: t("authority.lede") },
-    ],
-  }),
   loader: async (): Promise<LoaderData> => {
     const [chain, documents, rules] = await Promise.all([
       getAuthorityChain(),
@@ -43,6 +37,15 @@ export const Route = createFileRoute("/authority")({
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading variant="panel" />,
   component: AuthorityPage,
+  head: ({ matches }) => {
+    const l = localeFromMatches(matches);
+    return {
+      meta: [
+        { title: t("nav.authority", l) },
+        { name: "description", content: t("authority.lede", l) },
+      ],
+    };
+  },
 });
 
 const DOC_TYPES: DocumentType[] = ["statute", "regulation", "policy_manual", "guidance"];
