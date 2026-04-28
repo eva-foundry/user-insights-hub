@@ -92,9 +92,7 @@ export function localeFromMatches(
     const loc = data?.initialLocale;
     if (loc && CATALOGS[loc]) return loc;
   }
-  if (typeof process !== "undefined" && process.env?.DEBUG_HEAD_I18N) {
-    // eslint-disable-next-line no-console
-    console.warn("[head-i18n] no initialLocale in matches:", JSON.stringify(matches.map((m) => ({ keys: m && Object.keys(m), ld: (m as any)?.loaderData }))).slice(0, 500));
-  }
+  // eslint-disable-next-line no-console
+  console.warn("[HEADI18N-DEBUG] matches:", JSON.stringify(matches.map((m: any) => ({ keys: m && Object.keys(m), id: m?.id ?? m?.routeId, ld: m?.loaderData }))).slice(0, 800));
   return "en";
 }
