@@ -87,6 +87,20 @@ const REC_142: Recommendation = {
   partial_ratio: null,
   missing_evidence: [],
   flags: [],
+  benefit_amount: {
+    value: 727.67,
+    currency: "CAD",
+    period: "monthly",
+    formula_trace: [
+      { op: "ref", inputs: ["oas.base.monthly"], output: 727.67, citation: "OAS Act, s. 7(1)" },
+      { op: "field", inputs: ["residency_years"], output: 42 },
+      { op: "const", inputs: [40], output: 40, note: "full-pension threshold" },
+      { op: "min", inputs: [42, 40], output: 40 },
+      { op: "divide", inputs: [40, 40], output: 1 },
+      { op: "multiply", inputs: [727.67, 1], output: 727.67, citation: "OAS Act, s. 7(2)" },
+    ],
+    citations: ["OAS Act, s. 7(1)", "OAS Act, s. 7(2)"],
+  },
 };
 
 const REC_143: Recommendation = {
@@ -99,6 +113,19 @@ const REC_143: Recommendation = {
   pension_type: "partial",
   partial_ratio: "25/40",
   explanation: "Eligible for partial pension based on 25 years of post-18 residency.",
+  benefit_amount: {
+    value: 454.79,
+    currency: "CAD",
+    period: "monthly",
+    formula_trace: [
+      { op: "ref", inputs: ["oas.base.monthly"], output: 727.67, citation: "OAS Act, s. 7(1)" },
+      { op: "field", inputs: ["residency_years"], output: 25 },
+      { op: "const", inputs: [40], output: 40 },
+      { op: "divide", inputs: [25, 40], output: 0.625 },
+      { op: "multiply", inputs: [727.67, 0.625], output: 454.79, citation: "OAS Act, s. 7(2)" },
+    ],
+    citations: ["OAS Act, s. 7(1)", "OAS Act, s. 7(2)"],
+  },
 };
 
 const REC_145: Recommendation = {
