@@ -9,6 +9,7 @@ import { LegalDocumentList } from "@/components/govops/authority/LegalDocumentLi
 import { LegalRuleList } from "@/components/govops/authority/LegalRuleList";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
+import { t } from "@/lib/head-i18n";
 import type {
   AuthorityReference,
   DocumentType,
@@ -27,12 +28,8 @@ interface LoaderData {
 export const Route = createFileRoute("/authority")({
   head: () => ({
     meta: [
-      { title: "Authority chain — GovOps" },
-      {
-        name: "description",
-        content:
-          "Trace any operational rule back through every layer of authority that legitimizes it.",
-      },
+      { title: t("nav.authority") },
+      { name: "description", content: t("authority.lede") },
     ],
   }),
   loader: async (): Promise<LoaderData> => {

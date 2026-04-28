@@ -5,6 +5,7 @@ import { impactByCitation } from "@/lib/api";
 import type { ImpactResponse } from "@/lib/types";
 import { ImpactSection } from "@/components/govops/ImpactSection";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
+import { t } from "@/lib/head-i18n";
 
 type ImpactSearch = { citation?: string; limit?: number; page?: number };
 
@@ -14,11 +15,8 @@ const DEFAULT_LIMIT = 25;
 export const Route = createFileRoute("/impact")({
   head: () => ({
     meta: [
-      { title: "Citation impact — GovOps" },
-      {
-        name: "description",
-        content: "Find every ConfigValue that references a given citation, across all jurisdictions.",
-      },
+      { title: t("impact.heading") },
+      { name: "description", content: t("impact.lede") },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): ImpactSearch => ({
