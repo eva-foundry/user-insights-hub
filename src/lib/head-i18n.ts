@@ -82,21 +82,26 @@ export function t(key: string, locale: string = readLocaleCookie()): string {
  * embeds, and human first-paint all see the same localized title.
  */
 export function localeFromMatches(
-  matches: ReadonlyArray<{ loaderData?: unknown }> | undefined,
+  matches:
+    | ReadonlyArray<{ loaderData?: unknown; context?: unknown }>
+    | undefined,
 ): string {
-  (globalThis as any).__lastHeadMatches = matches?.map((m: any) => ({
-    id: m?.id ?? m?.routeId,
-    keys: m && Object.keys(m),
-    ld: m?.loaderData,
-    ctx: m?.context,
-  }));
   if (!matches || matches.length === 0) return "en";
-  // The root match is always at index 0, but we scan defensively in case
-  // the parent ordering ever changes.
+  // On SSR, child `head()` hooks can run before parent loaders settle, so
+  // `loaderData` may be undefined on the root match. The root therefore
+  // mirrors the SSR-resolved locale into `context.initialLocale` (set in
+  // its `beforeLoad`), which IS populated synchronously. We try context
+  // first, then loaderData (covers post-hydration client navigations).
   for (const m of matches) {
+    const ctx = (m as { context?: { initialLocale?: string } } | undefined)
+      ?.context;
+    const cloc = ctx?.initialLocale;
+    if (cloc && CATALOGS[cloc]) return cloc;
     const data = m?.loaderData as { initialLocale?: string } | undefined;
     const loc = data?.initialLocale;
     if (loc && CATALOGS[loc]) return loc;
   }
-  return "en";
+  // Last resort: read the cookie directly (works when this helper is
+  // invoked in a browser context post-hydration with a missing root match).
+  return readLocaleCookie();
 }
