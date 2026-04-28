@@ -402,6 +402,71 @@ export async function postCaseEvent(
   }
 }
 
+// ---- Federation (govops-020) ----------------------------------------------
+
+import type {
+  FederationFetchResult,
+  FederationPack,
+  FederationRegistryEntry,
+} from "./federation-types";
+
+const loadFederationMocks = () => import("./mock-federation");
+
+export async function listFederationRegistry(): Promise<{
+  entries: FederationRegistryEntry[];
+}> {
+  try {
+    return await fetcher("/api/admin/federation/registry");
+  } catch {
+    return (await loadFederationMocks()).mockListRegistry();
+  }
+}
+
+export async function listFederationPacks(): Promise<{ packs: FederationPack[] }> {
+  try {
+    return await fetcher("/api/admin/federation/packs");
+  } catch {
+    return (await loadFederationMocks()).mockListPacks();
+  }
+}
+
+export async function fetchFederationPack(
+  publisherId: string,
+  opts: { dryRun: boolean; allowUnsigned: boolean },
+): Promise<FederationFetchResult> {
+  const qs = new URLSearchParams({
+    dry_run: opts.dryRun ? "true" : "false",
+    allow_unsigned: opts.allowUnsigned ? "true" : "false",
+  }).toString();
+  try {
+    return await fetcher(
+      `/api/admin/federation/fetch/${encodeURIComponent(publisherId)}?${qs}`,
+      { method: "POST" },
+    );
+  } catch (e) {
+    if (e instanceof TypeError) {
+      return (await loadFederationMocks()).mockFetchPack(publisherId, opts);
+    }
+    // Try mock for any other failure path too (preview parity).
+    return (await loadFederationMocks()).mockFetchPack(publisherId, opts);
+  }
+}
+
+export async function setFederationPackEnabled(
+  publisherId: string,
+  enabled: boolean,
+): Promise<FederationPack> {
+  const op = enabled ? "enable" : "disable";
+  try {
+    return await fetcher(
+      `/api/admin/federation/packs/${encodeURIComponent(publisherId)}/${op}`,
+      { method: "POST" },
+    );
+  } catch {
+    return (await loadFederationMocks()).mockTogglePack(publisherId, enabled);
+  }
+}
+
 // ---- Health & jurisdiction switch (govops-012) -----------------------------
 
 export async function health(): Promise<HealthResponse> {
