@@ -21,6 +21,10 @@ import ptBR from "@/messages/pt-BR.json";
 import esMX from "@/messages/es-MX.json";
 import de from "@/messages/de.json";
 import uk from "@/messages/uk.json";
+// `.server.ts` is stripped from the client bundle by the tanstackStart Vite
+// plugin and replaced with an empty module, so `getSsrLocaleSync` is
+// `undefined` on the client. We guard every call site with a typeof check.
+import * as ssrLocaleSync from "@/lib/ssrLocaleSync.server";
 
 type Catalog = Record<string, string>;
 
@@ -86,6 +90,16 @@ export function localeFromMatches(
     | ReadonlyArray<{ loaderData?: unknown; context?: unknown }>
     | undefined,
 ): string {
+  // SSR fast path: read the cookie / Accept-Language directly from the
+  // request via TanStack's server helpers. This is the ONLY path that
+  // produces a localized `<title>` in the SSR HTML stream, because child
+  // route `head()` hooks run before parent loaders settle.
+  const sync = (ssrLocaleSync as { getSsrLocaleSync?: () => string | null })
+    .getSsrLocaleSync;
+  if (typeof sync === "function") {
+    const ssrLoc = sync();
+    if (ssrLoc && CATALOGS[ssrLoc]) return ssrLoc;
+  }
   if (!matches || matches.length === 0) return "en";
   // On SSR, child `head()` hooks can run before parent loaders settle, so
   // `loaderData` may be undefined on the root match. The root therefore
