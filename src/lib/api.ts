@@ -56,6 +56,8 @@ import {
   mockGetAudit,
   mockGetCase,
   mockReviewCase,
+  mockListCaseEvents,
+  mockPostCaseEvent,
 } from "./mock-cases";
 
 /**
@@ -350,6 +352,53 @@ export async function getCaseAudit(caseId: string): Promise<AuditPackage> {
     return await fetcher<AuditPackage>(`/api/cases/${encodeURIComponent(caseId)}/audit`);
   } catch {
     return mockGetAudit(caseId);
+  }
+}
+
+// ---- Case events / reassessment (govops-019) ------------------------------
+
+export async function listCaseEvents(
+  caseId: string,
+): Promise<import("./types").GetEventsResponse> {
+  try {
+    return await fetcher(`/api/cases/${encodeURIComponent(caseId)}/events`);
+  } catch {
+    return mockListCaseEvents(caseId);
+  }
+}
+
+export async function postCaseEvent(
+  caseId: string,
+  body: import("./types").CaseEventRequest,
+  reevaluate = true,
+): Promise<import("./types").PostEventResponse> {
+  const qs = `?reevaluate=${reevaluate ? "true" : "false"}`;
+  try {
+    const res = await fetch(
+      `${BASE}/api/cases/${encodeURIComponent(caseId)}/events${qs}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
+    if (!res.ok) {
+      let detail = res.statusText;
+      try {
+        const j = await res.json();
+        detail = (j as { detail?: string }).detail ?? detail;
+      } catch {
+        /* ignore */
+      }
+      throw new Error(detail);
+    }
+    return (await res.json()) as import("./types").PostEventResponse;
+  } catch (e) {
+    if (e instanceof TypeError) {
+      // Network error → fall back to mock so preview works.
+      return mockPostCaseEvent(caseId, body, reevaluate);
+    }
+    throw e;
   }
 }
 
