@@ -29,8 +29,8 @@ const PHASE_6_ROUTES = [
 ] as const;
 
 for (const route of PHASE_6_ROUTES) {
-  test(`SSR head: ${route} renders a non-empty <title>`, async ({ page }) => {
-    const r = await page.request.get(route);
+  test(`SSR head: ${route} renders a non-empty <title>`, async ({ request }) => {
+    const r = await request.get(route);
     const html = await r.text();
     const m = html.match(/<title>([^<]*)<\/title>/i);
     expect(m, `no <title> in SSR HTML for ${route}`).not.toBeNull();
@@ -42,18 +42,15 @@ for (const route of PHASE_6_ROUTES) {
 }
 
 test("SSR head: <title> reflects govops-locale cookie at SSR time, not after hydration", async ({
-  browser,
+  playwright,
   baseURL,
 }) => {
-  const ctx = await browser.newContext();
-  await ctx.addCookies([
-    {
-      name: "govops-locale",
-      value: "fr",
-      url: baseURL ?? "http://127.0.0.1:8080/",
-    },
-  ]);
-  const r = await ctx.request.get("/about");
+  const base = baseURL ?? "http://127.0.0.1:8080";
+  const ctx = await playwright.request.newContext({
+    baseURL: base,
+    extraHTTPHeaders: { cookie: "govops-locale=fr" },
+  });
+  const r = await ctx.get("/about");
   const html = await r.text();
   const m = html.match(/<title>([^<]*)<\/title>/i);
   expect(m, "no <title> in SSR HTML for /about").not.toBeNull();
