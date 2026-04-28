@@ -469,7 +469,7 @@ export async function setFederationPackEnabled(
 
 // ---- Decision notices (govops-018) ----------------------------------------
 
-import type { ScreenRequest } from "./types";
+import type { ScreenRequest as NoticeScreenRequest } from "./types";
 
 export interface NoticeResult {
   /** Rendered HTML body (already a complete document). */
@@ -536,7 +536,7 @@ function mockNoticeHtml(opts: {
  */
 export async function fetchDecisionNotice(args:
   | { mode: "case"; caseId: string; language?: string; signal?: AbortSignal }
-  | { mode: "screen"; screenRequest: ScreenRequest; language?: string; signal?: AbortSignal },
+  | { mode: "screen"; screenRequest: NoticeScreenRequest; language?: string; signal?: AbortSignal },
 ): Promise<NoticeResult> {
   const language = args.language ?? "en";
   const url =
