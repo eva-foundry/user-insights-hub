@@ -31,15 +31,12 @@ const PROJECT_HOME =
 export const Route = createFileRoute("/about")({
   head: ({ matches }) => {
     const l = localeFromMatches(matches);
-    const debugDump = JSON.stringify((globalThis as any).__lastHeadMatches ?? []).slice(0, 400);
     return {
       meta: [
         { title: t("about.title", l) },
         { name: "description", content: t("about.lede", l) },
         { property: "og:title", content: t("about.title", l) },
         { property: "og:description", content: t("about.lede", l) },
-        { name: "x-debug-locale", content: l },
-        { name: "x-debug-matches", content: debugDump },
       ],
     };
   },
