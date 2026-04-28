@@ -451,3 +451,53 @@ export interface BenefitAmount {
   /** Dedup'd in walk order. */
   citations: string[];
 }
+
+// ── Case events / reassessment (govops-019, ADR-013) ────────────────────────
+
+export type CaseEventType =
+  | "move_country"
+  | "change_legal_status"
+  | "add_evidence"
+  | "re_evaluate";
+
+export interface CaseEvent {
+  id: string;
+  case_id: string;
+  event_type: CaseEventType;
+  effective_date: string;
+  recorded_at: string;
+  actor: string;
+  payload: Record<string, unknown>;
+  note?: string | null;
+  /** Recommendation id this event triggered (if any). */
+  triggered_recommendation_id?: string | null;
+}
+
+export interface CaseEventRequest {
+  event_type: CaseEventType;
+  effective_date: string;
+  payload: Record<string, unknown>;
+  actor?: string;
+  note?: string;
+}
+
+export interface PostEventResponse {
+  event: CaseEvent;
+  recommendation?: Recommendation;
+}
+
+export interface GetEventsResponse {
+  events: CaseEvent[];
+  recommendations: Recommendation[];
+}
+
+/** Phase 10D extension: recommendations chain via `supersedes` and link to triggering event. */
+declare module "./types" {}
+
+// Augment Recommendation in-file (re-declared for clarity; TS merges interfaces).
+export interface Recommendation {
+  /** Phase 10D: prior recommendation id this one supersedes. */
+  supersedes?: string | null;
+  /** Phase 10D: id of the CaseEvent that triggered this evaluation. */
+  triggered_by_event_id?: string | null;
+}

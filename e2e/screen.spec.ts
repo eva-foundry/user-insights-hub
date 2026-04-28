@@ -66,3 +66,16 @@ test.describe("/screen — privacy invariants", () => {
     expect(screenKeys).toEqual([]);
   });
 });
+
+test.describe("/cases/$caseId — event timeline (govops-019)", () => {
+  test("renders an event timeline section", async ({ page }) => {
+    await page.goto("/cases/case-2025-0142");
+    await expect(
+      page.getByRole("heading", { name: /event timeline|chronologie/i }),
+    ).toBeVisible();
+    // "Record event" trigger present
+    await expect(
+      page.getByRole("button", { name: /record event|enregistrer un événement/i }),
+    ).toBeVisible();
+  });
+});

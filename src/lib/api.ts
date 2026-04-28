@@ -56,6 +56,8 @@ import {
   mockGetAudit,
   mockGetCase,
   mockReviewCase,
+  mockListCaseEvents,
+  mockPostCaseEvent,
 } from "./mock-cases";
 
 /**
@@ -350,6 +352,118 @@ export async function getCaseAudit(caseId: string): Promise<AuditPackage> {
     return await fetcher<AuditPackage>(`/api/cases/${encodeURIComponent(caseId)}/audit`);
   } catch {
     return mockGetAudit(caseId);
+  }
+}
+
+// ---- Case events / reassessment (govops-019) ------------------------------
+
+export async function listCaseEvents(
+  caseId: string,
+): Promise<import("./types").GetEventsResponse> {
+  try {
+    return await fetcher(`/api/cases/${encodeURIComponent(caseId)}/events`);
+  } catch {
+    return mockListCaseEvents(caseId);
+  }
+}
+
+export async function postCaseEvent(
+  caseId: string,
+  body: import("./types").CaseEventRequest,
+  reevaluate = true,
+): Promise<import("./types").PostEventResponse> {
+  const qs = `?reevaluate=${reevaluate ? "true" : "false"}`;
+  try {
+    const res = await fetch(
+      `${BASE}/api/cases/${encodeURIComponent(caseId)}/events${qs}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+    );
+    if (!res.ok) {
+      let detail = res.statusText;
+      try {
+        const j = await res.json();
+        detail = (j as { detail?: string }).detail ?? detail;
+      } catch {
+        /* ignore */
+      }
+      throw new Error(detail);
+    }
+    return (await res.json()) as import("./types").PostEventResponse;
+  } catch (e) {
+    if (e instanceof TypeError) {
+      // Network error → fall back to mock so preview works.
+      return mockPostCaseEvent(caseId, body, reevaluate);
+    }
+    throw e;
+  }
+}
+
+// ---- Federation (govops-020) ----------------------------------------------
+
+import type {
+  FederationFetchResult,
+  FederationPack,
+  FederationRegistryEntry,
+} from "./federation-types";
+
+const loadFederationMocks = () => import("./mock-federation");
+
+export async function listFederationRegistry(): Promise<{
+  entries: FederationRegistryEntry[];
+}> {
+  try {
+    return await fetcher("/api/admin/federation/registry");
+  } catch {
+    return (await loadFederationMocks()).mockListRegistry();
+  }
+}
+
+export async function listFederationPacks(): Promise<{ packs: FederationPack[] }> {
+  try {
+    return await fetcher("/api/admin/federation/packs");
+  } catch {
+    return (await loadFederationMocks()).mockListPacks();
+  }
+}
+
+export async function fetchFederationPack(
+  publisherId: string,
+  opts: { dryRun: boolean; allowUnsigned: boolean },
+): Promise<FederationFetchResult> {
+  const qs = new URLSearchParams({
+    dry_run: opts.dryRun ? "true" : "false",
+    allow_unsigned: opts.allowUnsigned ? "true" : "false",
+  }).toString();
+  try {
+    return await fetcher(
+      `/api/admin/federation/fetch/${encodeURIComponent(publisherId)}?${qs}`,
+      { method: "POST" },
+    );
+  } catch (e) {
+    if (e instanceof TypeError) {
+      return (await loadFederationMocks()).mockFetchPack(publisherId, opts);
+    }
+    // Try mock for any other failure path too (preview parity).
+    return (await loadFederationMocks()).mockFetchPack(publisherId, opts);
+  }
+}
+
+export async function setFederationPackEnabled(
+  publisherId: string,
+  enabled: boolean,
+): Promise<FederationPack> {
+  const op = enabled ? "enable" : "disable";
+  try {
+    return await fetcher(
+      `/api/admin/federation/packs/${encodeURIComponent(publisherId)}/${op}`,
+      { method: "POST" },
+    );
+  } catch {
+    return (await loadFederationMocks()).mockTogglePack(publisherId, enabled);
   }
 }
 
