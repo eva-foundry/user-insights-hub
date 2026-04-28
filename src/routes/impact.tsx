@@ -13,12 +13,6 @@ const ALLOWED_LIMITS = [10, 25, 50, 100] as const;
 const DEFAULT_LIMIT = 25;
 
 export const Route = createFileRoute("/impact")({
-  head: () => ({
-    meta: [
-      { title: t("impact.heading") },
-      { name: "description", content: t("impact.lede") },
-    ],
-  }),
   validateSearch: (s: Record<string, unknown>): ImpactSearch => ({
     citation: typeof s.citation === "string" && s.citation ? s.citation : undefined,
     limit:
@@ -35,6 +29,15 @@ export const Route = createFileRoute("/impact")({
           : undefined,
   }),
   component: ImpactPage,
+  head: ({ matches }) => {
+    const l = localeFromMatches(matches);
+    return {
+      meta: [
+        { title: t("impact.heading", l) },
+        { name: "description", content: t("impact.lede", l) },
+      ],
+    };
+  },
 });
 
 function ImpactPage() {
