@@ -4,6 +4,8 @@ import { useIntl } from "react-intl";
 import { ScreenShell } from "@/components/govops/ScreenShell";
 import { ScreenForm } from "@/components/govops/ScreenForm";
 import { ScreenResult } from "@/components/govops/ScreenResult";
+import { DownloadDecisionButton } from "@/components/govops/notices/DownloadDecisionButton";
+import { useLocale } from "@/lib/i18n";
 import { fetchJurisdiction, submitScreen } from "@/lib/api";
 import {
   SCREEN_JURISDICTIONS,
@@ -92,6 +94,7 @@ function ScreenFormPage() {
   const { jurisdictionId } = Route.useParams() as { jurisdictionId: ScreenJurisdictionId };
   const { live, data } = Route.useLoaderData() as LoaderData;
   const intl = useIntl();
+  const { locale } = useLocale();
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ScreenResponse | null>(null);
@@ -150,12 +153,23 @@ function ScreenFormPage() {
       )}
 
       {result && (
-        <ScreenResult
-          data={result}
-          stale={stale}
-          jurisdictionId={jurisdictionId}
-          onRerun={() => lastReq && run(lastReq)}
-        />
+        <>
+          <ScreenResult
+            data={result}
+            stale={stale}
+            jurisdictionId={jurisdictionId}
+            onRerun={() => lastReq && run(lastReq)}
+          />
+          {lastReq && (
+            <div className="mt-4 flex justify-end">
+              <DownloadDecisionButton
+                mode="screen"
+                screenRequest={lastReq}
+                language={locale}
+              />
+            </div>
+          )}
+        </>
       )}
     </ScreenShell>
   );
