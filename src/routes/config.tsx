@@ -10,7 +10,7 @@ import { ConfigValueFilters, type FiltersState } from "@/components/govops/Confi
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
-import { t } from "@/lib/head-i18n";
+import { t, localeFromMatches } from "@/lib/head-i18n";
 import {
   Select,
   SelectContent,
@@ -31,12 +31,15 @@ type ConfigSearch = {
 };
 
 export const Route = createFileRoute("/config")({
-  head: () => ({
-    meta: [
-      { title: t("config.title") },
-      { name: "description", content: t("config.lede") },
-    ],
-  }),
+  head: ({ matches }) => {
+    const l = localeFromMatches(matches);
+    return {
+      meta: [
+        { title: t("config.title", l) },
+        { name: "description", content: t("config.lede", l) },
+      ],
+    };
+  },
   validateSearch: (search: Record<string, unknown>): ConfigSearch => ({
     key_prefix: typeof search.key_prefix === "string" ? search.key_prefix : undefined,
     domain: typeof search.domain === "string" ? search.domain : undefined,
