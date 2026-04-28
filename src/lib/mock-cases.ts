@@ -476,3 +476,149 @@ export function mockGetAudit(caseId: string): AuditPackage {
       })) ?? [],
   };
 }
+
+// ── Case events (govops-019) ────────────────────────────────────────────────
+
+const eventsByCase: Record<string, CaseEvent[]> = {
+  "case-2025-0142": [
+    {
+      id: "evt-142-001",
+      case_id: "case-2025-0142",
+      event_type: "re_evaluate",
+      effective_date: "2025-04-20",
+      recorded_at: "2025-04-20T14:30:00Z",
+      actor: "system",
+      payload: {},
+      note: "Initial evaluation.",
+      triggered_recommendation_id: "rec-142",
+    },
+  ],
+  "case-2025-0143": [
+    {
+      id: "evt-143-001",
+      case_id: "case-2025-0143",
+      event_type: "re_evaluate",
+      effective_date: "2025-04-18",
+      recorded_at: "2025-04-18T10:10:00Z",
+      actor: "system",
+      payload: {},
+      triggered_recommendation_id: "rec-143",
+    },
+  ],
+  "demo-case-001": [
+    {
+      id: "evt-demo-001",
+      case_id: "demo-case-001",
+      event_type: "re_evaluate",
+      effective_date: "2025-01-15",
+      recorded_at: "2025-01-15T09:00:00Z",
+      actor: "system",
+      payload: {},
+      triggered_recommendation_id: "rec-142",
+    },
+  ],
+};
+
+const recommendationsByCase: Record<string, Recommendation[]> = {
+  "case-2025-0142": [REC_142],
+  "case-2025-0143": [REC_143],
+  "demo-case-001": [REC_142],
+};
+
+function uid(prefix: string): string {
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export async function mockListCaseEvents(caseId: string): Promise<GetEventsResponse> {
+  await new Promise((r) => setTimeout(r, 120));
+  const events = (eventsByCase[caseId] ?? []).slice().sort((a, b) => {
+    const cmp = a.effective_date.localeCompare(b.effective_date);
+    return cmp !== 0 ? cmp : a.recorded_at.localeCompare(b.recorded_at);
+  });
+  const recommendations = (recommendationsByCase[caseId] ?? []).slice().sort((a, b) =>
+    a.timestamp.localeCompare(b.timestamp),
+  );
+  return { events, recommendations };
+}
+
+function validatePayload(body: CaseEventRequest): string | null {
+  switch (body.event_type) {
+    case "move_country":
+      if (!body.payload.to_country) return "to_country required";
+      return null;
+    case "change_legal_status":
+      if (!body.payload.to_status) return "to_status required";
+      return null;
+    case "add_evidence":
+      if (!body.payload.evidence_type) return "evidence_type required";
+      return null;
+    case "re_evaluate":
+      return null;
+    default:
+      return "unknown event_type";
+  }
+}
+
+export async function mockPostCaseEvent(
+  caseId: string,
+  body: CaseEventRequest,
+  reevaluate: boolean,
+): Promise<PostEventResponse> {
+  await new Promise((r) => setTimeout(r, 350));
+  const err = validatePayload(body);
+  if (err) throw new Error(err);
+
+  const event: CaseEvent = {
+    id: uid("evt"),
+    case_id: caseId,
+    event_type: body.event_type,
+    effective_date: body.effective_date,
+    recorded_at: new Date().toISOString(),
+    actor: body.actor ?? "citizen",
+    payload: body.payload,
+    note: body.note ?? null,
+    triggered_recommendation_id: null,
+  };
+
+  if (!eventsByCase[caseId]) eventsByCase[caseId] = [];
+  eventsByCase[caseId].push(event);
+
+  if (!reevaluate) return { event };
+
+  // Synthesize a new recommendation that supersedes the most recent one.
+  const prior = (recommendationsByCase[caseId] ?? []).slice(-1)[0] ?? null;
+  const base: Recommendation = prior ?? {
+    id: uid("rec"),
+    case_id: caseId,
+    timestamp: new Date().toISOString(),
+    outcome: "insufficient_evidence",
+    confidence: 0.5,
+    rule_evaluations: [],
+    explanation: "Re-evaluation requested.",
+    pension_type: "",
+    partial_ratio: null,
+    missing_evidence: [],
+    flags: [],
+  };
+  const newRec: Recommendation = {
+    ...base,
+    id: uid("rec"),
+    case_id: caseId,
+    timestamp: new Date().toISOString(),
+    supersedes: prior?.id ?? null,
+    triggered_by_event_id: event.id,
+    explanation:
+      body.event_type === "move_country"
+        ? `Re-evaluated after move to ${String(body.payload.to_country)}.`
+        : body.event_type === "change_legal_status"
+          ? `Re-evaluated after legal status change to ${String(body.payload.to_status)}.`
+          : body.event_type === "add_evidence"
+            ? `Re-evaluated after adding evidence: ${String(body.payload.evidence_type)}.`
+            : "Reassessment requested by caseworker.",
+  };
+  if (!recommendationsByCase[caseId]) recommendationsByCase[caseId] = [];
+  recommendationsByCase[caseId].push(newRec);
+  event.triggered_recommendation_id = newRec.id;
+
+  return { event, recommendation: newRec };
+}
