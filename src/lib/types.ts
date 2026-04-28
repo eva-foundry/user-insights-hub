@@ -411,4 +411,41 @@ export interface ScreenResponse {
   evaluation_date: string;
   /** Set client-side when the mock fallback ran. Never sent by the server. */
   _preview?: boolean;
+  /** Phase 10B: present on `eligible` screens; null otherwise. */
+  benefit_amount?: BenefitAmount | null;
+}
+
+// ── Benefit amount (govops-017, ADR-011) ─────────────────────────────────────
+
+export type BenefitPeriod = "monthly" | "annual" | "lump_sum";
+
+export type FormulaTraceOp =
+  | "const"
+  | "ref"
+  | "field"
+  | "add"
+  | "subtract"
+  | "multiply"
+  | "divide"
+  | "min"
+  | "max"
+  | "clamp";
+
+export interface FormulaTraceStep {
+  op: FormulaTraceOp;
+  inputs: (number | string)[];
+  output: number;
+  citation?: string;
+  note?: string;
+}
+
+export interface BenefitAmount {
+  /** Already rounded to 2dp by the engine. */
+  value: number;
+  /** ISO 4217 — e.g. "CAD". */
+  currency: string;
+  period: BenefitPeriod;
+  formula_trace: FormulaTraceStep[];
+  /** Dedup'd in walk order. */
+  citations: string[];
 }
