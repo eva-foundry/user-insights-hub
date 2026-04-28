@@ -27,15 +27,13 @@ import { JurisdictionSwitcher } from "@/components/govops/admin/JurisdictionSwit
 import { RefreshButton } from "@/components/govops/admin/RefreshButton";
 import { SystemHealthStrip } from "@/components/govops/admin/SystemHealthStrip";
 import { RecentActivity } from "@/components/govops/admin/RecentActivity";
+import { t } from "@/lib/head-i18n";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin — GovOps" },
-      {
-        name: "description",
-        content: "Operator overview: counts, recent activity, and system health.",
-      },
+      { title: t("admin.heading") },
+      { name: "description", content: t("admin.lede") },
     ],
   }),
   component: AdminPage,

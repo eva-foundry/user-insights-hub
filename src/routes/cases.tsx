@@ -6,6 +6,7 @@ import type { CaseListItem, CaseStatus } from "@/lib/types";
 import { CaseRow } from "@/components/govops/cases/CaseRow";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
+import { t } from "@/lib/head-i18n";
 
 const STATUSES: CaseStatus[] = [
   "intake",
@@ -19,12 +20,10 @@ const STATUSES: CaseStatus[] = [
 export const Route = createFileRoute("/cases")({
   head: () => ({
     meta: [
-      { title: "Cases — GovOps" },
-      {
-        name: "description",
-        content:
-          "Operational case log: applicants, evaluations, and human-review actions.",
-      },
+      // govops-023: no `cases.list.lede` key exists; description omitted
+      // pending an explicit decision to add one. Title reuses the page's
+      // visible heading key.
+      { title: t("cases.list.heading") },
     ],
   }),
   loader: async () => {

@@ -10,6 +10,7 @@ import { ConfigValueFilters, type FiltersState } from "@/components/govops/Confi
 import { ConfigValueRow } from "@/components/govops/ConfigValueRow";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
+import { t } from "@/lib/head-i18n";
 import {
   Select,
   SelectContent,
@@ -32,12 +33,8 @@ type ConfigSearch = {
 export const Route = createFileRoute("/config")({
   head: () => ({
     meta: [
-      { title: "Configuration — GovOps" },
-      {
-        name: "description",
-        content:
-          "Search and filter every ConfigValue across jurisdictions, domains, and languages.",
-      },
+      { title: t("config.title") },
+      { name: "description", content: t("config.lede") },
     ],
   }),
   validateSearch: (search: Record<string, unknown>): ConfigSearch => ({

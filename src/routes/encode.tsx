@@ -7,15 +7,13 @@ import { BatchRow } from "@/components/govops/encode/BatchRow";
 import { Button } from "@/components/ui/button";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
+import { t } from "@/lib/head-i18n";
 
 export const Route = createFileRoute("/encode")({
   head: () => ({
     meta: [
-      { title: "Encode — GovOps" },
-      {
-        name: "description",
-        content: "Statute → proposals → review → commit. The Law-as-Code pipeline.",
-      },
+      { title: t("encode.list.heading") },
+      { name: "description", content: t("encode.list.lede") },
     ],
   }),
   loader: async () => {
