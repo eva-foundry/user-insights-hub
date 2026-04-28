@@ -63,5 +63,5 @@ test("SSR head: <title> reflects govops-locale cookie at SSR time, not after hyd
     m![1],
     "SSR <title> for /about did not localize to fr (cookie ignored on server)",
   ).toMatch(/propos/i);
-  await ctx.close();
+  await ctx.dispose();
 });
