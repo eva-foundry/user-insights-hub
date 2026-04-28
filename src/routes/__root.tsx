@@ -39,6 +39,7 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
+  beforeLoad: async () => ({ initialLocale: await getSsrLocale() }),
   loader: async () => ({ initialLocale: await getSsrLocale() }),
   head: () => ({
     meta: [
