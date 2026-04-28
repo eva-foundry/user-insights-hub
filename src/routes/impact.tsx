@@ -5,7 +5,7 @@ import { impactByCitation } from "@/lib/api";
 import type { ImpactResponse } from "@/lib/types";
 import { ImpactSection } from "@/components/govops/ImpactSection";
 import { ProvenanceRibbon } from "@/components/govops/ProvenanceRibbon";
-import { t } from "@/lib/head-i18n";
+import { t, localeFromMatches } from "@/lib/head-i18n";
 
 type ImpactSearch = { citation?: string; limit?: number; page?: number };
 
