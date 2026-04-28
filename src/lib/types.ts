@@ -230,6 +230,8 @@ export interface Recommendation {
   partial_ratio: string | null;
   missing_evidence: string[];
   flags: string[];
+  /** Phase 10B: present on `eligible` recommendations; null otherwise. */
+  benefit_amount?: BenefitAmount | null;
 }
 
 export interface HumanReviewAction {
