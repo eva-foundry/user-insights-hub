@@ -11,6 +11,46 @@ import { OutcomePill } from "./OutcomePill";
 import { RuleEvaluationItem } from "./RuleEvaluationItem";
 import { BenefitAmountCard } from "../screen/BenefitAmountCard";
 
+/**
+ * Topo-order recommendations by `supersedes` chain, oldest → newest.
+ * Falls back to timestamp ordering when:
+ *   - none of the recommendations declare a chain (legacy backend), or
+ *   - the chain has cycles / dangling refs (defensive).
+ * Timestamp is used as the tiebreaker for parallel branches.
+ */
+export function orderBySupersedes(recs: Recommendation[]): Recommendation[] {
+  if (recs.length <= 1) return [...recs];
+  const byId = new Map(recs.map((r) => [r.id, r]));
+  const hasChain = recs.some((r) => r.supersedes && byId.has(r.supersedes));
+  if (!hasChain) {
+    return [...recs].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  }
+  // Build child lists (parent.id → children sorted by timestamp).
+  const children = new Map<string | null, Recommendation[]>();
+  for (const r of recs) {
+    const parent = r.supersedes && byId.has(r.supersedes) ? r.supersedes : null;
+    const list = children.get(parent) ?? [];
+    list.push(r);
+    children.set(parent, list);
+  }
+  for (const list of children.values()) {
+    list.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  }
+  // DFS from each root (no parent) to flatten in chronological supersession order.
+  const out: Recommendation[] = [];
+  const seen = new Set<string>();
+  const visit = (node: Recommendation) => {
+    if (seen.has(node.id)) return; // cycle guard
+    seen.add(node.id);
+    out.push(node);
+    for (const c of children.get(node.id) ?? []) visit(c);
+  };
+  for (const root of children.get(null) ?? []) visit(root);
+  // Append any orphans (cycle survivors / dangling).
+  for (const r of recs) if (!seen.has(r.id)) out.push(r);
+  return out;
+}
+
 export function PreviousDecisions({
   recommendations,
   events,
@@ -22,9 +62,10 @@ export function PreviousDecisions({
 }) {
   const intl = useIntl();
   const eventById = new Map(events.map((e) => [e.id, e]));
-  // Sort oldest → newest, drop the latest (rendered above by RecommendationPane).
-  const sorted = [...recommendations].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
-  const prior = sorted.slice(0, -1);
+  // Order by supersession chain, then drop the head (latest) — rendered
+  // separately by RecommendationPane above.
+  const ordered = orderBySupersedes(recommendations);
+  const prior = ordered.slice(0, -1);
   if (prior.length === 0) return null;
 
   const handleAnchor = (e: React.MouseEvent<HTMLAnchorElement>, eventId: string) => {
@@ -33,6 +74,11 @@ export function PreviousDecisions({
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    // Brief flash to draw the eye to the target row.
+    el.classList.add("ring-2", "ring-authority/60", "transition-shadow");
+    window.setTimeout(() => {
+      el.classList.remove("ring-2", "ring-authority/60", "transition-shadow");
+    }, 1600);
   };
 
   return (
@@ -47,7 +93,7 @@ export function PreviousDecisions({
         {intl.formatMessage({ id: "events.history.heading" })}
       </h2>
       <ul className="space-y-2">
-        {prior.reverse().map((r) => (
+        {[...prior].reverse().map((r) => (
           <li
             key={r.id}
             id={`recommendation-${r.id}`}
