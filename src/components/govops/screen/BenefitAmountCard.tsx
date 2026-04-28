@@ -6,7 +6,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { useLocale } from "@/lib/i18n";
 import type { BenefitAmount, FormulaTraceStep } from "@/lib/types";
 
@@ -60,6 +62,33 @@ export function BenefitAmountCard({
     id: `screen.benefit.period.${benefitAmount.period}`,
   });
 
+  // Caption: explain the partial badge even when the backend omitted the ratio.
+  const ratioCaption =
+    pensionType === "partial"
+      ? partialRatio
+        ? intl.formatMessage(
+            { id: "screen.benefit.ratio_caption" },
+            { ratio: partialRatio },
+          )
+        : intl.formatMessage({ id: "screen.benefit.ratio_unknown" })
+      : null;
+
+  const copyFormulaJson = async () => {
+    try {
+      await navigator.clipboard?.writeText(
+        JSON.stringify(
+          { value: benefitAmount.value, currency: benefitAmount.currency,
+            period: benefitAmount.period, formula_trace: benefitAmount.formula_trace,
+            citations: benefitAmount.citations },
+          null, 2,
+        ),
+      );
+      toast.success(intl.formatMessage({ id: "screen.benefit.copy_ok" }));
+    } catch {
+      toast.error(intl.formatMessage({ id: "screen.benefit.copy_err" }));
+    }
+  };
+
   return (
     <section
       aria-labelledby="benefit-amount-heading"
@@ -88,13 +117,8 @@ export function BenefitAmountCard({
           <span className="ms-1 text-base text-foreground-muted">{periodSuffix}</span>
         </p>
         <p className="text-xs text-foreground-muted">{jurisdictionLabel}</p>
-        {partialRatio && (
-          <p className="text-sm text-foreground-muted">
-            {intl.formatMessage(
-              { id: "screen.benefit.ratio_caption" },
-              { ratio: partialRatio },
-            )}
-          </p>
+        {ratioCaption && (
+          <p className="text-sm text-foreground-muted">{ratioCaption}</p>
         )}
       </header>
 
@@ -112,9 +136,9 @@ export function BenefitAmountCard({
               {intl.formatMessage({ id: "screen.benefit.trace_unavailable" })}
             </p>
           ) : (
-            <ol className="space-y-2">
+            <ol className="space-y-2" aria-label={intl.formatMessage({ id: "screen.benefit.trace_aria" })}>
               {benefitAmount.formula_trace.map((step, i) => (
-                <FormulaTraceRow key={i} step={step} locale={locale} />
+                <FormulaTraceRow key={i} step={step} index={i + 1} locale={locale} />
               ))}
             </ol>
           )}
@@ -136,6 +160,20 @@ export function BenefitAmountCard({
               </div>
             </>
           )}
+          <div className="flex justify-end pt-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={copyFormulaJson}
+              aria-label={intl.formatMessage({ id: "screen.benefit.copy_formula" })}
+            >
+              <Copy className="size-3" aria-hidden />
+              <span className="ms-1 text-xs">
+                {intl.formatMessage({ id: "screen.benefit.copy_formula" })}
+              </span>
+            </Button>
+          </div>
         </CollapsibleContent>
       </Collapsible>
     </section>
@@ -144,17 +182,32 @@ export function BenefitAmountCard({
 
 function FormulaTraceRow({
   step,
+  index,
   locale,
 }: {
   step: FormulaTraceStep;
+  index: number;
   locale: string;
 }) {
   const intl = useIntl();
   const opLabel = intl.formatMessage({ id: `screen.benefit.op.${step.op}` });
+  const inputsText = step.inputs
+    .map((inp) => (typeof inp === "number" ? formatNumber(inp, locale) : String(inp)))
+    .join(", ");
+  const srSentence = intl.formatMessage(
+    { id: "screen.benefit.trace_step_aria" },
+    {
+      n: index,
+      op: opLabel,
+      inputs: inputsText,
+      out: formatNumber(step.output, locale),
+    },
+  );
 
   return (
     <li className="text-sm" style={{ fontFamily: "var(--font-mono)" }}>
-      <div className="flex flex-wrap items-baseline gap-2">
+      <span className="sr-only">{srSentence}</span>
+      <div className="flex flex-wrap items-baseline gap-2" aria-hidden>
         <span className="text-foreground-muted">{opLabel}</span>
         <span className="text-foreground-subtle">(</span>
         {step.inputs.map((inp, i) => (
@@ -179,7 +232,7 @@ function FormulaTraceRow({
         <span className="text-foreground">{formatNumber(step.output, locale)}</span>
       </div>
       {(step.citation || step.note) && (
-        <div className="mt-1 border-l-2 border-muted pl-2 text-xs text-foreground-muted">
+        <div className="mt-1 border-l-2 border-muted pl-2 text-xs text-foreground-muted" aria-hidden>
           {step.citation && <span>{step.citation}</span>}
           {step.note && (
             <span className="ms-2 italic">{step.note}</span>

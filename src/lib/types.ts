@@ -232,6 +232,10 @@ export interface Recommendation {
   flags: string[];
   /** Phase 10B: present on `eligible` recommendations; null otherwise. */
   benefit_amount?: BenefitAmount | null;
+  /** Phase 10D: prior recommendation id this one supersedes. */
+  supersedes?: string | null;
+  /** Phase 10D: id of the CaseEvent that triggered this evaluation. */
+  triggered_by_event_id?: string | null;
 }
 
 export interface HumanReviewAction {
@@ -489,15 +493,4 @@ export interface PostEventResponse {
 export interface GetEventsResponse {
   events: CaseEvent[];
   recommendations: Recommendation[];
-}
-
-/** Phase 10D extension: recommendations chain via `supersedes` and link to triggering event. */
-declare module "./types" {}
-
-// Augment Recommendation in-file (re-declared for clarity; TS merges interfaces).
-export interface Recommendation {
-  /** Phase 10D: prior recommendation id this one supersedes. */
-  supersedes?: string | null;
-  /** Phase 10D: id of the CaseEvent that triggered this evaluation. */
-  triggered_by_event_id?: string | null;
 }

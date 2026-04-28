@@ -25,4 +25,14 @@ export interface FederationFetchResult {
   file_count: number;
   signed: boolean;
   dry_run: boolean;
+  /**
+   * Optional diff vs the previously imported pack from the same publisher.
+   * Surfaced in the admin UI so reviewers can spot scope changes without
+   * re-reading the full pack. Backend may omit this field on first fetch.
+   */
+  diff?: {
+    previous_version: string | null;
+    file_count_delta: number;
+    signing_key_changed: boolean;
+  };
 }

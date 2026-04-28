@@ -58,6 +58,7 @@ export async function mockFetchPack(
       `Publisher ${publisherId} is unsigned; rerun with --allow-unsigned`,
     );
   }
+  const previous = packs.find((p) => p.publisher_id === publisherId) ?? null;
   const result: FederationFetchResult = {
     publisher_id: publisherId,
     pack_name: `${publisherId}-${new Date().toISOString().slice(0, 7)}`,
@@ -65,6 +66,13 @@ export async function mockFetchPack(
     file_count: 12,
     signed,
     dry_run: opts.dryRun,
+    diff: previous
+      ? {
+          previous_version: previous.version,
+          file_count_delta: 12 - previous.file_count,
+          signing_key_changed: previous.signed !== signed,
+        }
+      : undefined,
   };
   if (!opts.dryRun) {
     const existing = packs.findIndex((p) => p.publisher_id === publisherId);
