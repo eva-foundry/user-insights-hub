@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import { useIntl } from "react-intl";
 import { toast } from "sonner";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -35,76 +36,172 @@ export interface NewEventFormProps {
 }
 
 const ISO_COUNTRIES = ["CA", "US", "BR", "FR", "DE", "ES", "UK", "UA", "MX", "AU"];
+const LEGAL_STATUSES = ["citizen", "permanent_resident", "other"] as const;
+
+// ── Validation schemas ──────────────────────────────────────────────────────
+// Validate the per-event-type payload separately so we can map errors to fields.
+const baseSchema = z.object({
+  effective_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, { message: "events.error.bad_date" }),
+  note: z.string().max(2000, { message: "events.error.note_long" }).optional(),
+});
+const moveSchema = z.object({
+  to_country: z.enum(ISO_COUNTRIES as [string, ...string[]], {
+    errorMap: () => ({ message: "events.error.to_country_required" }),
+  }),
+  from_country: z
+    .enum(ISO_COUNTRIES as [string, ...string[]])
+    .optional(),
+  open_new: z.boolean(),
+});
+const statusSchema = z.object({
+  to_status: z.enum(LEGAL_STATUSES, {
+    errorMap: () => ({ message: "events.error.to_status_required" }),
+  }),
+});
+const evidenceSchema = z.object({
+  evidence_type: z
+    .string()
+    .trim()
+    .min(1, { message: "events.error.evidence_type_required" })
+    .max(80, { message: "events.error.evidence_type_long" }),
+  description: z.string().max(500, { message: "events.error.description_long" }).optional(),
+  verified: z.boolean(),
+});
+
+// ── Form state reducer (replaces 8 useState calls) ──────────────────────────
+interface FormState {
+  eventType: CaseEventType;
+  effective_date: string;
+  note: string;
+  // payloads keyed by type, kept independently so switching back is non-destructive
+  move: { to_country: string; from_country: string; open_new: boolean };
+  status: { to_status: (typeof LEGAL_STATUSES)[number] };
+  evidence: { evidence_type: string; description: string; verified: boolean };
+}
+
+type Action =
+  | { kind: "set_type"; value: CaseEventType }
+  | { kind: "set_field"; field: "effective_date" | "note"; value: string }
+  | { kind: "set_move"; patch: Partial<FormState["move"]> }
+  | { kind: "set_status"; patch: Partial<FormState["status"]> }
+  | { kind: "set_evidence"; patch: Partial<FormState["evidence"]> }
+  | { kind: "reset" };
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function initialState(): FormState {
+  return {
+    eventType: "re_evaluate",
+    effective_date: todayIso(),
+    note: "",
+    move: { to_country: "", from_country: "", open_new: true },
+    status: { to_status: "citizen" },
+    evidence: { evidence_type: "", description: "", verified: false },
+  };
+}
+
+function reducer(state: FormState, action: Action): FormState {
+  switch (action.kind) {
+    case "set_type":
+      return { ...state, eventType: action.value };
+    case "set_field":
+      return { ...state, [action.field]: action.value };
+    case "set_move":
+      return { ...state, move: { ...state.move, ...action.patch } };
+    case "set_status":
+      return { ...state, status: { ...state.status, ...action.patch } };
+    case "set_evidence":
+      return { ...state, evidence: { ...state.evidence, ...action.patch } };
+    case "reset":
+      return initialState();
+  }
+}
 
 export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
   const intl = useIntl();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [eventType, setEventType] = useState<CaseEventType>("re_evaluate");
-  const [effectiveDate, setEffectiveDate] = useState(
-    new Date().toISOString().slice(0, 10),
-  );
-  const [note, setNote] = useState("");
-  // type-specific
-  const [toCountry, setToCountry] = useState("");
-  const [fromCountry, setFromCountry] = useState("");
-  const [openNew, setOpenNew] = useState(true);
-  const [toStatus, setToStatus] = useState("citizen");
-  const [evidenceType, setEvidenceType] = useState("");
-  const [evidenceDescription, setEvidenceDescription] = useState("");
-  const [evidenceVerified, setEvidenceVerified] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [state, dispatch] = useReducer(reducer, undefined, initialState);
 
-  const reset = () => {
-    setEventType("re_evaluate");
-    setEffectiveDate(new Date().toISOString().slice(0, 10));
-    setNote("");
-    setToCountry("");
-    setFromCountry("");
-    setOpenNew(true);
-    setToStatus("citizen");
-    setEvidenceType("");
-    setEvidenceDescription("");
-    setEvidenceVerified(false);
-  };
+  const fieldError = (key: string): string | undefined =>
+    errors[key]
+      ? intl.formatMessage({ id: errors[key], defaultMessage: errors[key] })
+      : undefined;
 
-  const buildPayload = (): Record<string, unknown> => {
-    switch (eventType) {
-      case "move_country":
-        return {
-          to_country: toCountry,
-          ...(fromCountry ? { from_country: fromCountry } : {}),
-          open_new: openNew,
-        };
-      case "change_legal_status":
-        return { to_status: toStatus };
-      case "add_evidence":
-        return {
-          evidence_type: evidenceType,
-          ...(evidenceDescription ? { description: evidenceDescription } : {}),
-          verified: evidenceVerified,
-        };
-      case "re_evaluate":
-      default:
-        return {};
+  const validate = (): { ok: boolean; payload: Record<string, unknown> } => {
+    const next: Record<string, string> = {};
+    const base = baseSchema.safeParse({
+      effective_date: state.effective_date,
+      note: state.note || undefined,
+    });
+    if (!base.success) {
+      for (const issue of base.error.issues) next[issue.path.join(".")] = issue.message;
     }
+    let payload: Record<string, unknown> = {};
+    if (state.eventType === "move_country") {
+      const r = moveSchema.safeParse(state.move);
+      if (!r.success) for (const i of r.error.issues) next[i.path.join(".")] = i.message;
+      else
+        payload = {
+          to_country: r.data.to_country,
+          ...(r.data.from_country ? { from_country: r.data.from_country } : {}),
+          open_new: r.data.open_new,
+        };
+    } else if (state.eventType === "change_legal_status") {
+      const r = statusSchema.safeParse(state.status);
+      if (!r.success) for (const i of r.error.issues) next[i.path.join(".")] = i.message;
+      else payload = { to_status: r.data.to_status };
+    } else if (state.eventType === "add_evidence") {
+      const r = evidenceSchema.safeParse(state.evidence);
+      if (!r.success) for (const i of r.error.issues) next[i.path.join(".")] = i.message;
+      else
+        payload = {
+          evidence_type: r.data.evidence_type,
+          ...(r.data.description ? { description: r.data.description } : {}),
+          verified: r.data.verified,
+        };
+    }
+    setErrors(next);
+    return { ok: Object.keys(next).length === 0, payload };
   };
+
+  // Submit is enabled only when the type-specific required fields are present.
+  const canSubmit =
+    !submitting &&
+    !!state.effective_date &&
+    (state.eventType === "re_evaluate" ||
+      (state.eventType === "move_country" && !!state.move.to_country) ||
+      (state.eventType === "change_legal_status" && !!state.status.to_status) ||
+      (state.eventType === "add_evidence" && state.evidence.evidence_type.trim().length > 0));
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    const v = validate();
+    if (!v.ok) return;
     const body: CaseEventRequest = {
-      event_type: eventType,
-      effective_date: effectiveDate,
-      payload: buildPayload(),
-      note: note || undefined,
+      event_type: state.eventType,
+      effective_date: state.effective_date,
+      payload: v.payload,
+      note: state.note || undefined,
     };
     setSubmitting(true);
     try {
       const res = await postCaseEvent(caseId, body, true);
       onCreated(res);
       setOpen(false);
-      reset();
+      dispatch({ kind: "reset" });
+      setErrors({});
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to record event");
+      toast.error(
+        e instanceof Error
+          ? e.message
+          : intl.formatMessage({ id: "events.error.submit_failed" }),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -127,14 +224,14 @@ export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-2">
             <Label htmlFor="evt-type">
               {intl.formatMessage({ id: "events.form.field.event_type" })}
             </Label>
             <Select
-              value={eventType}
-              onValueChange={(v) => setEventType(v as CaseEventType)}
+              value={state.eventType}
+              onValueChange={(v) => dispatch({ kind: "set_type", value: v as CaseEventType })}
             >
               <SelectTrigger id="evt-type">
                 <SelectValue />
@@ -164,26 +261,41 @@ export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
               id="evt-date"
               type="date"
               required
-              value={effectiveDate}
-              onChange={(e) => setEffectiveDate(e.target.value)}
+              value={state.effective_date}
+              onChange={(e) =>
+                dispatch({ kind: "set_field", field: "effective_date", value: e.target.value })
+              }
+              aria-invalid={!!fieldError("effective_date") || undefined}
+              aria-describedby={fieldError("effective_date") ? "evt-date-err" : undefined}
             />
+            {fieldError("effective_date") && (
+              <p id="evt-date-err" className="text-xs text-destructive">
+                {fieldError("effective_date")}
+              </p>
+            )}
           </div>
 
-          {eventType === "move_country" && (
+          {state.eventType === "move_country" && (
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="evt-from">
                     {intl.formatMessage({ id: "events.form.field.from_country" })}
                   </Label>
-                  <Select value={fromCountry} onValueChange={setFromCountry}>
+                  <Select
+                    value={state.move.from_country}
+                    onValueChange={(v) => dispatch({ kind: "set_move", patch: { from_country: v } })}
+                  >
                     <SelectTrigger id="evt-from">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
                       {ISO_COUNTRIES.map((c) => (
                         <SelectItem key={c} value={c}>
-                          {c}
+                          {intl.formatMessage({
+                            id: `country.iso.${c}`,
+                            defaultMessage: c,
+                          })}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -192,60 +304,99 @@ export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
                 <div className="space-y-2">
                   <Label htmlFor="evt-to">
                     {intl.formatMessage({ id: "events.form.field.to_country" })}
+                    <span aria-hidden className="ms-1 text-destructive">*</span>
                   </Label>
-                  <Select value={toCountry} onValueChange={setToCountry}>
-                    <SelectTrigger id="evt-to">
+                  <Select
+                    value={state.move.to_country}
+                    onValueChange={(v) => dispatch({ kind: "set_move", patch: { to_country: v } })}
+                  >
+                    <SelectTrigger
+                      id="evt-to"
+                      aria-invalid={!!fieldError("to_country") || undefined}
+                      aria-describedby={fieldError("to_country") ? "evt-to-err" : undefined}
+                    >
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
                       {ISO_COUNTRIES.map((c) => (
                         <SelectItem key={c} value={c}>
-                          {c}
+                          {intl.formatMessage({
+                            id: `country.iso.${c}`,
+                            defaultMessage: c,
+                          })}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  {fieldError("to_country") && (
+                    <p id="evt-to-err" className="text-xs text-destructive">
+                      {fieldError("to_country")}
+                    </p>
+                  )}
                 </div>
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox
-                  checked={openNew}
-                  onCheckedChange={(v) => setOpenNew(v === true)}
+                  checked={state.move.open_new}
+                  onCheckedChange={(v) =>
+                    dispatch({ kind: "set_move", patch: { open_new: v === true } })
+                  }
                 />
                 {intl.formatMessage({ id: "events.form.field.open_new" })}
               </label>
             </>
           )}
 
-          {eventType === "change_legal_status" && (
+          {state.eventType === "change_legal_status" && (
             <div className="space-y-2">
               <Label htmlFor="evt-status">
                 {intl.formatMessage({ id: "events.form.field.to_status" })}
               </Label>
-              <Select value={toStatus} onValueChange={setToStatus}>
+              <Select
+                value={state.status.to_status}
+                onValueChange={(v) =>
+                  dispatch({
+                    kind: "set_status",
+                    patch: { to_status: v as (typeof LEGAL_STATUSES)[number] },
+                  })
+                }
+              >
                 <SelectTrigger id="evt-status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="citizen">citizen</SelectItem>
-                  <SelectItem value="permanent_resident">permanent_resident</SelectItem>
-                  <SelectItem value="other">other</SelectItem>
+                  {LEGAL_STATUSES.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {intl.formatMessage({ id: `events.legal_status.${s}` })}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           )}
 
-          {eventType === "add_evidence" && (
+          {state.eventType === "add_evidence" && (
             <>
               <div className="space-y-2">
                 <Label htmlFor="evt-evtype">
                   {intl.formatMessage({ id: "events.form.field.evidence_type" })}
+                  <span aria-hidden className="ms-1 text-destructive">*</span>
                 </Label>
                 <Input
                   id="evt-evtype"
-                  value={evidenceType}
-                  onChange={(e) => setEvidenceType(e.target.value)}
+                  value={state.evidence.evidence_type}
+                  onChange={(e) =>
+                    dispatch({ kind: "set_evidence", patch: { evidence_type: e.target.value } })
+                  }
+                  maxLength={80}
+                  aria-invalid={!!fieldError("evidence_type") || undefined}
+                  aria-describedby={fieldError("evidence_type") ? "evt-evtype-err" : undefined}
                 />
+                {fieldError("evidence_type") && (
+                  <p id="evt-evtype-err" className="text-xs text-destructive">
+                    {fieldError("evidence_type")}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="evt-evdesc">
@@ -253,14 +404,19 @@ export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
                 </Label>
                 <Input
                   id="evt-evdesc"
-                  value={evidenceDescription}
-                  onChange={(e) => setEvidenceDescription(e.target.value)}
+                  value={state.evidence.description}
+                  onChange={(e) =>
+                    dispatch({ kind: "set_evidence", patch: { description: e.target.value } })
+                  }
+                  maxLength={500}
                 />
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <Checkbox
-                  checked={evidenceVerified}
-                  onCheckedChange={(v) => setEvidenceVerified(v === true)}
+                  checked={state.evidence.verified}
+                  onCheckedChange={(v) =>
+                    dispatch({ kind: "set_evidence", patch: { verified: v === true } })
+                  }
                 />
                 {intl.formatMessage({ id: "events.form.field.verified" })}
               </label>
@@ -273,9 +429,12 @@ export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
             </Label>
             <Textarea
               id="evt-note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
+              value={state.note}
+              onChange={(e) =>
+                dispatch({ kind: "set_field", field: "note", value: e.target.value })
+              }
               rows={3}
+              maxLength={2000}
             />
           </div>
 
@@ -288,7 +447,7 @@ export function NewEventForm({ caseId, onCreated }: NewEventFormProps) {
             >
               {intl.formatMessage({ id: "events.form.cancel" })}
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={!canSubmit}>
               {intl.formatMessage({ id: "events.form.submit" })}
             </Button>
           </DialogFooter>
