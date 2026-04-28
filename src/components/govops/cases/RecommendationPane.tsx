@@ -4,6 +4,7 @@ import { Sparkles } from "lucide-react";
 import type { Recommendation } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { ProvenanceRibbon } from "../ProvenanceRibbon";
+import { BenefitAmountCard } from "../screen/BenefitAmountCard";
 import { ConfidenceRing } from "./ConfidenceRing";
 import { OutcomePill } from "./OutcomePill";
 import { RuleEvaluationItem } from "./RuleEvaluationItem";
@@ -11,9 +12,13 @@ import { RuleEvaluationItem } from "./RuleEvaluationItem";
 export function RecommendationPane({
   recommendation,
   onEvaluate,
+  jurisdictionLabel,
+  downloadSlot,
 }: {
   recommendation: Recommendation | null;
   onEvaluate: () => Promise<void>;
+  jurisdictionLabel?: string;
+  downloadSlot?: React.ReactNode;
 }) {
   const intl = useIntl();
   const [running, setRunning] = useState(false);
@@ -130,6 +135,20 @@ export function RecommendationPane({
               </div>
             )}
 
+            {recommendation.benefit_amount && (
+              <BenefitAmountCard
+                benefitAmount={recommendation.benefit_amount}
+                jurisdictionLabel={jurisdictionLabel ?? ""}
+                pensionType={
+                  recommendation.pension_type === "full" ||
+                  recommendation.pension_type === "partial"
+                    ? recommendation.pension_type
+                    : ""
+                }
+                partialRatio={recommendation.partial_ratio}
+              />
+            )}
+
             {recommendation.missing_evidence.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-foreground">
@@ -163,6 +182,7 @@ export function RecommendationPane({
                 ))}
               </div>
             )}
+            {downloadSlot && <div className="flex justify-end">{downloadSlot}</div>}
           </>
         )}
       </div>
