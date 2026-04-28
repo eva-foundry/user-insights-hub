@@ -17,7 +17,15 @@ import { AuthorityChainDiagram } from "@/components/govops/AuthorityChainDiagram
  */
 const REPO_BASE =
   (import.meta.env.VITE_REPO_BASE_URL as string | undefined) ??
-  "https://github.com/your-org/61-GovOps/blob/main";
+  "https://github.com/eva-foundry/61-GovOps/blob/main";
+
+/**
+ * Canonical project home (GitHub Pages landing). Override at build time via
+ * `VITE_PROJECT_HOME_URL`.
+ */
+const PROJECT_HOME =
+  (import.meta.env.VITE_PROJECT_HOME_URL as string | undefined) ??
+  "https://eva-foundry.github.io/61-GovOps/";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -134,6 +142,14 @@ function About() {
             <p className="max-w-2xl text-lg text-foreground-muted">
               {t("about.lede")}
             </p>
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <ExternalAnchor href="https://github.com/eva-foundry/61-GovOps">
+                {t("about.cta.github")}
+              </ExternalAnchor>
+              <ExternalAnchor href={PROJECT_HOME}>
+                {t("about.cta.project_home")}
+              </ExternalAnchor>
+            </div>
           </div>
         </div>
         <aside
@@ -340,6 +356,11 @@ function About() {
             </h3>
             <ul className="mt-3 space-y-2">
               {[
+                {
+                  key: "about.references.project_home",
+                  href: PROJECT_HOME,
+                  external: true,
+                },
                 { key: "about.deeper.plan", path: "PLAN.md" },
                 { key: "about.deeper.idea", path: "IDEA-GovOps-v2.0-LawAsCode.md" },
                 { key: "about.deeper.lawcode_mapping", path: "docs/design/LAW-AS-CODE.md" },
@@ -347,13 +368,24 @@ function About() {
                 { key: "about.deeper.lawcode_artefacts", path: "lawcode/" },
                 { key: "about.deeper.schema", path: "schema/configvalue-v1.0.json" },
                 { key: "about.deeper.aligned", path: "docs/aligned-initiatives.md" },
-              ].map((l) => (
-                <li key={l.key}>
-                  <InRepoAnchor href={`${REPO_BASE}/${l.path}`}>
-                    {t(l.key)}
-                  </InRepoAnchor>
-                </li>
-              ))}
+              ].map((l) => {
+                const isExternal = "external" in l && l.external;
+                const href = isExternal ? l.href! : `${REPO_BASE}/${l.path}`;
+                return (
+                  <li key={l.key}>
+                    {isExternal ? (
+                      <div className="space-y-1">
+                        <ExternalAnchor href={href}>{t(l.key)}</ExternalAnchor>
+                        <p className="text-xs text-foreground-muted">
+                          {t("about.references.project_home_desc")}
+                        </p>
+                      </div>
+                    ) : (
+                      <InRepoAnchor href={href}>{t(l.key)}</InRepoAnchor>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div>
