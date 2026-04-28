@@ -84,6 +84,12 @@ export function t(key: string, locale: string = readLocaleCookie()): string {
 export function localeFromMatches(
   matches: ReadonlyArray<{ loaderData?: unknown }> | undefined,
 ): string {
+  (globalThis as any).__lastHeadMatches = matches?.map((m: any) => ({
+    id: m?.id ?? m?.routeId,
+    keys: m && Object.keys(m),
+    ld: m?.loaderData,
+    ctx: m?.context,
+  }));
   if (!matches || matches.length === 0) return "en";
   // The root match is always at index 0, but we scan defensively in case
   // the parent ordering ever changes.
@@ -92,7 +98,5 @@ export function localeFromMatches(
     const loc = data?.initialLocale;
     if (loc && CATALOGS[loc]) return loc;
   }
-  // eslint-disable-next-line no-console
-  console.warn("[HEADI18N-DEBUG] matches:", JSON.stringify(matches.map((m: any) => ({ keys: m && Object.keys(m), id: m?.id ?? m?.routeId, ld: m?.loaderData }))).slice(0, 800));
   return "en";
 }
