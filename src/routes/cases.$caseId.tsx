@@ -15,6 +15,8 @@ import { AuditDrawer } from "@/components/govops/cases/AuditDrawer";
 import { StatusPill } from "@/components/govops/cases/StatusPill";
 import { RouteError } from "@/components/govops/RouteError";
 import { RouteLoading } from "@/components/govops/RouteLoading";
+import { DownloadDecisionButton } from "@/components/govops/notices/DownloadDecisionButton";
+import { useLocale } from "@/lib/i18n";
 
 export const Route = createFileRoute("/cases/$caseId")({
   head: ({ params }) => ({
@@ -34,6 +36,7 @@ export const Route = createFileRoute("/cases/$caseId")({
 
 function CaseDetailPage() {
   const intl = useIntl();
+  const { locale } = useLocale();
   const { caseId } = Route.useParams();
   const initial = (Route.useLoaderData() as { detail: CaseDetail }).detail;
   const [detail, setDetail] = useState<CaseDetail>(initial);
@@ -91,6 +94,16 @@ function CaseDetailPage() {
         <RecommendationPane
           recommendation={detail.recommendation}
           onEvaluate={handleEvaluate}
+          jurisdictionLabel={detail.case.jurisdiction_id}
+          downloadSlot={
+            detail.recommendation ? (
+              <DownloadDecisionButton
+                mode="case"
+                caseId={caseId}
+                language={locale}
+              />
+            ) : null
+          }
         />
       </div>
 
