@@ -9,8 +9,7 @@ import { BrandingCheck } from "@/components/govops/BrandingCheck";
 import { ReferenceCard } from "@/components/govops/ReferenceCard";
 import { PipelineDiagram } from "@/components/govops/PipelineDiagram";
 import { AuthorityChainDiagram } from "@/components/govops/AuthorityChainDiagram";
-import { t } from "@/lib/head-i18n";
-import { getSsrLocale } from "@/lib/ssrLocale";
+import { t, localeFromMatches } from "@/lib/head-i18n";
 
 /**
  * Repo base for in-repo doc links. Markdown files are not served by the SPA,
@@ -30,15 +29,17 @@ const PROJECT_HOME =
   "https://eva-foundry.github.io/61-GovOps/";
 
 export const Route = createFileRoute("/about")({
-  loader: async () => ({ ssrLocale: await getSsrLocale() }),
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: t("about.title", loaderData?.ssrLocale) },
-      { name: "description", content: t("about.lede", loaderData?.ssrLocale) },
-      { property: "og:title", content: t("about.title", loaderData?.ssrLocale) },
-      { property: "og:description", content: t("about.lede", loaderData?.ssrLocale) },
-    ],
-  }),
+  head: ({ matches }) => {
+    const l = localeFromMatches(matches);
+    return {
+      meta: [
+        { title: t("about.title", l) },
+        { name: "description", content: t("about.lede", l) },
+        { property: "og:title", content: t("about.title", l) },
+        { property: "og:description", content: t("about.lede", l) },
+      ],
+    };
+  },
   component: About,
 });
 
