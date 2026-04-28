@@ -85,10 +85,16 @@ export function localeFromMatches(
   matches: ReadonlyArray<{ loaderData?: unknown }> | undefined,
 ): string {
   if (!matches || matches.length === 0) return "en";
-  // The root match is always at index 0.
-  const root = matches[0];
-  const data = root?.loaderData as { initialLocale?: string } | undefined;
-  const loc = data?.initialLocale;
-  if (loc && CATALOGS[loc]) return loc;
+  // The root match is always at index 0, but we scan defensively in case
+  // the parent ordering ever changes.
+  for (const m of matches) {
+    const data = m?.loaderData as { initialLocale?: string } | undefined;
+    const loc = data?.initialLocale;
+    if (loc && CATALOGS[loc]) return loc;
+  }
+  if (typeof process !== "undefined" && process.env?.DEBUG_HEAD_I18N) {
+    // eslint-disable-next-line no-console
+    console.warn("[head-i18n] no initialLocale in matches:", JSON.stringify(matches.map((m) => ({ keys: m && Object.keys(m), ld: (m as any)?.loaderData }))).slice(0, 500));
+  }
   return "en";
 }
