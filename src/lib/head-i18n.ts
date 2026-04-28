@@ -67,3 +67,28 @@ export function t(key: string, locale: string = readLocaleCookie()): string {
   }
   return key;
 }
+
+/**
+ * Extract the SSR-resolved locale from a route `head()` ctx.
+ *
+ * The root loader (`src/routes/__root.tsx`) calls `getSsrLocale()` on every
+ * request and exposes the result as `initialLocale`. TanStack Start passes
+ * every parent match (including the root) into each child route's `head()`
+ * hook via `ctx.matches`, so we can read the SSR-resolved locale here
+ * **on the server** — before any client hydration — and use it to localize
+ * `<title>` and `<meta name="description">` in the SSR HTML itself.
+ *
+ * This is the key wiring that makes search-engine indexers, social-share
+ * embeds, and human first-paint all see the same localized title.
+ */
+export function localeFromMatches(
+  matches: ReadonlyArray<{ loaderData?: unknown }> | undefined,
+): string {
+  if (!matches || matches.length === 0) return "en";
+  // The root match is always at index 0.
+  const root = matches[0];
+  const data = root?.loaderData as { initialLocale?: string } | undefined;
+  const loc = data?.initialLocale;
+  if (loc && CATALOGS[loc]) return loc;
+  return "en";
+}
