@@ -31,15 +31,6 @@ type ConfigSearch = {
 };
 
 export const Route = createFileRoute("/config")({
-  head: ({ matches }) => {
-    const l = localeFromMatches(matches);
-    return {
-      meta: [
-        { title: t("config.title", l) },
-        { name: "description", content: t("config.lede", l) },
-      ],
-    };
-  },
   validateSearch: (search: Record<string, unknown>): ConfigSearch => ({
     key_prefix: typeof search.key_prefix === "string" ? search.key_prefix : undefined,
     domain: typeof search.domain === "string" ? search.domain : undefined,
@@ -74,6 +65,15 @@ export const Route = createFileRoute("/config")({
   errorComponent: ({ error, reset }) => <RouteError error={error as Error} reset={reset} />,
   pendingComponent: () => <RouteLoading rows={3} rowHeight={68} />,
   component: ConfigRouteComponent,
+  head: ({ matches }) => {
+    const l = localeFromMatches(matches);
+    return {
+      meta: [
+        { title: t("config.title", l) },
+        { name: "description", content: t("config.lede", l) },
+      ],
+    };
+  },
 });
 
 function ConfigRouteComponent() {
