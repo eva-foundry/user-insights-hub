@@ -2,6 +2,10 @@ import type {
   AuditPackage,
   CaseDetail,
   CaseListItem,
+  CaseEvent,
+  CaseEventRequest,
+  GetEventsResponse,
+  PostEventResponse,
   HumanReviewAction,
   Recommendation,
 } from "./types";
